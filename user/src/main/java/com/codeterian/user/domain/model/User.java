@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -16,15 +17,18 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Getter
     private Long id;
 
     @Column
+    @Getter
     private String name;
 
     @Column
     private String password;
 
     @Column
+    @Getter
     private String email;
 
     // 팩토리 메서드를 통해 객체 생성

@@ -1,4 +1,4 @@
-package com.codeterian.user.presentation.dto;
+package com.codeterian.user.presentation.dto.request;
 
 public record UserAddRequestDto(
         String name,
