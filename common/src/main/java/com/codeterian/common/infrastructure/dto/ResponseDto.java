@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ResponseDTO<T> {
+public class ResponseDto<T> {
 
     private final int code;
 
@@ -21,15 +21,15 @@ public class ResponseDTO<T> {
     private final LocalDateTime responseAt;
 
     @Builder
-    private ResponseDTO(int code, String message, T data, LocalDateTime responseAt) {
+    private ResponseDto(int code, String message, T data, LocalDateTime responseAt) {
         this.code = code;
         this.message = message;
         this.data = data;
         this.responseAt = responseAt;
     }
 
-    public static ResponseDTO<Void> ok() {
-        return ResponseDTO.<Void>builder()
+    public static ResponseDto<Void> ok() {
+        return ResponseDto.<Void>builder()
                 .code(HttpStatus.OK.value())
                 .data(null)
                 .message(null)
@@ -37,8 +37,8 @@ public class ResponseDTO<T> {
                 .build();
     }
 
-    public static <T> ResponseDTO<T> okWithData(T data) {
-        return ResponseDTO.<T>builder()
+    public static <T> ResponseDto<T> okWithData(T data) {
+        return ResponseDto.<T>builder()
                 .code(HttpStatus.OK.value())
                 .data(data)
                 .message(null)
@@ -46,8 +46,8 @@ public class ResponseDTO<T> {
                 .build();
     }
 
-    public static <T> ResponseDTO<T> okWithDataAndMessage(String message, T data) {
-        return ResponseDTO.<T>builder()
+    public static <T> ResponseDto<T> okWithDataAndMessage(String message, T data) {
+        return ResponseDto.<T>builder()
                 .code(HttpStatus.OK.value())
                 .message(message)
                 .data(data)
@@ -55,8 +55,8 @@ public class ResponseDTO<T> {
                 .build();
     }
 
-    public static ResponseDTO<Void> error(ErrorCode errorCode) {
-        return ResponseDTO.<Void>builder()
+    public static ResponseDto<Void> error(ErrorCode errorCode) {
+        return ResponseDto.<Void>builder()
                 .code(errorCode.getHttpStatus().value())
                 .message(errorCode.getMessage())
                 .data(null)
@@ -64,8 +64,8 @@ public class ResponseDTO<T> {
                 .build();
     }
 
-    public static <T> ResponseDTO<T> errorWithMessage(HttpStatus httpStatus, String errorMessage) {
-        return ResponseDTO.<T>builder()
+    public static <T> ResponseDto<T> errorWithMessage(HttpStatus httpStatus, String errorMessage) {
+        return ResponseDto.<T>builder()
                 .code(httpStatus.value())
                 .message(errorMessage)
                 .data(null)
