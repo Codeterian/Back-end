@@ -27,4 +27,15 @@ public class User {
     @Column
     private String email;
 
+    // 팩토리 메서드를 통해 객체 생성
+    public static User create(String name, String password, String email) {
+        return new User(name, password, email);
+    }
+
+    // private 생성자 (팩토리 메서드를 통해서만 객체 생성 가능)
+    private User(String name, String password, String email) {
+        this.name = name;
+        this.password = password;
+        this.email = email;
+    }
 }
