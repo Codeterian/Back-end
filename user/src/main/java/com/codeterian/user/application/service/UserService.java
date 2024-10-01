@@ -7,6 +7,9 @@ import com.codeterian.user.presentation.dto.response.UserFindResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -25,6 +28,12 @@ public class UserService {
         );
 
         return UserFindResponseDto.fromEntity(user);
+    }
+
+    public List<UserFindResponseDto> findAllUser() {
+        return userRepository.findAll().stream()
+                .map(UserFindResponseDto::fromEntity)
+                .collect(Collectors.toList());
     }
 
 }
