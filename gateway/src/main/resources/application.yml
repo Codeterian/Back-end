@@ -15,15 +15,6 @@ eureka:
     service-url:
       defaultZone: http://localhost:19090/eureka/
 
-
-management:
-  zipkin:
-    tracing:
-      endpoint: "http://zipkin:9411/api/v2/spans"
-  tracing:
-    sampling:
-      probability: 1.0
-
 logging:
   level:
     org.springframework.cloud.gateway: DEBUG
