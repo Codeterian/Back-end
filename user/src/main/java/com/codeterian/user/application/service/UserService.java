@@ -8,6 +8,7 @@ import com.codeterian.user.presentation.dto.response.UserFindResponseDto;
 import com.codeterian.user.presentation.dto.response.UserModifyResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,12 +19,14 @@ public class UserService {
 
     private final UserRepository userRepository;
 
+    @Transactional
     public void addUser(UserAddRequestDto requestDto) {
         User user = User.create(requestDto.name(), requestDto.password(), requestDto.name());
 
         userRepository.save(user);
     }
 
+    @Transactional(readOnly = true)
     public UserFindResponseDto findUserById(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(
                 //Global Exception Handler
@@ -32,12 +35,14 @@ public class UserService {
         return UserFindResponseDto.fromEntity(user);
     }
 
+    @Transactional(readOnly = true)
     public List<UserFindResponseDto> findAllUser() {
         return userRepository.findAll().stream()
                 .map(UserFindResponseDto::fromEntity)
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public UserModifyResponseDto modifyUser(Long userId, UserModifyRequestDto requestDto) {
 
         User user = userRepository.findById(userId).orElseThrow(
@@ -49,6 +54,7 @@ public class UserService {
         return UserModifyResponseDto.fromEntity(user);
     }
 
+//    @Transactional
 //    public void deleteUser(Long userId) {
 //        User user = userRepository.findById(userId).orElseThrow(
 //                //Global Exception Handler
