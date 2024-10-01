@@ -42,4 +42,9 @@ public class User {
         this.password = password;
         this.email = email;
     }
+
+    public void modifyUserInfo(String name, String email) {
+        this.name = name;
+        this.email = email;
+    }
 }
