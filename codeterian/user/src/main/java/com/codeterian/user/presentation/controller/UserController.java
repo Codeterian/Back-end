@@ -1,6 +1,7 @@
 package com.codeterian.user.presentation.controller;
 
 
+import com.codeterian.common.infrastructure.dto.ResponseDto;
 import com.codeterian.user.application.service.UserService;
 import com.codeterian.user.presentation.dto.request.UserAddRequestDto;
 import com.codeterian.user.presentation.dto.request.UserModifyRequestDto;
@@ -8,7 +9,7 @@ import com.codeterian.user.presentation.dto.response.UserFindResponseDto;
 import com.codeterian.user.presentation.dto.response.UserModifyResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-//import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,37 +28,34 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<Void> userAdd(@RequestBody UserAddRequestDto requestDto) {
+    public ResponseEntity<ResponseDto<Void>> userAdd(@RequestBody UserAddRequestDto requestDto) {
         userService.addUser(requestDto);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(ResponseDto.ok());
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<UserFindResponseDto> userDetails(@PathVariable("userId") Long userId) {
-        return ResponseEntity.ok()
-                .body(userService.findUserById(userId));
+    public ResponseEntity<ResponseDto<UserFindResponseDto>> userDetails(@PathVariable("userId") Long userId) {
+        return ResponseEntity.ok(ResponseDto.okWithData(userService.findUserById(userId)));
     }
 
     @GetMapping
-    public ResponseEntity<List<UserFindResponseDto>> userList() {
-        return ResponseEntity.ok()
-                .body(userService.findAllUser());
+    public ResponseEntity<ResponseDto<List<UserFindResponseDto>>> userList() {
+        return ResponseEntity.ok(ResponseDto.okWithData(userService.findAllUser()));
     }
 
     @PatchMapping("/{userId}")
-    public ResponseEntity<UserModifyResponseDto> userModify(@PathVariable("userId") Long userId,
-                                                            @RequestBody UserModifyRequestDto requestDto) {
-        return ResponseEntity.ok()
-                .body(userService.modifyUser(userId, requestDto));
+    public ResponseEntity<ResponseDto<UserModifyResponseDto>> userModify(@PathVariable("userId") Long userId,
+                                                                         @RequestBody UserModifyRequestDto requestDto) {
+        return ResponseEntity.ok(ResponseDto.okWithData(userService.modifyUser(userId, requestDto)));
     }
 
-//    @DeleteMapping("/{userId")
-//    public ResponseEntity<Void> userDelete(@PathVariable("userId") Long userId) {
-//
-//        userService.deleteUser(userId);
-//
-//        return ResponseEntity.ok().build();
-//    }
+    @DeleteMapping("/{userId")
+    public ResponseEntity<ResponseDto<Void>> userDelete(@PathVariable("userId") Long userId) {
+
+        userService.deleteUser(userId);
+
+        return ResponseEntity.ok(ResponseDto.ok());
+    }
 
 
 }
