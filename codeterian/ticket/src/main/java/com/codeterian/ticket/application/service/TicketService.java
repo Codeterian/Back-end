@@ -8,6 +8,7 @@ import com.codeterian.ticket.presentation.dto.response.TicketFindResponseDto;
 import com.codeterian.ticket.presentation.dto.response.TicketModifyResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -19,6 +20,7 @@ public class TicketService {
 
     private final TicketRepository ticketRepository;
 
+    @Transactional
     public void addTicket(TicketAddRequestDto requestDto) {
         Ticket ticket = Ticket.create(requestDto.performanceId(), requestDto.ticketStatus(), requestDto.price(),
                 requestDto.seatSection(), requestDto.seatNumber(), UUID.randomUUID());
@@ -26,6 +28,7 @@ public class TicketService {
         ticketRepository.save(ticket);
     }
 
+    @Transactional(readOnly = true)
     public TicketFindResponseDto findTicketById(UUID ticketId) {
 
         Ticket ticket = ticketRepository.findByIdAndDeletedAtIsNull(ticketId).orElseThrow(
@@ -34,12 +37,14 @@ public class TicketService {
         return TicketFindResponseDto.fromEntity(ticket);
     }
 
+    @Transactional(readOnly = true)
     public List<TicketFindResponseDto> findAllTicket() {
         return ticketRepository.findAllByDeletedAtIsNull().stream()
                 .map(TicketFindResponseDto::fromEntity)
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public TicketModifyResponseDto modifyTicket(UUID ticketId, TicketModifyRequestDto requestDto) {
 
         Ticket ticket = ticketRepository.findByIdAndDeletedAtIsNull(ticketId).orElseThrow(
@@ -52,6 +57,7 @@ public class TicketService {
         return TicketModifyResponseDto.fromEntity(ticket);
     }
 
+    @Transactional(readOnly = true)
     public void deleteTicketById(UUID ticketId) {
 
         Ticket ticket = ticketRepository.findByIdAndDeletedAtIsNull(ticketId).orElseThrow(
