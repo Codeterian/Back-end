@@ -1,0 +1,12 @@
+rootProject.name = 'codeterian'
+
+include('common')
+include('eureka')
+include('gateway')
+include('user')
+include('auth')
+include('performance')
+include('payment')
+include('order')
+include('config')
+
