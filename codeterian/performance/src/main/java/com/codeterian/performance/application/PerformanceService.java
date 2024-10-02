@@ -12,6 +12,7 @@ import com.codeterian.performance.infrastructure.persistence.CategoryRepositoryI
 import com.codeterian.performance.infrastructure.persistence.PerformanceRepositoryImpl;
 import com.codeterian.performance.presentation.dto.request.PerformanceAddDto;
 import com.codeterian.performance.presentation.dto.request.PerformanceModifyDto;
+import com.codeterian.performance.presentation.dto.response.PerformanceDetailsDto;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -124,4 +125,24 @@ public class PerformanceService {
         performanceRepository.save(existedPerformance);
     }
 
+    public PerformanceDetailsDto findPerformanceDetails(UUID performanceId) {
+        Performance performance = performanceRepository.findByIdAndIsDeletedFalse(performanceId).orElseThrow(
+            () -> new IllegalArgumentException("존재하지 않는 공연입니다.")
+        );
+        return new PerformanceDetailsDto(
+            performance.getId(),
+            performance.getTitle(),
+            performance.getDescription(),
+            performance.getLocation(),
+            performance.getStartDate(),
+            performance.getEndDate(),
+            performance.getBookingStartDate(),
+            performance.getBookingEndDate(),
+            performance.getDuration(),
+            performance.getAgeRestriction(),
+            performance.getStatus().name(),
+            performance.getTicketStock(),
+            performance.getCategory().getId()
+        );
+    }
 }

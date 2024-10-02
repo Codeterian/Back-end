@@ -3,6 +3,7 @@ package com.codeterian.performance.presentation.controller;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.codeterian.performance.application.PerformanceService;
 import com.codeterian.performance.presentation.dto.request.PerformanceAddDto;
 import com.codeterian.performance.presentation.dto.request.PerformanceModifyDto;
+import com.codeterian.performance.presentation.dto.response.PerformanceDetailsDto;
 
 import lombok.RequiredArgsConstructor;
 
@@ -33,6 +35,11 @@ public class PerformanceController {
     public ResponseEntity<?> performanceModify(@PathVariable UUID performanceId, @RequestBody PerformanceModifyDto dto){
         performanceService.modifyPerformance(performanceId,dto);
         return ResponseEntity.ok().body("공연 수정에 성공했습니다.");
+    }
+
+    @GetMapping("/{performanceId}")
+    public ResponseEntity<PerformanceDetailsDto> performanceDetails(@PathVariable UUID performanceId) {
+        return ResponseEntity.ok(performanceService.findPerformanceDetails(performanceId));
     }
 
 
