@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -54,5 +55,12 @@ public class OrderController {
 	){
 		return ResponseEntity.ok(orderService.modifyOrder(requestDto));
 	}
-
+	//
+	// @DeleteMapping("/orderId")
+	// public ResponseEntity<> orderRemove(
+	// 	@PathVariable UUID orderId
+	// ){
+	// 	orderService.removeOrder(orderId);
+	// 	return ResponseEntity.ok()
+	// }
 }

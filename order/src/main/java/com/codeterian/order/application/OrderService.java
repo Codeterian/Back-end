@@ -55,9 +55,15 @@ public class OrderService {
 		orders.update(requestDto);
 		return OrderModifyResponseDto.fromEntity(orders);
 	}
+	//
+	// @CacheEvict(cacheNames = {"orderAllCache", "orderCache"}, allEntries = true)
+	// @Transactional
+	// public void removeOrder(UUID orderId) {
+	// 	Orders orders = findById(orderId);
+	// 	orders.delete();
+	// }
 
 	public Orders findById(UUID orderId){
 		return orderRepository.findById(orderId).orElseThrow(NoSuchElementException::new);
 	}
-
 }
