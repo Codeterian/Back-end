@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -19,7 +20,10 @@ public class TicketService {
     private final TicketRepository ticketRepository;
 
     public void addTicket(TicketAddRequestDto requestDto) {
+        Ticket ticket = Ticket.create(requestDto.performanceId(), requestDto.ticketStatus(), requestDto.price(),
+                requestDto.seatSection(), requestDto.seatNumber(), UUID.randomUUID());
 
+        ticketRepository.save(ticket);
     }
 
     public TicketFindResponseDto findTicketById(UUID ticketId) {
@@ -27,12 +31,13 @@ public class TicketService {
         Ticket ticket = ticketRepository.findByIdAndDeletedAtIsNull(ticketId).orElseThrow(
                 //Global Exception Handler
         );
-
-        return null;
+        return TicketFindResponseDto.fromEntity(ticket);
     }
 
     public List<TicketFindResponseDto> findAllTicket() {
-        return null;
+        return ticketRepository.findAllByDeletedAtIsNull().stream()
+                .map(TicketFindResponseDto::fromEntity)
+                .collect(Collectors.toList());
     }
 
     public TicketModifyResponseDto modifyTicket(UUID ticketId, TicketModifyRequestDto requestDto) {
@@ -41,7 +46,10 @@ public class TicketService {
                 //Global Exception Handler
         );
 
-        return null;
+        ticket.update(requestDto.seatNumber(),requestDto.seatSection(),
+                requestDto.ticketStatus(), requestDto.price());
+
+        return TicketModifyResponseDto.fromEntity(ticket);
     }
 
     public void deleteTicketById(UUID ticketId) {
@@ -51,6 +59,7 @@ public class TicketService {
         );
 
 //        ticket.delete(userId);
+        ticket.delete(1);
 
     }
 
