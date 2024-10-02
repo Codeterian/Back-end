@@ -1,0 +1,10 @@
+### Order Add - Send Post request with json body
+POST http://localhost:19095/api/v1/order
+Content-Type: application/json
+
+{
+  "userId" :  1,
+  "ticketId" :  "3a222f44-a3e1-49f5-aeab-67319b33b3a5",
+  "price" : 20000,
+  "quantity" : 2
+}
