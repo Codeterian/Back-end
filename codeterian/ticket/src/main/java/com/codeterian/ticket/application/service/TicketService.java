@@ -65,7 +65,7 @@ public class TicketService {
         );
 
 //        ticket.delete(userId);
-        ticket.delete(1);
+        ticket.delete(1L);
 
     }
 

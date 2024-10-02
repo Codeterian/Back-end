@@ -59,7 +59,7 @@ public class UserService {
         User user = userRepository.findById(userId).orElseThrow(
                 //Global Exception Handler
         );
-        user.delete(user.getId().intValue());
+        user.delete(user.getId());
     }
 
 }

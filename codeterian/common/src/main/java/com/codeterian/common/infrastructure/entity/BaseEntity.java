@@ -35,16 +35,16 @@ public class BaseEntity {
 
 //    @CreatedBy
 //    @Column(updatable = false)
-//    private Integer createdBy;
+//    private Long createdBy;
 
 //    @LastModifiedBy
-//    private Integer updatedBy;
+//    private Long updatedBy;
 
-    private Integer deletedBy;
+    private Long deletedBy;
 
     private boolean isDeleted = false;
 
-    public void delete(Integer handlerId) {
+    public void delete(Long handlerId) {
         this.deletedBy = handlerId;
         this.isDeleted = true;
         this.deletedAt = LocalDateTime.now();
