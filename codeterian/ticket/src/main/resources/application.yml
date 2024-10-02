@@ -1,6 +1,6 @@
 spring:
   application:
-    name: user
+    name: ticket
 
   datasource:
     url: jdbc:postgresql://localhost:5432/postgres
@@ -17,7 +17,7 @@ spring:
           show_sql: true
 
 server:
-  port: 19097
+  port: 19094
 
 eureka:
   client:
