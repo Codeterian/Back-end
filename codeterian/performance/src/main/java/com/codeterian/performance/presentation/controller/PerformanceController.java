@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.codeterian.performance.application.PerformanceService;
-import com.codeterian.performance.presentation.dto.request.PerformanceAddDto;
-import com.codeterian.performance.presentation.dto.request.PerformanceModifyDto;
-import com.codeterian.performance.presentation.dto.response.PerformanceDetailsDto;
+import com.codeterian.performance.presentation.dto.request.PerformanceAddRequestDto;
+import com.codeterian.performance.presentation.dto.request.PerformanceModifyRequestDto;
+import com.codeterian.performance.presentation.dto.response.PerformanceDetailsResponseDto;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,19 +26,19 @@ public class PerformanceController {
     private final PerformanceService performanceService;
 
     @PostMapping
-    public ResponseEntity<?> performanceAdd(@RequestBody PerformanceAddDto dto){
+    public ResponseEntity<?> performanceAdd(@RequestBody PerformanceAddRequestDto dto){
         performanceService.addPerformance(dto);
         return ResponseEntity.ok().body("공연 등록에 성공했습니다.");
     }
 
     @PutMapping("/{performanceId}")
-    public ResponseEntity<?> performanceModify(@PathVariable UUID performanceId, @RequestBody PerformanceModifyDto dto){
+    public ResponseEntity<?> performanceModify(@PathVariable UUID performanceId, @RequestBody PerformanceModifyRequestDto dto){
         performanceService.modifyPerformance(performanceId,dto);
         return ResponseEntity.ok().body("공연 수정에 성공했습니다.");
     }
 
     @GetMapping("/{performanceId}")
-    public ResponseEntity<PerformanceDetailsDto> performanceDetails(@PathVariable UUID performanceId) {
+    public ResponseEntity<PerformanceDetailsResponseDto> performanceDetails(@PathVariable UUID performanceId) {
         return ResponseEntity.ok(performanceService.findPerformanceDetails(performanceId));
     }
 

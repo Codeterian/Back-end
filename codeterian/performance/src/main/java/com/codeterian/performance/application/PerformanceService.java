@@ -10,9 +10,9 @@ import com.codeterian.performance.domain.performance.Performance;
 import com.codeterian.performance.domain.performance.PerformanceStatus;
 import com.codeterian.performance.infrastructure.persistence.CategoryRepositoryImpl;
 import com.codeterian.performance.infrastructure.persistence.PerformanceRepositoryImpl;
-import com.codeterian.performance.presentation.dto.request.PerformanceAddDto;
-import com.codeterian.performance.presentation.dto.request.PerformanceModifyDto;
-import com.codeterian.performance.presentation.dto.response.PerformanceDetailsDto;
+import com.codeterian.performance.presentation.dto.request.PerformanceAddRequestDto;
+import com.codeterian.performance.presentation.dto.request.PerformanceModifyRequestDto;
+import com.codeterian.performance.presentation.dto.response.PerformanceDetailsResponseDto;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ public class PerformanceService {
     private final PerformanceRepositoryImpl performanceRepository;
     private final CategoryRepositoryImpl categoryRepository;
 
-    public void addPerformance(PerformanceAddDto dto) {
+    public void addPerformance(PerformanceAddRequestDto dto) {
         // 카테고리 존재 여부 확인
         Category category = categoryRepository.findByIdAndIsDeletedFalse(dto.categoryId()).orElseThrow(
                 () -> new IllegalArgumentException("존재하지 않는 카테고리 입니다.")
@@ -54,7 +54,7 @@ public class PerformanceService {
     }
 
     @Transactional
-    public void modifyPerformance(UUID performanceId, PerformanceModifyDto dto) {
+    public void modifyPerformance(UUID performanceId, PerformanceModifyRequestDto dto) {
         Performance existedPerformance = performanceRepository.findByIdAndIsDeletedFalse(performanceId).orElseThrow(
             () -> new IllegalArgumentException("존재하지 않는 공연입니다.")
         );
@@ -125,11 +125,11 @@ public class PerformanceService {
         performanceRepository.save(existedPerformance);
     }
 
-    public PerformanceDetailsDto findPerformanceDetails(UUID performanceId) {
+    public PerformanceDetailsResponseDto findPerformanceDetails(UUID performanceId) {
         Performance performance = performanceRepository.findByIdAndIsDeletedFalse(performanceId).orElseThrow(
             () -> new IllegalArgumentException("존재하지 않는 공연입니다.")
         );
-        return new PerformanceDetailsDto(
+        return new PerformanceDetailsResponseDto(
             performance.getId(),
             performance.getTitle(),
             performance.getDescription(),

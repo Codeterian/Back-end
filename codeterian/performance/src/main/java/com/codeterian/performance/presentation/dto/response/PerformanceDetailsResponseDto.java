@@ -3,7 +3,7 @@ package com.codeterian.performance.presentation.dto.response;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public record PerformanceDetailsDto (
+public record PerformanceDetailsResponseDto(
 	UUID id,
 	String title,
 	String description,

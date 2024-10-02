@@ -3,9 +3,7 @@ package com.codeterian.performance.presentation.dto.request;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import lombok.Getter;
-
-public record PerformanceModifyDto(
+public record PerformanceModifyRequestDto(
     String title,
     String description,
     String location,
