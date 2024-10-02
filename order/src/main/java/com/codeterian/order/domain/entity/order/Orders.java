@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import com.codeterian.order.domain.entity.status.OrderStatus;
 import com.codeterian.order.presentation.dto.OrderAddRequestDto;
+import com.codeterian.order.presentation.dto.OrderModifyRequestDto;
 
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -46,5 +47,9 @@ public class Orders implements Serializable {
 			.orderLine(new OrderLine(requestDto.ticketId(), requestDto.quantity(), requestDto.price()))
 			.orderStatus(OrderStatus.PENDING)
 			.build();
+	}
+
+	public void update(OrderModifyRequestDto requestDto) {
+		this.orderLine = new OrderLine(requestDto.ticketId(), requestDto.quantity(), requestDto.price());
 	}
 }

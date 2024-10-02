@@ -17,3 +17,15 @@ GET http://localhost:19095/api/v1/order/{{orderId}}
 
 ### Order List - Send Get request with json body
 GET http://localhost:19095/api/v1/order
+
+### Order Modify - Send Patch request with json body
+PATCH http://localhost:19095/api/v1/order
+Content-Type: application/json
+
+{
+  "orderId" : "57eff95e-022f-483c-9c72-8938aac6a3d5",
+  "userId" : 2,
+  "ticketId" :  "3a222f44-a3e1-49f5-aeab-67319b33b3a5",
+  "price" : 20000,
+  "quantity" : 4
+}
