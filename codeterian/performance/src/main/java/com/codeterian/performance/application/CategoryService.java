@@ -6,10 +6,10 @@ import org.springframework.stereotype.Service;
 
 import com.codeterian.performance.domain.category.Category;
 import com.codeterian.performance.infrastructure.persistence.CategoryRepositoryImpl;
-import com.codeterian.performance.presentation.dto.request.CategoryModifyDto;
-import com.codeterian.performance.presentation.dto.request.ChildCategoryAddDto;
-import com.codeterian.performance.presentation.dto.request.ParentCategoryAddDto;
-import com.codeterian.performance.presentation.dto.response.CategoryDetailsDto;
+import com.codeterian.performance.presentation.dto.request.CategoryModifyRequestDto;
+import com.codeterian.performance.presentation.dto.request.ChildCategoryAddRequestDto;
+import com.codeterian.performance.presentation.dto.request.ParentCategoryAddRequestDto;
+import com.codeterian.performance.presentation.dto.response.CategoryDetailsResponseDto;
 
 import jakarta.transaction.Transactional;
 
@@ -22,7 +22,7 @@ public class CategoryService {
     private final CategoryRepositoryImpl categoryRepository;
     private final String username = "test";
 
-    public void addParentCategory(ParentCategoryAddDto dto) {
+    public void addParentCategory(ParentCategoryAddRequestDto dto) {
         if (categoryRepository.existsByNameAndIsDeletedFalse(dto.name())) {
             throw new IllegalArgumentException("이미 존재하는 카테고리입니다.");
         }
@@ -34,7 +34,7 @@ public class CategoryService {
         categoryRepository.save(newCategory);
     }
 
-    public void addChildCategory(ChildCategoryAddDto dto) {
+    public void addChildCategory(ChildCategoryAddRequestDto dto) {
         Category parentCategory = categoryRepository.findByIdAndIsDeletedFalse(dto.parentId()).orElseThrow(
                 () -> new IllegalArgumentException("상위 카테고리가 존재하지 않습니다.")
         );
@@ -53,7 +53,7 @@ public class CategoryService {
     }
 
     @Transactional
-    public void modifyCategory(UUID categoryId, CategoryModifyDto dto) {
+    public void modifyCategory(UUID categoryId, CategoryModifyRequestDto dto) {
         Category category = categoryRepository.findByIdAndIsDeletedFalse(categoryId).orElseThrow(
                 ()-> new IllegalArgumentException("존재하지 않는 카테고리입니다.")
         );
@@ -87,16 +87,16 @@ public class CategoryService {
     //     categoryRepository.save(category);
     // }
 
-    public CategoryDetailsDto findCategoryDetails(UUID categoryId) {
+    public CategoryDetailsResponseDto findCategoryDetails(UUID categoryId) {
         Category category = categoryRepository.findByIdAndIsDeletedFalse(categoryId).orElseThrow(
                 () -> new IllegalArgumentException("존재하지 않는 카테고리입니다.")
         );
 
 
         if (category.getParent() == null) {
-            return new CategoryDetailsDto(category.getName(),"부모 카테고리 입니다.");
+            return new CategoryDetailsResponseDto(category.getName(),"부모 카테고리 입니다.");
         }
 
-        return new CategoryDetailsDto(category.getName(), category.getParent().getName());
+        return new CategoryDetailsResponseDto(category.getName(), category.getParent().getName());
     }
 }

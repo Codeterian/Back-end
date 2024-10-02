@@ -4,11 +4,12 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import com.codeterian.performance.domain.performance.Performance;
-import com.codeterian.common.infrastructure.entity.BaseEntity;
 
 @Entity
 @Getter
@@ -31,10 +32,10 @@ public class Category{
 	private boolean isDeleted = false;
 
 	@OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Category> children = new ArrayList<>();
+	private Set<Category> children = new HashSet<>();
 
-	// @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
-	// private List<Performance> performances = new ArrayList<>();
+	@OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+	private Set<Performance> performances = new HashSet<>();
 
 	public void modifyCategoryName(String name) {
 		this.name = name;
