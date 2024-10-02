@@ -49,7 +49,7 @@ public class UserController {
         return ResponseEntity.ok(ResponseDto.okWithData(userService.modifyUser(userId, requestDto)));
     }
 
-    @DeleteMapping("/{userId")
+    @DeleteMapping("/{userId}")
     public ResponseEntity<ResponseDto<Void>> userDelete(@PathVariable("userId") Long userId) {
 
         userService.deleteUser(userId);
