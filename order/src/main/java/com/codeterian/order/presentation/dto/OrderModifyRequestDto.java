@@ -4,7 +4,6 @@ import java.util.UUID;
 
 public record OrderModifyRequestDto(
 
-	UUID orderId,
 	Long userId,
 	UUID ticketId,
 	Integer price,

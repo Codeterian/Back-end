@@ -1,31 +1,33 @@
 ### Order Add - Send Post request with json body
-POST http://localhost:19095/api/v1/order
+POST http://localhost:19095/api/v1/orders
 Content-Type: application/json
 
 {
-  "userId" :  1,
+  "userId" :  5,
   "ticketId" :  "3a222f44-a3e1-49f5-aeab-67319b33b3a5",
-  "price" : 20000,
+  "price" : 30000,
   "quantity" : 2
 }
 
 ### Order Details - Send Get request with json body
 < {%
-    request.variables.set("orderId", "57eff95e-022f-483c-9c72-8938aac6a3d5")
+    request.variables.set("orderId", "80306fd1-88ef-4cd9-9a52-9bc4295f4621")
 %}
-GET http://localhost:19095/api/v1/order/{{orderId}}
+GET http://localhost:19095/api/v1/orders/{{orderId}}
 
 ### Order List - Send Get request with json body
-GET http://localhost:19095/api/v1/order
+GET http://localhost:19095/api/v1/orders
 
 ### Order Modify - Send Patch request with json body
-PATCH http://localhost:19095/api/v1/order
+< {%
+    request.variables.set("orderId", "57eff95e-022f-483c-9c72-8938aac6a3d5")
+%}
+PATCH http://localhost:19095/api/v1/orders/{{orderId}}
 Content-Type: application/json
 
 {
-  "orderId" : "57eff95e-022f-483c-9c72-8938aac6a3d5",
-  "userId" : 2,
-  "ticketId" :  "3a222f44-a3e1-49f5-aeab-67319b33b3a5",
-  "price" : 20000,
-  "quantity" : 4
+  "userId": 2,
+  "ticketId": "3a222f44-a3e1-49f5-aeab-67319b33b3a5",
+  "price": 20000,
+  "quantity": 4
 }

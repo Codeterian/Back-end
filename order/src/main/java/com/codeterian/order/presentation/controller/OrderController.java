@@ -24,7 +24,7 @@ import com.codeterian.order.presentation.dto.OrderModifyResponseDto;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/v1/order")
+@RequestMapping("/api/v1/orders")
 @RequiredArgsConstructor
 public class OrderController {
 
@@ -49,11 +49,12 @@ public class OrderController {
 		return ResponseEntity.ok(orderService.findOrderList());
 	}
 
-	@PatchMapping
+	@PatchMapping("/{orderId}")
 	public ResponseEntity<OrderModifyResponseDto> orderModify(
+		@PathVariable UUID orderId,
 		@RequestBody OrderModifyRequestDto requestDto
 	){
-		return ResponseEntity.ok(orderService.modifyOrder(requestDto));
+		return ResponseEntity.ok(orderService.modifyOrder(orderId, requestDto));
 	}
 	//
 	// @DeleteMapping("/orderId")

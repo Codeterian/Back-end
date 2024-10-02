@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,16 +26,31 @@ import lombok.RequiredArgsConstructor;
 public class OrderService {
 
 	private final OrderRepository orderRepository;
+	private final RedisTemplate<String, Orders> redisTemplate;
 
-	@CachePut(cacheNames = "orderCache", key = "#result.orderId()")
+	//Write - Through 전략
 	public OrderAddResponseDto addOrder(OrderAddRequestDto requestDto) {
-		return OrderAddResponseDto.fromEntity(orderRepository.save(Orders.add(requestDto)));
+		Orders orders = orderRepository.save(Orders.add(requestDto));
+
+		// 2.Redis에 Orders 엔티티를 저장
+		String redisKey = "orderCache::"+orders.getId();
+		redisTemplate.opsForValue().set(redisKey, orders);
+
+		return OrderAddResponseDto.fromEntity(orders);
 	}
 
-	@Cacheable(cacheNames = "orderCache", key = "args[0]")
+	// Read-Through 전략
 	@Transactional(readOnly = true)
 	public OrderDetailsResponseDto findOrder(UUID orderId) {
-		return OrderDetailsResponseDto.fromEntity(findById(orderId));
+		String redisKey = "orderCache::"+ orderId;
+		Orders orders = redisTemplate.opsForValue().get(redisKey);
+
+		if(orders == null){
+			orders = findById(orderId);
+			redisTemplate.opsForValue().set(redisKey, orders);
+		}
+
+		return OrderDetailsResponseDto.fromEntity(orders);
 	}
 
 
@@ -44,15 +60,16 @@ public class OrderService {
 		return orderRepository.findAll().stream().map(OrderDetailsResponseDto::fromEntity).toList();
 	}
 
-	@CachePut(cacheNames = "orderCache", key = "args[0].orderId")
 	@CacheEvict(cacheNames = "orderAllCache", allEntries = true)
 	@Transactional
-	public OrderModifyResponseDto modifyOrder(OrderModifyRequestDto requestDto) {
-		Orders orders = findById(requestDto.orderId());
+	public OrderModifyResponseDto modifyOrder(UUID orderId, OrderModifyRequestDto requestDto) {
+		Orders orders = findById(orderId);
 		if(orders.getUserId().equals(requestDto.userId())){
 			throw new IllegalArgumentException();
 		}
 		orders.update(requestDto);
+		redisTemplate.opsForValue().set("orderCache::"+ orderId, orders);
+
 		return OrderModifyResponseDto.fromEntity(orders);
 	}
 	//
@@ -66,4 +83,5 @@ public class OrderService {
 	public Orders findById(UUID orderId){
 		return orderRepository.findById(orderId).orElseThrow(NoSuchElementException::new);
 	}
+
 }
