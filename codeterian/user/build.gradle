@@ -29,6 +29,9 @@ ext {
 
 dependencies {
 
+	// common module
+	implementation project(':common')
+
 	//actuator
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
