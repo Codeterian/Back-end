@@ -8,6 +8,8 @@ import com.codeterian.order.presentation.dto.OrderAddRequestDto;
 
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -35,6 +37,7 @@ public class Orders implements Serializable {
 	@Embedded
 	private OrderLine orderLine;
 
+	@Enumerated(EnumType.STRING)
 	private OrderStatus orderStatus;
 
 	public static Orders add(OrderAddRequestDto requestDto) {

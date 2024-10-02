@@ -8,3 +8,12 @@ Content-Type: application/json
   "price" : 20000,
   "quantity" : 2
 }
+
+### Order Details - Send Get request with json body
+< {%
+    request.variables.set("orderId", "57eff95e-022f-483c-9c72-8938aac6a3d5")
+%}
+GET http://localhost:19095/api/v1/order/{{orderId}}
+
+### Order List - Send Get request with json body
+GET http://localhost:19095/api/v1/order
