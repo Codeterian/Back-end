@@ -1,8 +1,0 @@
-### Payment Add - Send Post request with json body
-POST http://localhost:19096/api/v1/payments
-Content-Type: application/json
-
-{
-  "orderId" : "a2392626-eee7-4496-a6ce-e41c41ec3310",
-  "paymentType" :  "TOSS"
-}
