@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.UUID;
 
 import com.codeterian.performance.domain.performance.Performance;
-import com.codeterian.common.infrastructure.entity.BaseEntity;
 
 @Entity
 @Getter
@@ -33,8 +32,8 @@ public class Category{
 	@OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Category> children = new ArrayList<>();
 
-	// @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
-	// private List<Performance> performances = new ArrayList<>();
+	@OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Performance> performances = new ArrayList<>();
 
 	public void modifyCategoryName(String name) {
 		this.name = name;
