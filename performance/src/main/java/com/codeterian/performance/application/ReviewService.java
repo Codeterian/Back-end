@@ -51,34 +51,22 @@ public class ReviewService {
 			() -> new IllegalArgumentException("존재하지 않는 리뷰입니다.")
 		);
 
-		// 공연Id 수정
-		if (dto.performanceId() != null && !dto.performanceId().equals(existingReview.getPerformance().getId())) {
+		Performance performance = performanceRepository.findByIdAndIsDeletedFalse(dto.performanceId()).orElseThrow(
+			() -> new IllegalArgumentException("존재하지 않는 공연입니다.")
+		);
 
-			// 공연 존재 여부 확인
-			Performance performance = performanceRepository.findByIdAndIsDeletedFalse(dto.performanceId()).orElseThrow(
-				() -> new IllegalArgumentException("존재하지 않는 공연입니다.")
-			);
-
-			existingReview.modifyPerformanceId(performance);
+		// 평점 유효성 체크
+		if (dto.rating() < 1 || dto.rating() > 5) {
+			throw new IllegalArgumentException("평점은 1~5점 사이만 가능합니다.");
 		}
 
-		// 리뷰 제목 수정
-		if (dto.title() != null && !dto.title().equals(existingReview.getTitle())) {
-			existingReview.modifyTitle(dto.title());
-		}
-
-		// 리뷰 내용 수정
-		if (dto.description() != null && !dto.description().equals(existingReview.getDescription())) {
-			existingReview.modifyDescription(dto.description());
-		}
-
-		// 평점 수정
-		if (dto.rating() != null){
-			if (dto.rating() <0 || dto.rating() > 6){
-				throw new IllegalArgumentException("평점은 1~5점 사이만 가능합니다.");
-			}
-			existingReview.modifyRating(dto.rating());
-		}
+		// 일괄 업데이트 호출
+		existingReview.update(
+			dto.title(),
+			dto.description(),
+			dto.rating(),
+			performance
+		);
 
 		reviewRepository.save(existingReview);
 
