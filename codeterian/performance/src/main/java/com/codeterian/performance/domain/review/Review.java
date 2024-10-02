@@ -37,4 +37,23 @@ public class Review {
 
 	// 유저
 	// private Long userId;
+
+	// 나중에 baseEntity 사용하면 삭제할 예정
+	private boolean isDeleted = false;
+
+	public void modifyTitle(String title) {
+		this.title = title;
+	}
+
+	public void modifyDescription(String description) {
+		this.description = description;
+	}
+
+	public void modifyRating(Integer rating) {
+		this.rating = rating;
+	}
+
+	public void modifyPerformanceId(Performance performance) {
+		this.performance = performance;
+	}
 }
