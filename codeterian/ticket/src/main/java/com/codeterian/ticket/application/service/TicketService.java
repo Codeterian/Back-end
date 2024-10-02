@@ -1,5 +1,6 @@
 package com.codeterian.ticket.application.service;
 
+import com.codeterian.ticket.domain.model.Ticket;
 import com.codeterian.ticket.domain.repository.TicketRepository;
 import com.codeterian.ticket.presentation.dto.request.TicketAddRequestDto;
 import com.codeterian.ticket.presentation.dto.request.TicketModifyRequestDto;
@@ -22,6 +23,11 @@ public class TicketService {
     }
 
     public TicketFindResponseDto findTicketById(UUID ticketId) {
+
+        Ticket ticket = ticketRepository.findByIdAndDeletedAtIsNull(ticketId).orElseThrow(
+                //Global Exception Handler
+        );
+
         return null;
     }
 
@@ -30,10 +36,21 @@ public class TicketService {
     }
 
     public TicketModifyResponseDto modifyTicket(UUID ticketId, TicketModifyRequestDto requestDto) {
+
+        Ticket ticket = ticketRepository.findByIdAndDeletedAtIsNull(ticketId).orElseThrow(
+                //Global Exception Handler
+        );
+
         return null;
     }
 
     public void deleteTicketById(UUID ticketId) {
+
+        Ticket ticket = ticketRepository.findByIdAndDeletedAtIsNull(ticketId).orElseThrow(
+                //Global Exception Handler
+        );
+
+//        ticket.delete(userId);
 
     }
 
