@@ -59,68 +59,25 @@ public class PerformanceService {
             () -> new IllegalArgumentException("존재하지 않는 공연입니다.")
         );
 
-        // title 수정
-        if (dto.title() != null && !dto.title().equals(existedPerformance.getTitle())) {
-            existedPerformance.modifyTitle(dto.title());
-        }
+        Category existingcategory = categoryRepository.findByIdAndIsDeletedFalse(dto.categoryId()).orElseThrow(
+            () -> new IllegalArgumentException("존재하지 않는 카테고리입니다.")
+        );
 
-        // 설명 수정
-        if (dto.description() != null && !dto.description().equals(existedPerformance.getDescription())) {
-            existedPerformance.modifyDescription(dto.description());
-        }
-
-        // 위치 수정
-        if (dto.location() != null && !dto.location().equals(existedPerformance.getLocation())) {
-            existedPerformance.modifyLocation(dto.location());
-        }
-
-        // 시작일 수정
-        if (dto.startDate() != null && !Objects.equals(existedPerformance.getStartDate(), dto.startDate())) {
-            existedPerformance.modifyStartDate(dto.startDate());
-        }
-
-        // 종료일 수정
-        if (dto.endDate() != null && !Objects.equals(existedPerformance.getEndDate(), dto.endDate())) {
-            existedPerformance.modifyEndDate(dto.endDate());
-        }
-
-        // 예약일 수정
-        if (dto.bookingStartTime() != null && !Objects.equals(existedPerformance.getBookingStartDate(), dto.bookingStartTime())) {
-            existedPerformance.modifyBookingStartDate(dto.bookingStartTime());
-        }
-
-        // 예약 종료일 수정
-        if (dto.bookingEndTime() != null && !Objects.equals(existedPerformance.getBookingEndDate(), dto.bookingEndTime())) {
-            existedPerformance.modifyBookingEndDate(dto.bookingEndTime());
-        }
-
-        // 시간 수정
-        if (dto.duration() != null && !Objects.equals(existedPerformance.getDuration(), dto.duration())) {
-            existedPerformance.modifyDuration(dto.duration());
-        }
-
-        // 나이 제한 수정
-        if (dto.ageRestriction() != null && !Objects.equals(existedPerformance.getAgeRestriction(), dto.ageRestriction())) {
-            existedPerformance.modifyAgeRestriction(dto.ageRestriction());
-        }
-
-        // 공연 상태 수정
-        if (dto.status() != null && !dto.status().equals(existedPerformance.getStatus().name())) {
-            existedPerformance.modifyStatus(dto.status());
-        }
-
-        // 티켓 수량 수정
-        if (dto.ticketStock() != null && !Objects.equals(existedPerformance.getTicketStock(), dto.ticketStock())) {
-            existedPerformance.modifyTicketStock(dto.ticketStock());
-        }
-
-        // 카테고리 수정
-        if (dto.categoryId() != null && !Objects.equals(existedPerformance.getCategory().getId(), dto.categoryId())) {
-            Category category = categoryRepository.findByIdAndIsDeletedFalse(dto.categoryId()).orElseThrow(
-                () -> new IllegalArgumentException("존재하지 않는 카테고리입니다.")
-            );
-            existedPerformance.modifyCategory(category);
-        }
+        // 일괄 업데이트 메서드 호출
+        existedPerformance.update(
+            dto.title(),
+            dto.description(),
+            dto.location(),
+            dto.startDate(),
+            dto.endDate(),
+            dto.bookingStartTime(),
+            dto.bookingEndTime(),
+            dto.duration(),
+            dto.ageRestriction(),
+            dto.status(),
+            dto.ticketStock(),
+            existingcategory
+        );
 
         performanceRepository.save(existedPerformance);
     }

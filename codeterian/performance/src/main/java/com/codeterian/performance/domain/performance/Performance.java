@@ -108,4 +108,32 @@ public class Performance {
     public void modifyCategory(Category category) {
         this.category = category;
     }
+
+    public void update(
+        String title,
+        String description,
+        String location,
+        LocalDateTime startDate,
+        LocalDateTime endDate,
+        LocalDateTime bookingStartTime,
+        LocalDateTime bookingEndTime,
+        Integer duration,
+        String ageRestriction,
+        String status,
+        Integer ticketStock,
+        Category category
+    ) {
+        this.title = title;
+        this.description = description;
+        this.location = location;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.bookingStartDate = bookingStartTime;
+        this.bookingEndDate = bookingEndTime;
+        this.duration = duration;
+        this.ageRestriction = ageRestriction;
+        this.status = PerformanceStatus.valueOf(status); // 상태 값은 enum 처리
+        this.ticketStock = ticketStock;
+        this.category = category;
+    }
 }
