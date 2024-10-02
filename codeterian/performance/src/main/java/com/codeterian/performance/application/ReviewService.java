@@ -10,6 +10,7 @@ import com.codeterian.performance.infrastructure.persistence.PerformanceReposito
 import com.codeterian.performance.infrastructure.persistence.ReviewRepositoryImpl;
 import com.codeterian.performance.presentation.dto.request.ReviewAddDto;
 import com.codeterian.performance.presentation.dto.request.ReviewModifyDto;
+import com.codeterian.performance.presentation.dto.response.ReviewDetailsDto;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -81,5 +82,19 @@ public class ReviewService {
 
 		reviewRepository.save(existingReview);
 
+	}
+
+	public ReviewDetailsDto findReviewDetails(UUID reviewId) {
+		// 리뷰 존재 여부 확인
+		Review existingReview = reviewRepository.findByIdAndIsDeletedFalse(reviewId).orElseThrow(
+			() -> new IllegalArgumentException("존재하지 않는 리뷰입니다.")
+		);
+
+		return new ReviewDetailsDto(
+			reviewId,existingReview.getPerformance().getId(),
+			existingReview.getTitle(),
+			existingReview.getDescription(),
+			existingReview.getRating()
+		);
 	}
 }
