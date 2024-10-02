@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.codeterian.performance.domain.performance.Performance;
 
 public interface PerformanceRepositoryImpl extends JpaRepository<Performance, UUID> {
-	Boolean existsByTitleAndIsDeletedFalse(String title);
+    Boolean existsByTitleAndIsDeletedFalse(String title);
 
-	Optional<Performance> findByIdAndIsDeletedFalse(UUID id);
+    Optional<Performance> findByIdAndIsDeletedFalse(UUID id);
 }
