@@ -49,66 +49,6 @@ public class Performance {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    // title 수정
-    public void modifyTitle(String title) {
-        this.title = title;
-    }
-
-    // 설명 수정
-    public void modifyDescription(String description) {
-        this.description = description;
-    }
-
-    // 위치 수정
-    public void modifyLocation(String location) {
-        this.location = location;
-    }
-
-    // 시작일 수정
-    public void modifyStartDate(LocalDateTime startDate) {
-        this.startDate = startDate;
-    }
-
-    // 종료일 수정
-    public void modifyEndDate(LocalDateTime endDate) {
-        this.endDate = endDate;
-    }
-
-    // 예약 시작일 수정
-    public void modifyBookingStartDate(LocalDateTime bookingStartTime) {
-        this.bookingStartDate = bookingStartTime;
-    }
-
-    // 에약 종료일 수정
-    public void modifyBookingEndDate(LocalDateTime bookingEndTime) {
-        this.bookingEndDate = bookingEndTime;
-    }
-
-    // 시간 수정
-    public void modifyDuration(int duration) {
-        this.duration = duration;
-    }
-
-    // 나이 제한 수정
-    public void modifyAgeRestriction(String ageRestriction) {
-        this.ageRestriction = ageRestriction;
-    }
-
-    // 공연 상태 수정
-    public void modifyStatus(String status) {
-        this.status = PerformanceStatus.valueOf(status);
-    }
-
-    // 티켓 수량 수정
-    public void modifyTicketStock(int ticketStock) {
-        this.ticketStock = ticketStock;
-    }
-
-    // 카테고리 수정
-    public void modifyCategory(Category category) {
-        this.category = category;
-    }
-
     public void update(
         String title,
         String description,
