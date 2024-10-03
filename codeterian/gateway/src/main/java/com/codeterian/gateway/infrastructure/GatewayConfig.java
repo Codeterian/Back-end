@@ -12,11 +12,11 @@ public class GatewayConfig {
     public RouteLocator gatewayRoute(RouteLocatorBuilder builder) {
         return builder.routes()
                 .route("auth", r->r.path("/auth/**").uri("lb://auth"))
-                .route("performance", r-> r.path("/performance/**").uri("lb://performance"))
-                .route("ticket", r -> r.path("/ticket/**").uri("lb://ticket"))
-                .route("order", r->r.path("order/**").uri("lb://order"))
-                .route("payment", r-> r.path("payment/**").uri("lb://payment"))
-                .route("user", r->r.path("user/**").uri("lb://user"))
+                .route("performance", r-> r.path("/api/v1/performances/**").uri("lb://performance"))
+                .route("ticket", r -> r.path("/api/v1/tickets/**").uri("lb://ticket"))
+                .route("order", r->r.path("/api/v1/orders/**").uri("lb://order"))
+                .route("payment", r-> r.path("/api/v1/payments/**").uri("lb://payment"))
+                .route("user", r->r.path("/api/v1/users/**").uri("lb://user"))
                 .build();
     }
 

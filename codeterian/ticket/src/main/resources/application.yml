@@ -1,9 +1,9 @@
 spring:
   application:
-    name: user
+    name: ticket
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/users
+    url: jdbc:postgresql://localhost:5432/ticket
     username: postgres
     password: 1234
     driver-class-name: org.postgresql.Driver
@@ -17,7 +17,7 @@ spring:
           show_sql: true
 
 server:
-  port: 19097
+  port: 19094
 
 eureka:
   client:

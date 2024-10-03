@@ -1,16 +1,16 @@
-package com.codeterian.user;
+package com.codeterian.ticket;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication(scanBasePackages = {
-		"com.codeterian.user",
+		"com.codeterian.ticket",
 		"com.codeterian.common"
 })
-public class UserApplication {
+public class TicketApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(UserApplication.class, args);
+		SpringApplication.run(TicketApplication.class, args);
 	}
 
 }
