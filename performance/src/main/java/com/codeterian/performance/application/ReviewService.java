@@ -68,11 +68,6 @@ public class ReviewService {
 			() -> new IllegalArgumentException("존재하지 않는 리뷰입니다.")
 		);
 
-		return new ReviewDetailsDto(
-			reviewId,existingReview.getPerformance().getId(),
-			existingReview.getTitle(),
-			existingReview.getDescription(),
-			existingReview.getRating()
-		);
+		return ReviewDetailsDto.fromEntity(existingReview);
 	}
 }
