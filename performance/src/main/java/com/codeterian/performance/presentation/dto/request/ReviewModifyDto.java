@@ -2,10 +2,12 @@ package com.codeterian.performance.presentation.dto.request;
 
 import java.util.UUID;
 
+import org.hibernate.validator.constraints.Range;
+
 public record ReviewModifyDto(
 	 UUID performanceId,
 	 String title,
 	 String description,
-	 Integer rating
+	 @Range(min = 1,max = 5) Integer rating
 ) {
 }

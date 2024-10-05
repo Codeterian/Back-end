@@ -30,11 +30,6 @@ public class ReviewService {
 			() -> new IllegalArgumentException("존재하지 않는 공연입니다.")
 		);
 
-		// 평점 확인
-		if (dto.rating() <0 || dto.rating() > 6){
-			throw new IllegalArgumentException("평점은 1~5점 사이만 가능합니다.");
-		}
-
 		Review newReview = Review.builder()
 			.performance(performance)
 			.title(dto.title())
@@ -54,11 +49,6 @@ public class ReviewService {
 		Performance performance = performanceRepository.findByIdAndIsDeletedFalse(dto.performanceId()).orElseThrow(
 			() -> new IllegalArgumentException("존재하지 않는 공연입니다.")
 		);
-
-		// 평점 유효성 체크
-		if (dto.rating() < 1 || dto.rating() > 5) {
-			throw new IllegalArgumentException("평점은 1~5점 사이만 가능합니다.");
-		}
 
 		// 일괄 업데이트 호출
 		existingReview.update(

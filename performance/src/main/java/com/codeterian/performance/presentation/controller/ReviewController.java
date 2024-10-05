@@ -33,7 +33,7 @@ public class ReviewController {
 	}
 
 	@PutMapping("/{reviewId}")
-	public ResponseEntity<?> reviewModify(@PathVariable UUID reviewId, @RequestBody ReviewModifyDto dto){
+	public ResponseEntity<?> reviewModify(@PathVariable UUID reviewId, @Valid @RequestBody ReviewModifyDto dto){
 		reviewService.modifyReview(reviewId,dto);
 		return ResponseEntity.ok().body("리뷰 수정에 성공했습니다.");
 	}
