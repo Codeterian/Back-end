@@ -87,26 +87,12 @@ public class PerformanceService {
 		performanceRepository.save(existedPerformance);
 	}
 
-	public PerformanceDetailsResponseDto findPerformanceDetails(UUID performanceId) {
-		Performance performance = performanceRepository.findByIdAndIsDeletedFalse(performanceId).orElseThrow(
-			() -> new IllegalArgumentException("존재하지 않는 공연입니다.")
-		);
-		return new PerformanceDetailsResponseDto(
-			performance.getId(),
-			performance.getTitle(),
-			performance.getDescription(),
-			performance.getLocation(),
-			performance.getStartDate(),
-			performance.getEndDate(),
-			performance.getBookingStartDate(),
-			performance.getBookingEndDate(),
-			performance.getDuration(),
-			performance.getAgeRestriction(),
-			performance.getStatus().name(),
-			performance.getTicketStock(),
-			performance.getCategory().getId()
-		);
-	}
+    public PerformanceDetailsResponseDto findPerformanceDetails(UUID performanceId) {
+        Performance performance = performanceRepository.findByIdAndIsDeletedFalse(performanceId).orElseThrow(
+            () -> new IllegalArgumentException("존재하지 않는 공연입니다.")
+        );
+        return PerformanceDetailsResponseDto.fromEntity(performance);
+    }
 
 	@Transactional
 	public void modifyStock(PerformanceDecreaseStockRequestDto performanceDecreaseStockRequestDto) throws
