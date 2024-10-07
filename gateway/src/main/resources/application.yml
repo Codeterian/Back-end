@@ -24,22 +24,21 @@ logging:
 springdoc:
   swagger-ui:
     urls[0]:
-      name: 인증 서비스
-      url: http://localhost:19091/api/auth/v3/api-docs
+      name: 인증 명세서
+      url: /swagger/auth/v3/api-docs
     urls[1]:
-      name: 공연 서비스
-      url: http://localhost:19091/api/performances/v3/api-docs
+      name: 공연 명세서
+      url: /swagger/performances/v3/api-docs
     urls[2]:
-      name: 유저 서비스
-      url: http://localhost:19091/api/users/v3/api-docs
+      name: 티켓 명세서
+      url: /swagger/tickets/v3/api-docs
     urls[3]:
-      name: 주문 서비스
-      url: http://localhost:19091/api/orders/v3/api-docs
+      name: 주문 명세서
+      url: /swagger/orders/v3/api-docs
     urls[4]:
-      name: 티켓 서비스
-      url: http://localhost:19091/api/ticket/v3/api-docs
+      name: 결제 명세서
+      url: /swagger/payments/v3/api-docs
     urls[5]:
-      name: 결제 서비스
-      url: http://localhost:19091/api/payments/v3/api-docs
-    ## Geteway 접속시 default로 Swagger가 나오게 설정
+      name: 유저 명세서
+      url: /swagger/users/v3/api-docs
     use-root-path: true

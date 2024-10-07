@@ -1,4 +1,4 @@
-rootProject.name = 'codeterian'
+rootProject.name = 'Codeterian'
 
 include('common')
 include('eureka')

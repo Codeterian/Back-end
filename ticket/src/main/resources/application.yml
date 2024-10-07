@@ -5,7 +5,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/ticket
     username: postgres
-    password: 1234
+    password: postgres
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -18,6 +18,15 @@ spring:
 
 server:
   port: 19094
+
+
+springdoc:
+  api-docs:
+    version: openapi_3_1
+    enabled: true
+  enable-spring-security: true
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
 
 eureka:
   client:

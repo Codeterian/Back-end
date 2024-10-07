@@ -29,6 +29,9 @@ ext {
 
 dependencies {
 
+	// Spring Docs
+	implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.2.0'
+
 	// common module
 	implementation project(':common')
 
