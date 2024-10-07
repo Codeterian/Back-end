@@ -7,7 +7,7 @@ import com.codeterian.performance.domain.review.Review;
 import lombok.Builder;
 
 @Builder
-public record ReviewDetailsDto(
+public record ReviewDetailsResponseDto(
 	UUID reviewId,
 	UUID performanceId,
 	String title,
@@ -15,8 +15,8 @@ public record ReviewDetailsDto(
 	Integer rating
 ) {
 
-	public static ReviewDetailsDto fromEntity(Review review) {
-		return ReviewDetailsDto.builder()
+	public static ReviewDetailsResponseDto fromEntity(Review review) {
+		return ReviewDetailsResponseDto.builder()
 			.reviewId(review.getId())
 			.performanceId(review.getPerformance().getId())
 			.title(review.getTitle())

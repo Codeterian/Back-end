@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import org.hibernate.validator.constraints.Range;
 
-public record ReviewModifyDto(
+public record ReviewModifyRequestDto(
 	 UUID performanceId,
 	 String title,
 	 String description,

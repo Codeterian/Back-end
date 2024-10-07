@@ -7,7 +7,7 @@ import org.hibernate.validator.constraints.Range;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public record ReviewAddDto(
+public record ReviewAddRequestDto(
 	@NotNull(message = "공연Id는 필수 입력입니다.") UUID performanceId,
 	@NotBlank(message = "리뷰 제목을 입력해주세요.") String title,
 	@NotBlank(message = "리뷰 내용을 입력해주세요.") String description,
