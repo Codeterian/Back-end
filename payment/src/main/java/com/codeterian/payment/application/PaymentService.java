@@ -21,6 +21,7 @@ public class PaymentService {
 
 	private final PaymentRepository paymentRepository;
 
+	@Transactional
 	public PaymentAddResponseDto addPayment(PaymentAddRequestDto requestDto) {
 		return PaymentAddResponseDto.fromEntity(paymentRepository.save(Payment.add(requestDto)));
 	}
@@ -36,6 +37,7 @@ public class PaymentService {
 	}
 
 
+	@Transactional(readOnly = true)
 	public Payment findById(UUID paymentId){
 		return paymentRepository.findById(paymentId).orElseThrow(NoSuchElementException::new);
 	}
