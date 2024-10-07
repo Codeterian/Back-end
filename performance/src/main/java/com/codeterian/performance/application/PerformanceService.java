@@ -28,64 +28,67 @@ public class PerformanceService {
 	private final CategoryRepositoryImpl categoryRepository;
 	private final PerformanceKafkaProducer performanceKafkaProducer;
 
-	public void addPerformance(PerformanceAddRequestDto dto) {
-		// 카테고리 존재 여부 확인
-		Category category = categoryRepository.findByIdAndIsDeletedFalse(dto.categoryId()).orElseThrow(
-			() -> new IllegalArgumentException("존재하지 않는 카테고리 입니다.")
-		);
+    public void addPerformance(PerformanceAddRequestDto dto) {
+        // 카테고리 존재 여부 확인
+        Category category = categoryRepository.findByIdAndIsDeletedFalse(dto.categoryId()).orElseThrow(
+                () -> new IllegalArgumentException("존재하지 않는 카테고리 입니다.")
+        );
 
-		// 공연 title 중복 확인
-		if (performanceRepository.existsByTitleAndIsDeletedFalse(dto.title())) {
-			throw new IllegalArgumentException("중복되는 공연 입니다.");
-		}
+        // 공연 title 중복 확인
+        if (performanceRepository.existsByTitleAndIsDeletedFalse(dto.title())){
+            throw new IllegalArgumentException("중복되는 공연 입니다.");
+        }
 
-		Performance newPerformance = Performance.builder()
-			.title(dto.title())
-			.description(dto.description())
-			.location(dto.location())
-			.startDate(dto.startDate())
-			.endDate(dto.endDate())
-			.bookingStartDate(dto.bookingStartTime())
-			.bookingEndDate(dto.bookingEndTime())
-			.duration(dto.duration())
-			.ageRestriction(dto.ageRestriction())
-			.status(PerformanceStatus.valueOf(dto.status()))
-			.ticketStock(dto.ticketStock())
-			.category(category)
-			.build();
+        Performance newPerformance = Performance.builder()
+                .title(dto.title())
+                .description(dto.description())
+                .location(dto.location())
+                .startDate(dto.startDate())
+                .endDate(dto.endDate())
+                .bookingStartDate(dto.bookingStartTime())
+                .bookingEndDate(dto.bookingEndTime())
+                .duration(dto.duration())
+                .ageRestriction(dto.ageRestriction())
+                .status(PerformanceStatus.valueOf(dto.status()))
+                .ticketStock(dto.ticketStock())
+                .category(category)
+                .build();
 
-		performanceRepository.save(newPerformance);
+        Performance savedperformance = performanceRepository.save(newPerformance);
 
-	}
+        // elasticsearch에 저장
+        performanceDocumentRepository.save(PerformanceDocument.from(savedperformance));
 
-	@Transactional
-	public void modifyPerformance(UUID performanceId, PerformanceModifyRequestDto dto) {
-		Performance existedPerformance = performanceRepository.findByIdAndIsDeletedFalse(performanceId).orElseThrow(
-			() -> new IllegalArgumentException("존재하지 않는 공연입니다.")
-		);
+    }
 
-		Category existingcategory = categoryRepository.findByIdAndIsDeletedFalse(dto.categoryId()).orElseThrow(
-			() -> new IllegalArgumentException("존재하지 않는 카테고리입니다.")
-		);
+    @Transactional
+    public void modifyPerformance(UUID performanceId, PerformanceModifyRequestDto dto) {
+        Performance existedPerformance = performanceRepository.findByIdAndIsDeletedFalse(performanceId).orElseThrow(
+            () -> new IllegalArgumentException("존재하지 않는 공연입니다.")
+        );
 
-		// 일괄 업데이트 메서드 호출
-		existedPerformance.update(
-			dto.title(),
-			dto.description(),
-			dto.location(),
-			dto.startDate(),
-			dto.endDate(),
-			dto.bookingStartTime(),
-			dto.bookingEndTime(),
-			dto.duration(),
-			dto.ageRestriction(),
-			dto.status(),
-			dto.ticketStock(),
-			existingcategory
-		);
+        Category existingcategory = categoryRepository.findByIdAndIsDeletedFalse(dto.categoryId()).orElseThrow(
+            () -> new IllegalArgumentException("존재하지 않는 카테고리입니다.")
+        );
 
-		performanceRepository.save(existedPerformance);
-	}
+        // 일괄 업데이트 메서드 호출
+        existedPerformance.update(
+            dto.title(),
+            dto.description(),
+            dto.location(),
+            dto.startDate(),
+            dto.endDate(),
+            dto.bookingStartTime(),
+            dto.bookingEndTime(),
+            dto.duration(),
+            dto.ageRestriction(),
+            dto.status(),
+            dto.ticketStock(),
+            existingcategory
+        );
+
+        performanceRepository.save(existedPerformance);
+    }
 
     public PerformanceDetailsResponseDto findPerformanceDetails(UUID performanceId) {
         Performance performance = performanceRepository.findByIdAndIsDeletedFalse(performanceId).orElseThrow(

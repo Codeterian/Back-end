@@ -59,5 +59,24 @@ public class PerformanceDocument {
 	@Field(type = FieldType.Text)
 	private String username;
 
+	public static PerformanceDocument from(Performance performance) {
+		return PerformanceDocument.builder()
+			.id(performance.getId())
+			.title(performance.getTitle())
+			.description(performance.getDescription())
+			.location(performance.getLocation())
+			.startDate(performance.getStartDate())
+			.endDate(performance.getEndDate())
+			.bookingStartDate(performance.getBookingStartDate())
+			.bookingEndDate(performance.getBookingEndDate())
+			.duration(performance.getDuration())
+			.ageRestriction(performance.getAgeRestriction())
+			.status(performance.getStatus().name())
+			.ticketStock(performance.getTicketStock())
+			.username(performance.getUsername())
+			.build();
+
+	}
+
 
 }
