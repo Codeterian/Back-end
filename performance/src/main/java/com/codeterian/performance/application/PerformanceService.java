@@ -97,6 +97,11 @@ public class PerformanceService {
         return PerformanceDetailsResponseDto.fromEntity(performance);
     }
 
+    public List<PerformanceDocument> searchPerformance(String query) {
+       return performanceDocumentRepository
+            .findByTitleContainingOrDescriptionContainingOrLocationContaining(query, query, query);
+    }
+
 	@Transactional
 	public void modifyStock(PerformanceDecreaseStockRequestDto performanceDecreaseStockRequestDto) throws
 		JsonProcessingException {
