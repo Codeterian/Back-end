@@ -1,4 +1,4 @@
-package com.codeterian.auth.application;
+package com.codeterian.auth.application.service;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -18,8 +18,8 @@ public class JwtTokenGenerator {
 
     private final Long expirationTime;
 
-    public JwtTokenGenerator(@Value("${sever.jwt.secret-key}") String key,
-                             @Value("${sever.jwt.access-expiration}") Long expirationTime) {
+    public JwtTokenGenerator(@Value("${jwt.secret.key}") String key,
+                             @Value("${jwt.secret.expiration-time}") Long expirationTime) {
         this.key = Keys.hmacShaKeyFor(Decoders.BASE64URL.decode(key));
         this.expirationTime = expirationTime;
     }

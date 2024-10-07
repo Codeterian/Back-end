@@ -36,6 +36,15 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
+    public UserFindResponseDto findByEmail(String email) {
+        User user = userRepository.findByEmailAndDeletedAtIsNull(email).orElseThrow(
+                    //global Exception Handler
+        );
+
+        return UserFindResponseDto.fromEntity(user);
+    }
+
+    @Transactional(readOnly = true)
     public List<UserFindResponseDto> findAllUser() {
         return userRepository.findAll().stream()
                 .map(UserFindResponseDto::fromEntity)

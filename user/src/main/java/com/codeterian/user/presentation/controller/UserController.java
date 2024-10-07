@@ -38,6 +38,11 @@ public class UserController {
         return ResponseEntity.ok(ResponseDto.okWithData(userService.findUserById(userId)));
     }
 
+    @GetMapping("/{userEmail}")
+    public ResponseEntity<ResponseDto<UserFindResponseDto>> userDetailsByEmail(@PathVariable("userEmail") String email) {
+        return ResponseEntity.ok(ResponseDto.okWithData(userService.findByEmail(email)));
+    }
+
     @GetMapping
     public ResponseEntity<ResponseDto<List<UserFindResponseDto>>> userList() {
         return ResponseEntity.ok(ResponseDto.okWithData(userService.findAllUser()));
