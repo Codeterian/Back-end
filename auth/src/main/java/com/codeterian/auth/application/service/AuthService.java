@@ -1,8 +1,10 @@
 package com.codeterian.auth.application.service;
 
-import com.codeterian.auth.infrastructure.util.CustomUserDetailsService;
+import com.codeterian.auth.application.feign.UserFeignService;
 import com.codeterian.auth.infrastructure.util.UserPrincipal;
 import com.codeterian.auth.presentation.LoginRequestDto;
+import com.codeterian.common.infrastructure.dto.ResponseDto;
+import com.codeterian.common.infrastructure.dto.UserAddRequestDto;
 import com.codeterian.common.infrastructure.dto.UserDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,9 +23,12 @@ import java.util.stream.Collectors;
 public class AuthService {
 
     private final AuthenticationManager authenticationManager;
+
     private final RedisService redisService;
+
     private final JwtTokenGenerator jwtTokenGenerator;
-    private final CustomUserDetailsService customUserDetailsService;
+
+    private final UserFeignService userFeignService;
 
     public String login(LoginRequestDto loginRequestDto) {
         try {
@@ -54,4 +59,10 @@ public class AuthService {
             throw new RuntimeException("Invalid email or password");
         }
     }
+
+    public ResponseDto<Void> addUser(UserAddRequestDto requestDto) {
+        userFeignService.addUser(requestDto);
+        return null;
+    }
+
 }

@@ -2,7 +2,7 @@ package com.codeterian.user.presentation.controller;
 
 
 import com.codeterian.common.infrastructure.dto.ResponseDto;
-import com.codeterian.user.presentation.dto.request.UserAddRequestDto;
+import com.codeterian.common.infrastructure.dto.UserAddRequestDto;
 import com.codeterian.user.presentation.dto.request.UserModifyRequestDto;
 import com.codeterian.user.presentation.dto.response.UserFindAllInfoResponseDto;
 import com.codeterian.user.presentation.dto.response.UserFindResponseDto;

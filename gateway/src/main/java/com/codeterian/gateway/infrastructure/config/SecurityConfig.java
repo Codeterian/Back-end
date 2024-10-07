@@ -44,7 +44,7 @@ public class SecurityConfig {
                 .cors(ServerHttpSecurity.CorsSpec::disable)
                 .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
                 .authorizeExchange(exchange -> exchange
-                        .pathMatchers("/auth/login").permitAll()  // 로그인 경로는 허용
+                        .pathMatchers("/auth/login", "/auth/sign-up").permitAll()  // 로그인 경로는 허용
                         .anyExchange().authenticated()  // 나머지 요청은 인증 필요
                 )
                 .addFilterAt(jwtAuthenticationFilter(redisService), SecurityWebFiltersOrder.AUTHENTICATION);
@@ -56,7 +56,8 @@ public class SecurityConfig {
 
         return (exchange, chain) -> {
             // /auth/login 경로는 필터를 적용하지 않음
-            if (exchange.getRequest().getURI().getPath().startsWith("/auth/login")) {
+            if (exchange.getRequest().getURI().getPath().startsWith("/auth/login")&&
+                exchange.getRequest().getURI().getPath().startsWith("/auth/sign-up")) {
                 return chain.filter(exchange);
             }
 

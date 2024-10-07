@@ -1,4 +1,4 @@
-package com.codeterian.user.presentation.dto.request;
+package com.codeterian.common.infrastructure.dto;
 
 import com.codeterian.common.infrastructure.entity.UserRole;
 
