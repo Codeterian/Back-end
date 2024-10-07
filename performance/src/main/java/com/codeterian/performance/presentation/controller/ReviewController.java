@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.codeterian.performance.application.ReviewService;
-import com.codeterian.performance.presentation.dto.request.ReviewAddDto;
-import com.codeterian.performance.presentation.dto.request.ReviewModifyDto;
-import com.codeterian.performance.presentation.dto.response.ReviewDetailsDto;
+import com.codeterian.performance.presentation.dto.request.ReviewAddRequestDto;
+import com.codeterian.performance.presentation.dto.request.ReviewModifyRequestDto;
+import com.codeterian.performance.presentation.dto.response.ReviewDetailsResponseDto;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,19 +27,19 @@ public class ReviewController {
 	private final ReviewService reviewService;
 
 	@PostMapping
-	public ResponseEntity<?> reviewAdd(@Valid @RequestBody ReviewAddDto dto){
+	public ResponseEntity<?> reviewAdd(@Valid @RequestBody ReviewAddRequestDto dto){
 		reviewService.addReview(dto);
 		return ResponseEntity.ok().body("리뷰 등록에 성공했습니다.");
 	}
 
 	@PutMapping("/{reviewId}")
-	public ResponseEntity<?> reviewModify(@PathVariable UUID reviewId, @Valid @RequestBody ReviewModifyDto dto){
+	public ResponseEntity<?> reviewModify(@PathVariable UUID reviewId, @Valid @RequestBody ReviewModifyRequestDto dto){
 		reviewService.modifyReview(reviewId,dto);
 		return ResponseEntity.ok().body("리뷰 수정에 성공했습니다.");
 	}
 
 	@GetMapping("/{reviewId}")
-	public ResponseEntity<ReviewDetailsDto> reviewDetails(@PathVariable UUID reviewId){
+	public ResponseEntity<ReviewDetailsResponseDto> reviewDetails(@PathVariable UUID reviewId){
 		return ResponseEntity.ok(reviewService.findReviewDetails(reviewId));
 	}
 }
