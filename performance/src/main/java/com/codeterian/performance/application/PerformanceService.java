@@ -1,5 +1,6 @@
 package com.codeterian.performance.application;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -93,5 +94,10 @@ public class PerformanceService {
             () -> new IllegalArgumentException("존재하지 않는 공연입니다.")
         );
         return PerformanceDetailsResponseDto.fromEntity(performance);
+    }
+
+    public List<PerformanceDocument> searchPerformance(String query) {
+       return performanceDocumentRepository
+            .findByTitleContainingOrDescriptionContainingOrLocationContaining(query, query, query);
     }
 }

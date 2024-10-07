@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.codeterian.performance.application.PerformanceService;
@@ -42,6 +43,8 @@ public class PerformanceController {
         return ResponseEntity.ok(performanceService.findPerformanceDetails(performanceId));
     }
 
-
-
+    @GetMapping("/search")
+    public ResponseEntity<?> performanceSearch(@RequestParam String query) {
+        return ResponseEntity.ok(performanceService.searchPerformance(query));
+    }
 }
