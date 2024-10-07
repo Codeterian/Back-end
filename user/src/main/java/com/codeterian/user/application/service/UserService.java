@@ -8,6 +8,7 @@ import com.codeterian.user.presentation.dto.response.UserFindAllInfoResponseDto;
 import com.codeterian.user.presentation.dto.response.UserFindResponseDto;
 import com.codeterian.user.presentation.dto.response.UserModifyResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,10 +20,16 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder; // PasswordEncoder 주입
+
+
 
     @Transactional
     public void addUser(UserAddRequestDto requestDto) {
-        User user = User.create(requestDto.name(), requestDto.password(), requestDto.email());
+
+        String encodedPassword = passwordEncoder.encode(requestDto.password());
+
+        User user = User.create(requestDto.name(), encodedPassword, requestDto.email(), requestDto.userRole());
 
         userRepository.save(user);
     }

@@ -38,15 +38,16 @@ public class User extends BaseEntity {
     private UserRole role;
 
     // 팩토리 메서드를 통해 객체 생성
-    public static User create(String name, String password, String email) {
-        return new User(name, password, email);
+    public static User create(String name, String password, String email, UserRole role) {
+        return new User(name, password, email, role);
     }
 
     // private 생성자 (팩토리 메서드를 통해서만 객체 생성 가능)
-    private User(String name, String password, String email) {
+    private User(String name, String password, String email, UserRole userRole) {
         this.name = name;
         this.password = password;
         this.email = email;
+        this.role = userRole;
     }
 
     public void modifyUserInfo(String name, String email) {

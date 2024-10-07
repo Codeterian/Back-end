@@ -9,9 +9,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.Collections;
 
+@Getter
 public class UserPrincipal implements UserDetails {
 
-    @Getter
     private final UserFindAllInfoResponseDto userFindAllInfoResponseDto;
 
     public UserPrincipal(UserFindAllInfoResponseDto userFindAllInfoResponseDto) {
@@ -20,7 +20,7 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public Collection<GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(new SimpleGrantedAuthority(userFindAllInfoResponseDto.userRole().toString()));
+        return Collections.singletonList(new SimpleGrantedAuthority(userFindAllInfoResponseDto.userRole().getUserRole()));
     }
 
     @Override
@@ -30,7 +30,7 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public String getUsername() {
-        return userFindAllInfoResponseDto.password();
+        return userFindAllInfoResponseDto.name();
     }
 
     @Override

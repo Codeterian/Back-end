@@ -39,11 +39,15 @@ public class SecurityConfig {
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
         http
-                .csrf(ServerHttpSecurity.CsrfSpec::disable) // CSRF 비활성화
+                .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
                 .cors(ServerHttpSecurity.CorsSpec::disable)
                 .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
-                .addFilterAt(jwtAuthenticationFilter(redisService), SecurityWebFiltersOrder.HTTP_BASIC);
+                .authorizeExchange(exchange -> exchange
+                        .pathMatchers("/auth/login").permitAll()  // 로그인 경로는 허용
+                        .anyExchange().authenticated()  // 나머지 요청은 인증 필요
+                )
+                .addFilterAt(jwtAuthenticationFilter(redisService), SecurityWebFiltersOrder.AUTHENTICATION);
         return http.build();
     }
 
@@ -51,9 +55,8 @@ public class SecurityConfig {
     public WebFilter jwtAuthenticationFilter(RedisService redisService) {
 
         return (exchange, chain) -> {
-
             // /auth/login 경로는 필터를 적용하지 않음
-            if (exchange.getRequest().getURI().getPath().equals("/auth/login")) {
+            if (exchange.getRequest().getURI().getPath().startsWith("/auth/login")) {
                 return chain.filter(exchange);
             }
 
@@ -81,7 +84,6 @@ public class SecurityConfig {
                                     .orElseThrow(() -> new UsernameNotFoundException("User " + username + " not found")
                                     );
 
-
                     // 사용자 정보를 새로운 헤더에 추가
                     ServerHttpRequest modifiedRequest = exchange.getRequest().mutate()
                             .header("X-User-Name", username)  // 사용자명 헤더 추가
@@ -92,7 +94,6 @@ public class SecurityConfig {
                     ServerWebExchange modifiedExchange = exchange.mutate().request(modifiedRequest).build();
                     return chain.filter(modifiedExchange);
 
-                    // 추가적인 JWT 처리 로직을 넣을 수 있음
                 } catch (Exception e) {
                     return Mono.error(new RuntimeException("Invalid JWT Token"));
                 }
