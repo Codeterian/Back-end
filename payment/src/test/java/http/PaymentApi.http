@@ -1,0 +1,19 @@
+### Payment Add - Send Post request with json body
+POST http://localhost:19096/api/v1/payments
+Content-Type: application/json
+
+{
+  "orderId" : "a2392626-eee7-4496-a6ce-e41c41ec3310",
+  "paymentType" :  "TOSS"
+}
+
+### Payment Details - Send Get request with path variable
+< {%
+    request.variables.set("paymentId", "ab2a44fb-8d2d-45a9-812a-7549bb6fc1df")
+%}
+GET http://localhost:19096/api/v1/payments/{{paymentId}}
+
+### Payment List - Send Get request
+GET http://localhost:19096/api/v1/payments
+
+
