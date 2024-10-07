@@ -1,14 +1,13 @@
 package com.codeterian.auth.application.service;
 
+import com.codeterian.common.infrastructure.entity.UserRole;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-import java.util.Collection;
 import java.util.Date;
 
 @Component
@@ -25,12 +24,12 @@ public class JwtTokenGenerator {
     }
 
     public String createJwtToken(Long userId,String email,
-                                 String username, Collection<GrantedAuthority> roles) {
+                                 String username, UserRole role) {
         return Jwts.builder()
-                .setSubject(username)
+                .claim("username", username)
                 .claim("userId", userId)
                 .claim("email", email)
-                .claim("role", roles)
+                .claim("role", role)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis()+expirationTime))
                 .signWith(key)

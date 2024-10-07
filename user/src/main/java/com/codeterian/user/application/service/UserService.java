@@ -1,5 +1,7 @@
 package com.codeterian.user.application.service;
 
+import com.codeterian.common.infrastructure.entity.UserRole;
+import com.codeterian.common.infrastructure.util.Passport;
 import com.codeterian.user.domain.model.User;
 import com.codeterian.user.domain.repository.UserRepository;
 import com.codeterian.common.infrastructure.dto.UserAddRequestDto;
@@ -35,7 +37,13 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public UserFindResponseDto findUserById(Long userId) {
+    public UserFindResponseDto findUserById(Long userId, Passport passport) throws IllegalAccessException {
+
+        UserRole userRole = passport.getUserRole();
+        if (userRole == UserRole.CUSTOMER) {
+            throw new IllegalAccessException();
+        }
+
         User user = userRepository.findById(userId).orElseThrow(
                 //Global Exception Handler
         );
@@ -53,14 +61,25 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public List<UserFindResponseDto> findAllUser() {
+    public List<UserFindResponseDto> findAllUser(Passport passport) throws IllegalAccessException {
+
+        UserRole userRole = passport.getUserRole();
+        if (userRole == UserRole.CUSTOMER) {
+            throw new IllegalAccessException();
+        }
+
         return userRepository.findAll().stream()
                 .map(UserFindResponseDto::fromEntity)
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public UserModifyResponseDto modifyUser(Long userId, UserModifyRequestDto requestDto) {
+    public UserModifyResponseDto modifyUser(Long userId, UserModifyRequestDto requestDto, Passport passport) throws IllegalAccessException {
+
+        UserRole userRole = passport.getUserRole();
+        if (userRole == UserRole.CUSTOMER) {
+            throw new IllegalAccessException();
+        }
 
         User user = userRepository.findById(userId).orElseThrow(
                 //Global Exception Handler
@@ -72,7 +91,13 @@ public class UserService {
     }
 
     @Transactional
-    public void deleteUser(Long userId) {
+    public void deleteUser(Long userId, Passport passport) throws IllegalAccessException {
+
+        UserRole userRole = passport.getUserRole();
+        if (userRole == UserRole.CUSTOMER) {
+            throw new IllegalAccessException();
+        }
+
         User user = userRepository.findById(userId).orElseThrow(
                 //Global Exception Handler
         );
