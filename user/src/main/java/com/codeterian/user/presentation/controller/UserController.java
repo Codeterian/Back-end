@@ -2,9 +2,9 @@ package com.codeterian.user.presentation.controller;
 
 
 import com.codeterian.common.infrastructure.dto.ResponseDto;
-import com.codeterian.user.application.service.UserService;
 import com.codeterian.user.presentation.dto.request.UserAddRequestDto;
 import com.codeterian.user.presentation.dto.request.UserModifyRequestDto;
+import com.codeterian.user.presentation.dto.response.UserFindAllInfoResponseDto;
 import com.codeterian.user.presentation.dto.response.UserFindResponseDto;
 import com.codeterian.user.presentation.dto.response.UserModifyResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.codeterian.user.application.service.UserService;
 
 import java.util.List;
 
@@ -38,9 +39,9 @@ public class UserController {
         return ResponseEntity.ok(ResponseDto.okWithData(userService.findUserById(userId)));
     }
 
-    @GetMapping("/{userEmail}")
-    public ResponseEntity<ResponseDto<UserFindResponseDto>> userDetailsByEmail(@PathVariable("userEmail") String email) {
-        return ResponseEntity.ok(ResponseDto.okWithData(userService.findByEmail(email)));
+    @GetMapping("/email/{userEmail}")
+    public ResponseDto<UserFindAllInfoResponseDto> userDetailsByEmail(@PathVariable("userEmail") String email) {
+        return ResponseDto.okWithData(userService.findByEmail(email));
     }
 
     @GetMapping

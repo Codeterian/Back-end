@@ -4,6 +4,7 @@ import com.codeterian.user.domain.model.User;
 import com.codeterian.user.domain.repository.UserRepository;
 import com.codeterian.user.presentation.dto.request.UserAddRequestDto;
 import com.codeterian.user.presentation.dto.request.UserModifyRequestDto;
+import com.codeterian.user.presentation.dto.response.UserFindAllInfoResponseDto;
 import com.codeterian.user.presentation.dto.response.UserFindResponseDto;
 import com.codeterian.user.presentation.dto.response.UserModifyResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,7 @@ public class UserService {
 
     @Transactional
     public void addUser(UserAddRequestDto requestDto) {
-        User user = User.create(requestDto.name(), requestDto.password(), requestDto.name());
+        User user = User.create(requestDto.name(), requestDto.password(), requestDto.email());
 
         userRepository.save(user);
     }
@@ -36,12 +37,12 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public UserFindResponseDto findByEmail(String email) {
+    public UserFindAllInfoResponseDto findByEmail(String email) {
         User user = userRepository.findByEmailAndDeletedAtIsNull(email).orElseThrow(
                     //global Exception Handler
         );
 
-        return UserFindResponseDto.fromEntity(user);
+        return UserFindAllInfoResponseDto.fromEntity(user);
     }
 
     @Transactional(readOnly = true)

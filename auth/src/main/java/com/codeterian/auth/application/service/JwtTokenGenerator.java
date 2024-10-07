@@ -27,9 +27,9 @@ public class JwtTokenGenerator {
     public String createJwtToken(Long userId,String email,
                                  String username, Collection<GrantedAuthority> roles) {
         return Jwts.builder()
+                .setSubject(username)
                 .claim("userId", userId)
                 .claim("email", email)
-                .claim("username", username)
                 .claim("role", roles)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis()+expirationTime))
