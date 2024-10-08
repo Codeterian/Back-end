@@ -37,20 +37,7 @@ public class PerformanceService {
             throw new IllegalArgumentException("중복되는 공연 입니다.");
         }
 
-        Performance newPerformance = Performance.builder()
-                .title(dto.title())
-                .description(dto.description())
-                .location(dto.location())
-                .startDate(dto.startDate())
-                .endDate(dto.endDate())
-                .bookingStartDate(dto.bookingStartTime())
-                .bookingEndDate(dto.bookingEndTime())
-                .duration(dto.duration())
-                .ageRestriction(dto.ageRestriction())
-                .status(PerformanceStatus.valueOf(dto.status()))
-                .ticketStock(dto.ticketStock())
-                .category(category)
-                .build();
+        Performance newPerformance = Performance.addPerformance(dto, category);
 
         Performance savedperformance = performanceRepository.save(newPerformance);
 
@@ -70,7 +57,7 @@ public class PerformanceService {
         );
 
         // 일괄 업데이트 메서드 호출
-        existedPerformance.update(
+        existedPerformance.updatePerformance(
             dto.title(),
             dto.description(),
             dto.location(),

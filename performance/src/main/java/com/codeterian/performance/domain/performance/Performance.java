@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import com.codeterian.performance.domain.category.Category;
+import com.codeterian.performance.presentation.dto.request.PerformanceAddRequestDto;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -49,7 +50,30 @@ public class Performance {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    public void update(
+
+    public static Performance addPerformance(PerformanceAddRequestDto dto,Category category) {
+
+        if (dto.startDate().isAfter(dto.endDate())) {
+            throw new IllegalArgumentException("시작일은 종료일보다 이전이어야 합니다.");
+        }
+
+        return Performance.builder()
+            .title(dto.title())
+            .description(dto.description())
+            .location(dto.location())
+            .startDate(dto.startDate())
+            .endDate(dto.endDate())
+            .bookingStartDate(dto.bookingStartTime())
+            .bookingEndDate(dto.bookingEndTime())
+            .duration(dto.duration())
+            .ageRestriction(dto.ageRestriction())
+            .status(PerformanceStatus.valueOf(dto.status()))
+            .ticketStock(dto.ticketStock())
+            .category(category)
+            .build();
+    }
+
+    public void updatePerformance(
         String title,
         String description,
         String location,
@@ -63,6 +87,11 @@ public class Performance {
         Integer ticketStock,
         Category category
     ) {
+
+        if (startDate.isAfter(endDate)) {
+            throw new IllegalArgumentException("시작일은 종료일보다 이전이어야 합니다.");
+        }
+
         this.title = title;
         this.description = description;
         this.location = location;
