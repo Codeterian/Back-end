@@ -60,20 +60,7 @@ public class PerformanceService {
         );
 
         // 일괄 업데이트 메서드 호출
-        existedPerformance.updatePerformance(
-            dto.title(),
-            dto.description(),
-            dto.location(),
-            dto.startDate(),
-            dto.endDate(),
-            dto.bookingStartTime(),
-            dto.bookingEndTime(),
-            dto.duration(),
-            dto.ageRestriction(),
-            dto.status(),
-            dto.ticketStock(),
-            existingcategory
-        );
+        existedPerformance.updatePerformance(dto, existingcategory);
 
         performanceRepository.save(existedPerformance);
     }

@@ -6,6 +6,7 @@ import java.util.UUID;
 import com.codeterian.common.infrastructure.entity.BaseEntity;
 import com.codeterian.performance.domain.category.Category;
 import com.codeterian.performance.presentation.dto.request.PerformanceAddRequestDto;
+import com.codeterian.performance.presentation.dto.request.PerformanceModifyRequestDto;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -74,36 +75,23 @@ public class Performance extends BaseEntity {
             .build();
     }
 
-    public void updatePerformance(
-        String title,
-        String description,
-        String location,
-        LocalDateTime startDate,
-        LocalDateTime endDate,
-        LocalDateTime bookingStartTime,
-        LocalDateTime bookingEndTime,
-        Integer duration,
-        String ageRestriction,
-        String status,
-        Integer ticketStock,
-        Category category
-    ) {
+    public void updatePerformance(PerformanceModifyRequestDto dto, Category category) {
 
         if (startDate.isAfter(endDate)) {
             throw new IllegalArgumentException("시작일은 종료일보다 이전이어야 합니다.");
         }
 
-        this.title = title;
-        this.description = description;
-        this.location = location;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.bookingStartDate = bookingStartTime;
-        this.bookingEndDate = bookingEndTime;
-        this.duration = duration;
-        this.ageRestriction = ageRestriction;
-        this.status = PerformanceStatus.valueOf(status); // 상태 값은 enum 처리
-        this.ticketStock = ticketStock;
+        this.title = dto.title();
+        this.description = dto.description();
+        this.location = dto.location();
+        this.startDate = dto.startDate();
+        this.endDate = dto.endDate();
+        this.bookingStartDate = dto.bookingStartTime();
+        this.bookingEndDate = dto.bookingEndTime();
+        this.duration = dto.duration();
+        this.ageRestriction = dto.ageRestriction();
+        this.status = PerformanceStatus.valueOf(dto.status()); // 상태 값은 enum 처리
+        this.ticketStock = dto.ticketStock();
         this.category = category;
     }
 
