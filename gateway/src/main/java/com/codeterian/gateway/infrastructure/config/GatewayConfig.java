@@ -1,4 +1,4 @@
-package com.codeterian.gateway.infrastructure;
+package com.codeterian.gateway.infrastructure.config;
 
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
