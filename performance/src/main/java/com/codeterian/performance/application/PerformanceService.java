@@ -1,6 +1,7 @@
 package com.codeterian.performance.application;
 
 import java.util.NoSuchElementException;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -8,14 +9,14 @@ import org.springframework.stereotype.Service;
 import com.codeterian.common.infrastructure.dto.performance.PerformanceDecreaseStockRequestDto;
 import com.codeterian.performance.domain.category.Category;
 import com.codeterian.performance.domain.performance.Performance;
+import com.codeterian.performance.domain.performance.PerformanceDocument;
 import com.codeterian.performance.domain.performance.PerformanceStatus;
-import com.codeterian.performance.infrastructure.kafka.PerformanceKafkaProducer;
 import com.codeterian.performance.infrastructure.persistence.CategoryRepositoryImpl;
+import com.codeterian.performance.infrastructure.persistence.PerformanceDocumentRepositoryImpl;
 import com.codeterian.performance.infrastructure.persistence.PerformanceRepositoryImpl;
 import com.codeterian.performance.presentation.dto.request.PerformanceAddRequestDto;
 import com.codeterian.performance.presentation.dto.request.PerformanceModifyRequestDto;
 import com.codeterian.performance.presentation.dto.response.PerformanceDetailsResponseDto;
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
