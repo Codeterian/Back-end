@@ -2,9 +2,11 @@ package com.codeterian.user.presentation.controller;
 
 
 import com.codeterian.common.infrastructure.dto.ResponseDto;
-import com.codeterian.user.application.service.UserService;
-import com.codeterian.user.presentation.dto.request.UserAddRequestDto;
+import com.codeterian.common.infrastructure.dto.UserAddRequestDto;
+import com.codeterian.common.infrastructure.util.CurrentPassport;
+import com.codeterian.common.infrastructure.util.Passport;
 import com.codeterian.user.presentation.dto.request.UserModifyRequestDto;
+import com.codeterian.user.presentation.dto.response.UserFindAllInfoResponseDto;
 import com.codeterian.user.presentation.dto.response.UserFindResponseDto;
 import com.codeterian.user.presentation.dto.response.UserModifyResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.codeterian.user.application.service.UserService;
 
 import java.util.List;
 
@@ -34,25 +37,33 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<ResponseDto<UserFindResponseDto>> userDetails(@PathVariable("userId") Long userId) {
-        return ResponseEntity.ok(ResponseDto.okWithData(userService.findUserById(userId)));
+    public ResponseEntity<ResponseDto<UserFindResponseDto>> userDetails(@PathVariable("userId") Long userId,
+                                                                        @CurrentPassport Passport passport) throws IllegalAccessException {
+        return ResponseEntity.ok(ResponseDto.okWithData(userService.findUserById(userId, passport)));
+    }
+
+    @GetMapping("/email/{userEmail}")
+    public ResponseDto<UserFindAllInfoResponseDto> userDetailsByEmail(@PathVariable("userEmail") String email) {
+        return ResponseDto.okWithData(userService.findByEmail(email));
     }
 
     @GetMapping
-    public ResponseEntity<ResponseDto<List<UserFindResponseDto>>> userList() {
-        return ResponseEntity.ok(ResponseDto.okWithData(userService.findAllUser()));
+    public ResponseEntity<ResponseDto<List<UserFindResponseDto>>> userList(@CurrentPassport Passport passport) throws IllegalAccessException {
+        return ResponseEntity.ok(ResponseDto.okWithData(userService.findAllUser(passport)));
     }
 
     @PatchMapping("/{userId}")
     public ResponseEntity<ResponseDto<UserModifyResponseDto>> userModify(@PathVariable("userId") Long userId,
-                                                                         @RequestBody UserModifyRequestDto requestDto) {
-        return ResponseEntity.ok(ResponseDto.okWithData(userService.modifyUser(userId, requestDto)));
+                                                                         @RequestBody UserModifyRequestDto requestDto,
+                                                                         @CurrentPassport Passport passport) throws IllegalAccessException {
+        return ResponseEntity.ok(ResponseDto.okWithData(userService.modifyUser(userId, requestDto, passport)));
     }
 
     @DeleteMapping("/{userId}")
-    public ResponseEntity<ResponseDto<Void>> userDelete(@PathVariable("userId") Long userId) {
+    public ResponseEntity<ResponseDto<Void>> userDelete(@PathVariable("userId") Long userId,
+                                                        @CurrentPassport Passport passport) throws IllegalAccessException {
 
-        userService.deleteUser(userId);
+        userService.deleteUser(userId, passport);
 
         return ResponseEntity.ok(ResponseDto.ok());
     }
