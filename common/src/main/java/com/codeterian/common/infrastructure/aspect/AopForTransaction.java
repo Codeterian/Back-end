@@ -1,4 +1,4 @@
-package com.codeterian.ticket.infrastructure.aspect;
+package com.codeterian.common.infrastructure.aspect;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.springframework.stereotype.Component;

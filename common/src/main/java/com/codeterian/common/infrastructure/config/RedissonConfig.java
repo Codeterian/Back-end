@@ -1,4 +1,4 @@
-package com.codeterian.ticket.infrastructure.config;
+package com.codeterian.common.infrastructure.config;
 
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;

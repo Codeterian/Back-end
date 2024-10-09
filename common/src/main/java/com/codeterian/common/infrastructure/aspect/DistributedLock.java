@@ -1,4 +1,4 @@
-package com.codeterian.ticket.infrastructure.aspect;
+package com.codeterian.common.infrastructure.aspect;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

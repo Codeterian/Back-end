@@ -1,4 +1,4 @@
-package com.codeterian.ticket.infrastructure.aspect;
+package com.codeterian.common.infrastructure.aspect;
 
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
