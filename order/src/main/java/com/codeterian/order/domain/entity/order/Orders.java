@@ -3,6 +3,7 @@ package com.codeterian.order.domain.entity.order;
 import java.io.Serializable;
 import java.util.UUID;
 
+import com.codeterian.common.infrastructure.entity.BaseEntity;
 import com.codeterian.order.domain.entity.status.OrderStatus;
 import com.codeterian.order.presentation.dto.OrderAddRequestDto;
 import com.codeterian.order.presentation.dto.OrderModifyRequestDto;
@@ -27,7 +28,7 @@ import lombok.NoArgsConstructor;
 @Builder(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class Orders implements Serializable {
+public class Orders extends BaseEntity implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
@@ -56,8 +57,12 @@ public class Orders implements Serializable {
 	public void success() {
 		this.orderStatus = OrderStatus.COMPLETED;
 	}
-	//
-	// public void delete() {
-	// 	this.isDeleted = false;
-	// }
+
+	public void fail() {
+		this.orderStatus = OrderStatus.FAILED;
+	}
+
+	public void delete(Long userId) {
+		this.delete(userId);
+	}
 }

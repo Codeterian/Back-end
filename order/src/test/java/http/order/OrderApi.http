@@ -3,9 +3,9 @@ POST http://localhost:19095/api/v1/orders
 Content-Type: application/json
 
 {
-  "userId" :  5,
+  "userId" :  3,
   "ticketId" :  "3a222f44-a3e1-49f5-aeab-67319b33b3a5",
-  "price" : 30000,
+  "price" : 10000,
   "quantity" : 2
 }
 
