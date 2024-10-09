@@ -8,7 +8,7 @@ import java.util.UUID;
 public record TicketFindResponseDto(
         UUID ticketId,
         UUID performanceId,
-        String seatNumber,
+        int seatNumber,
         String seatSection,
         Integer price,
         TicketStatus ticketStatus

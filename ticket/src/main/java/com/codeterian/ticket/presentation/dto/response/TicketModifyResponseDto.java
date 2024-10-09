@@ -9,7 +9,7 @@ public record TicketModifyResponseDto(
 
         UUID ticketId,
         UUID performanceId,
-        String seatNumber,
+        int seatNumber,
         String seatSection,
         Integer price,
         TicketStatus ticketStatus

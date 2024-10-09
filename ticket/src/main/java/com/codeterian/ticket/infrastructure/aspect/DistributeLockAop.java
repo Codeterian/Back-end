@@ -34,7 +34,7 @@ public class DistributeLockAop {
 
         try {
             boolean lockable = rLock.tryLock(distributedLock.waitTime(), distributedLock.leaseTime(), distributedLock.timeUnit());
-            if(!lockable) {
+            if (!lockable) {
                 log.info("Lock 획득 실패={}", key);
                 return false;
             }
@@ -46,11 +46,8 @@ public class DistributeLockAop {
             log.info("에러 발생!");
             throw new RuntimeException(e);
         } finally {
-            try {
-                rLock.unlock();
-            } catch (IllegalMonitorStateException e){
-                log.info("이미 언락 상태 입니다.");
-            }
+            rLock.unlock();
+            log.info("이미 언락 상태 입니다.");
         }
     }
 

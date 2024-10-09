@@ -25,20 +25,19 @@ public class TicketService {
     private final PerformanceService performanceService;
 
     @Transactional
-    @DistributedLock(key = "#requestDto.performanceId()")
+    @DistributedLock(key = "#requestDto.performanceId() + ':'+ #requestDto.seatSection + ':' + #requestDto.seatNumber")
     public void addTicket(TicketAddRequestDto requestDto) {
         Ticket ticket = Ticket.create(requestDto.performanceId(), requestDto.ticketStatus(), requestDto.price(),
                 requestDto.seatSection(), requestDto.seatNumber(), UUID.randomUUID());
 
-        Optional<Ticket> existedTicket = ticketRepository.findBySeatSectionAndSeatNumberAndDeletedIsNull(requestDto.seatSection(),
-                requestDto.seatSection());
+        Optional<Ticket> existedTicket = ticketRepository.findBySeatSectionAndSeatNumberAndDeletedAtIsNull(requestDto.seatSection(),
+                requestDto.seatNumber());
 
         if (existedTicket.isPresent()) {
             throw new IllegalStateException("예약할 수 없는 좌석입니다.");
         }
 
         ticketRepository.save(ticket);
-
         performanceService.decreaseTicketStock(requestDto.performanceId());
     }
 
@@ -65,7 +64,7 @@ public class TicketService {
                 //Global Exception Handler
         );
 
-        ticket.update(requestDto.seatNumber(),requestDto.seatSection(),
+        ticket.update(requestDto.seatSection(), requestDto.seatNumber(),
                 requestDto.ticketStatus(), requestDto.price());
 
         return TicketModifyResponseDto.fromEntity(ticket);

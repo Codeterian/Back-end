@@ -28,3 +28,9 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:19090/eureka/
+
+jwt:
+  secret:
+    key: 2e2ab37ae96a148bcb9919d74ecbd818ce9c097151c4b5d5d9049bcbdc05d349c59b9e1ad762c7b6ccf8b73e79fef4a82d13f08db22ca3c3070705b08df3f41c
+    internal-secret-key: 45c7553fdd3c31912b36e569f8e26a4218051ef3709bf4ba16ec9c8d2ba14d535ce63db771f0a7b899b53a3d6f33f8dda7c6c6b1fb35c99d5bb9e93122f82a4b
+    exiration-time: 360000
