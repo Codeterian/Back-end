@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -28,6 +29,13 @@ public class TicketService {
     public void addTicket(TicketAddRequestDto requestDto) {
         Ticket ticket = Ticket.create(requestDto.performanceId(), requestDto.ticketStatus(), requestDto.price(),
                 requestDto.seatSection(), requestDto.seatNumber(), UUID.randomUUID());
+
+        Optional<Ticket> existedTicket = ticketRepository.findBySeatSectionAndSeatNumberAndDeletedIsNull(requestDto.seatSection(),
+                requestDto.seatSection());
+
+        if (existedTicket.isPresent()) {
+            throw new IllegalStateException("예약할 수 없는 좌석입니다.");
+        }
 
         ticketRepository.save(ticket);
 
