@@ -12,4 +12,6 @@ public interface PerformanceRepository {
 	Boolean existsByTitleAndIsDeletedFalse(String title);
 
 	Optional<Performance> findByIdAndIsDeletedFalse(UUID id);
+
+	Optional<Performance> findById(UUID id);
 }

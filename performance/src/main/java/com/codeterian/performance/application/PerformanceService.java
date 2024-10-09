@@ -1,19 +1,17 @@
 package com.codeterian.performance.application;
 
-import java.util.NoSuchElementException;
 import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import com.codeterian.common.infrastructure.dto.performance.PerformanceDecreaseStockRequestDto;
 import com.codeterian.performance.domain.category.Category;
 import com.codeterian.performance.domain.performance.Performance;
 import com.codeterian.performance.domain.performance.PerformanceDocument;
 import com.codeterian.performance.domain.performance.PerformanceStatus;
+import com.codeterian.performance.domain.repository.PerformanceRepository;
 import com.codeterian.performance.infrastructure.persistence.CategoryRepositoryImpl;
 import com.codeterian.performance.infrastructure.persistence.PerformanceDocumentRepositoryImpl;
-import com.codeterian.performance.infrastructure.persistence.PerformanceRepositoryImpl;
 import com.codeterian.performance.presentation.dto.request.PerformanceAddRequestDto;
 import com.codeterian.performance.presentation.dto.request.PerformanceModifyRequestDto;
 import com.codeterian.performance.presentation.dto.response.PerformanceDetailsResponseDto;
@@ -24,9 +22,11 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class PerformanceService {
-
-	private final PerformanceRepositoryImpl performanceRepository;
-	private final CategoryRepositoryImpl categoryRepository;
+	
+    private final PerformanceRepository performanceRepository;
+    private final CategoryRepositoryImpl categoryRepository;
+    private final PerformanceDocumentRepositoryImpl performanceDocumentRepository;
+    private final KafkaProducerService kafkaProducerService;
 	private final PerformanceKafkaProducer performanceKafkaProducer;
 
     public void addPerformance(PerformanceAddRequestDto dto) {
@@ -44,8 +44,8 @@ public class PerformanceService {
 
         Performance savedperformance = performanceRepository.save(newPerformance);
 
-        // elasticsearch에 저장
-        performanceDocumentRepository.save(PerformanceDocument.from(savedperformance));
+        // Kafka를 통해 Elasticsearch에 저장하도록 메시지 발행
+        kafkaProducerService.sendPerformanceToKafka(savedperformance.getId());
 
     }
 
