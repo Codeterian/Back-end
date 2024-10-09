@@ -63,6 +63,9 @@ public class PerformanceService {
         existedPerformance.updatePerformance(dto, existingcategory);
 
         performanceRepository.save(existedPerformance);
+
+        // Kafka를 통해 Elasticsearch에 저장하도록 메시지 발행
+        kafkaProducerService.sendPerformanceToKafka(existedPerformance.getId());
     }
 
     public PerformanceDetailsResponseDto findPerformanceDetails(UUID performanceId) {
