@@ -20,6 +20,6 @@ public interface UserFeignClient extends UserFeignService {
     ResponseDto<UserFindAllInfoResponseDto> getByUserEmail(@PathVariable("userEmail") String email);
 
     @PostMapping("/api/v1/users")
-    ResponseDto<Void> addUser(@RequestBody UserAddRequestDto requestDto);
+    void addUser(@RequestBody UserAddRequestDto requestDto);
 
 }

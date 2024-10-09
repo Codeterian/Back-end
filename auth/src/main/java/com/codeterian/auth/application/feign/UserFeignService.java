@@ -11,7 +11,7 @@ public interface UserFeignService {
 
     ResponseDto<UserFindAllInfoResponseDto> getByUserEmail(String email);
 
-    ResponseDto<Void> addUser(UserAddRequestDto requestDto);
+    void addUser(UserAddRequestDto requestDto);
 
 
 

@@ -1,7 +1,9 @@
 package com.codeterian.ticket.application.service;
 
+import com.codeterian.ticket.application.feign.PerformanceService;
 import com.codeterian.ticket.domain.model.Ticket;
 import com.codeterian.ticket.domain.repository.TicketRepository;
+import com.codeterian.ticket.infrastructure.aspect.DistributedLock;
 import com.codeterian.ticket.presentation.dto.request.TicketAddRequestDto;
 import com.codeterian.ticket.presentation.dto.request.TicketModifyRequestDto;
 import com.codeterian.ticket.presentation.dto.response.TicketFindResponseDto;
@@ -19,13 +21,17 @@ import java.util.stream.Collectors;
 public class TicketService {
 
     private final TicketRepository ticketRepository;
+    private final PerformanceService performanceService;
 
     @Transactional
+    @DistributedLock(key = "#requestDto.performanceId()")
     public void addTicket(TicketAddRequestDto requestDto) {
         Ticket ticket = Ticket.create(requestDto.performanceId(), requestDto.ticketStatus(), requestDto.price(),
                 requestDto.seatSection(), requestDto.seatNumber(), UUID.randomUUID());
 
         ticketRepository.save(ticket);
+
+        performanceService.decreaseTicketStock(requestDto.performanceId());
     }
 
     @Transactional(readOnly = true)
