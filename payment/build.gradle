@@ -29,8 +29,15 @@ ext {
 
 dependencies {
 
+	// common module
+	implementation project(':common')
+
 	// Spring Docs
 	implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.2.0'
+
+	// Feign Client
+	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
 
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'

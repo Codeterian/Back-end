@@ -52,6 +52,10 @@ public class Orders implements Serializable {
 	public void update(OrderModifyRequestDto requestDto) {
 		this.orderLine = new OrderLine(requestDto.ticketId(), requestDto.quantity(), requestDto.price());
 	}
+
+	public void success() {
+		this.orderStatus = OrderStatus.COMPLETED;
+	}
 	//
 	// public void delete() {
 	// 	this.isDeleted = false;

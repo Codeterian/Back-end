@@ -5,14 +5,17 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.codeterian.common.infrastructure.dto.ResponseDto;
+import com.codeterian.common.infrastructure.dto.payment.PaymentAddRequestDto;
+import com.codeterian.common.infrastructure.entity.enums.PaymentType;
 import com.codeterian.order.domain.entity.order.Orders;
 import com.codeterian.order.domain.repository.OrderRepository;
+import com.codeterian.order.infrastructure.client.PaymentClient;
 import com.codeterian.order.presentation.dto.OrderAddRequestDto;
 import com.codeterian.order.presentation.dto.OrderAddResponseDto;
 import com.codeterian.order.presentation.dto.OrderDetailsResponseDto;
@@ -21,20 +24,29 @@ import com.codeterian.order.presentation.dto.OrderModifyResponseDto;
 
 import lombok.RequiredArgsConstructor;
 
+
 @Service
 @RequiredArgsConstructor
 public class OrderService {
 
 	private final OrderRepository orderRepository;
 	private final RedisTemplate<String, Orders> redisTemplate;
+	private final PaymentClient paymentClient;
 
 	//Write - Through 전략
+	@Transactional
 	public OrderAddResponseDto addOrder(OrderAddRequestDto requestDto) {
 		Orders orders = orderRepository.save(Orders.add(requestDto));
 
 		// 2.Redis에 Orders 엔티티를 저장
 		String redisKey = "orderCache::"+orders.getId();
 		redisTemplate.opsForValue().set(redisKey, orders);
+		PaymentAddRequestDto paymentAddRequestDto = new PaymentAddRequestDto(orders.getId(), PaymentType.TOSS);
+
+		ResponseDto responseDto = paymentClient.paymentAdd(paymentAddRequestDto);
+
+		if(responseDto.getCode() == 200)
+			orders.success();
 
 		return OrderAddResponseDto.fromEntity(orders);
 	}

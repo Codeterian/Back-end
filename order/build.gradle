@@ -28,6 +28,12 @@ ext {
 }
 
 dependencies {
+
+	// common module
+	implementation project(':common')
+
+	// Feign Client
+	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 	// Spring Docs
 	implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.2.0'
 
@@ -35,6 +41,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+	implementation project(path: ':payment')
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'org.postgresql:postgresql'
 	annotationProcessor 'org.projectlombok:lombok'

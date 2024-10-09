@@ -1,4 +1,4 @@
-package com.codeterian.payment.domain.entity.enums;
+package com.codeterian.common.infrastructure.entity.enums;
 
 public enum PaymentStatus {
 
