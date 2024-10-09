@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import com.codeterian.performance.domain.category.Category;
 import com.codeterian.performance.domain.performance.Performance;
 import com.codeterian.performance.domain.performance.PerformanceDocument;
-import com.codeterian.performance.domain.performance.PerformanceStatus;
 import com.codeterian.performance.domain.repository.PerformanceRepository;
 import com.codeterian.performance.infrastructure.persistence.CategoryRepositoryImpl;
 import com.codeterian.performance.infrastructure.persistence.PerformanceDocumentRepositoryImpl;
@@ -25,6 +24,7 @@ public class PerformanceService {
     private final PerformanceRepository performanceRepository;
     private final CategoryRepositoryImpl categoryRepository;
     private final PerformanceDocumentRepositoryImpl performanceDocumentRepository;
+    private final KafkaProducerService kafkaProducerService;
 
     public void addPerformance(PerformanceAddRequestDto dto) {
         // 카테고리 존재 여부 확인
@@ -41,8 +41,8 @@ public class PerformanceService {
 
         Performance savedperformance = performanceRepository.save(newPerformance);
 
-        // elasticsearch에 저장
-        performanceDocumentRepository.save(PerformanceDocument.from(savedperformance));
+        // Kafka를 통해 Elasticsearch에 저장하도록 메시지 발행
+        kafkaProducerService.sendPerformanceToKafka(savedperformance.getId());
 
     }
 
