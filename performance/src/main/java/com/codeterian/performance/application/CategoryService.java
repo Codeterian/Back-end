@@ -10,6 +10,7 @@ import com.codeterian.performance.presentation.dto.request.CategoryModifyRequest
 import com.codeterian.performance.presentation.dto.request.ChildCategoryAddRequestDto;
 import com.codeterian.performance.presentation.dto.request.ParentCategoryAddRequestDto;
 import com.codeterian.performance.presentation.dto.response.CategoryDetailsResponseDto;
+import com.codeterian.performance.presentation.dto.response.CategoryModifyResponseDto;
 
 import jakarta.transaction.Transactional;
 
@@ -20,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 public class CategoryService {
 
     private final CategoryRepositoryImpl categoryRepository;
-    private final String username = "test";
 
     public void addParentCategory(ParentCategoryAddRequestDto dto) {
         if (categoryRepository.existsByNameAndIsDeletedFalse(dto.name())) {
@@ -53,7 +53,7 @@ public class CategoryService {
     }
 
     @Transactional
-    public void modifyCategory(UUID categoryId, CategoryModifyRequestDto dto) {
+    public CategoryModifyResponseDto modifyCategory(UUID categoryId, CategoryModifyRequestDto dto) {
         Category category = categoryRepository.findByIdAndIsDeletedFalse(categoryId).orElseThrow(
                 ()-> new IllegalArgumentException("존재하지 않는 카테고리입니다.")
         );
@@ -67,25 +67,31 @@ public class CategoryService {
         }
 
         // 부모 카테고리 존재 유무 확인 && 부모 카테고리 업데이트
-        if (!category.getParent().getId().equals(dto.parentId()) && dto.parentId() != null) {
-            if (!categoryRepository.existsById(dto.parentId())) {
-                throw new IllegalArgumentException("상위 카테고리가 존재하지 않습니다.");
+        if (dto.parentId() != null) {
+            // 기존 parent가 null이 아닌 경우 비교, null이면 바로 업데이트
+            if (category.getParent() == null || !category.getParent().getId().equals(dto.parentId())) {
+                if (!categoryRepository.existsById(dto.parentId())) {
+                    throw new IllegalArgumentException("상위 카테고리가 존재하지 않습니다.");
+                }
+                category.modifyParentId(dto.parentId());
             }
-            category.modifyParentId(dto.parentId());
         }
+
+        Category saveCategory = categoryRepository.save(category);
+        return CategoryModifyResponseDto.valueOf(saveCategory);
+    }
+
+    @Transactional
+    public void removeCategory(UUID categoryId) {
+        Category category = categoryRepository.findByIdAndIsDeletedFalse(categoryId).orElseThrow(
+                () -> new IllegalArgumentException("존재하지 않는 카테고리입니다.")
+        );
+
+        // 나중에 userId 받아와서 수정하기
+        category.delete(1L);
 
         categoryRepository.save(category);
     }
-
-    // @Transactional
-    // public void removeCategory(UUID categoryId) {
-    //     Category category = categoryRepository.findByIdAndIsDeletedFalse(categoryId).orElseThrow(
-    //             () -> new IllegalArgumentException("존재하지 않는 카테고리입니다.")
-    //     );
-    //     // // 나중에 userId 받아와서 수정하기
-    //     // category.delete(1);
-    //     categoryRepository.save(category);
-    // }
 
     public CategoryDetailsResponseDto findCategoryDetails(UUID categoryId) {
         Category category = categoryRepository.findByIdAndIsDeletedFalse(categoryId).orElseThrow(
