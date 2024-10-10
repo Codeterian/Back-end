@@ -44,7 +44,7 @@ public class PerformanceController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<?> performanceSearch(@RequestParam String query) {
-        return ResponseEntity.ok(performanceService.searchPerformance(query));
+    public ResponseEntity<?> performanceSearch(@RequestParam String query, @RequestParam int pageNumber, @RequestParam int pageSize) {
+        return ResponseEntity.ok(performanceService.searchPerformance(query,pageNumber,pageSize));
     }
 }
