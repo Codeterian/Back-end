@@ -12,15 +12,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.codeterian.common.infrastructure.dto.ResponseDto;
-import com.codeterian.common.infrastructure.dto.payment.PaymentAddRequestDto;
 import com.codeterian.common.infrastructure.dto.performance.PerformanceModifyStockRequestDto;
 import com.codeterian.common.infrastructure.dto.ticket.TicketAddFromOrdersRequestDto;
 import com.codeterian.common.infrastructure.dto.ticket.TicketAddFromOrdersResponseDto;
-import com.codeterian.common.infrastructure.entity.enums.PaymentType;
 import com.codeterian.order.domain.entity.order.Orders;
 import com.codeterian.order.domain.repository.OrderRepository;
-import com.codeterian.order.infrastructure.client.PaymentClient;
 import com.codeterian.order.infrastructure.client.PerformanceClient;
 import com.codeterian.order.infrastructure.client.TicketClient;
 import com.codeterian.order.presentation.dto.OrderAddRequestDto;

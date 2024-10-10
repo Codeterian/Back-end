@@ -30,6 +30,11 @@ dependencies {
 //	implementation 'org.redisson:redisson-spring-boot-starter:3.27.0'
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
+	// Jackson for JSON processing
+	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.16.1'
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
+
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	compileOnly 'org.projectlombok:lombok'

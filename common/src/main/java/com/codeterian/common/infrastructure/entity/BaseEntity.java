@@ -13,6 +13,12 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+
 @Getter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
@@ -20,15 +26,24 @@ public class BaseEntity {
 
     @CreatedDate
     @Column(updatable = false, columnDefinition = "TIMESTAMP", nullable = false)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonFormat(pattern = "yyyy-MM-dd kk:mm:ss")
     @Comment("생성일시")
     private LocalDateTime createdAt;
 
     @LastModifiedDate
     @Column(columnDefinition = "TIMESTAMP")
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonFormat(pattern = "yyyy-MM-dd kk:mm:ss")
     @Comment("수정일시")
     private LocalDateTime updatedAt;
 
     @Column(columnDefinition = "TIMESTAMP")
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonFormat(pattern = "yyyy-MM-dd kk:mm:ss")
     @Comment("삭제일시")
     private LocalDateTime deletedAt;
 
