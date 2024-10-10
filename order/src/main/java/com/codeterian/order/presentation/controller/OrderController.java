@@ -35,7 +35,7 @@ public class OrderController {
 	public ResponseDto<OrderAddResponseDto> orderAdd(
 		@RequestBody OrderAddRequestDto requestDto
 	){
-		return ResponseDto.okWithData(orderService.addOrder(requestDto));
+		return ResponseDto.okWithData(orderService.addOrder("addOrder",requestDto));
 	}
 
 	@GetMapping("/{orderId}")

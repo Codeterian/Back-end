@@ -19,6 +19,7 @@ import com.codeterian.order.domain.entity.order.Orders;
 import com.codeterian.order.domain.repository.OrderRepository;
 import com.codeterian.order.infrastructure.client.PerformanceClient;
 import com.codeterian.order.infrastructure.client.TicketClient;
+import com.codeterian.order.infrastructure.redisson.aspect.DistributedLock;
 import com.codeterian.order.presentation.dto.OrderAddRequestDto;
 import com.codeterian.order.presentation.dto.OrderAddResponseDto;
 import com.codeterian.order.presentation.dto.OrderDetailsResponseDto;
@@ -39,8 +40,8 @@ public class OrderService {
 	private final PerformanceClient performanceClient;
 
 	//Write - Through 전략
-	@Transactional
-	public OrderAddResponseDto addOrder(OrderAddRequestDto requestDto) {
+	@DistributedLock(key = "#lockName")
+	public OrderAddResponseDto addOrder(String lockName, OrderAddRequestDto requestDto) {
 		// 1. 주문 생성
 		Orders orders = orderRepository.save(Orders.add(0, requestDto.userId()));
 

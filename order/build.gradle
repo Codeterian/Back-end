@@ -38,6 +38,9 @@ dependencies {
 	// https://mvnrepository.com/artifact/io.github.openfeign/feign-okhttp
 	implementation group: 'io.github.openfeign', name: 'feign-okhttp', version: '13.4'
 
+	// redisson
+	implementation 'org.redisson:redisson-spring-boot-starter:3.27.0'
+
 	// TimeStamp
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.3'
 
