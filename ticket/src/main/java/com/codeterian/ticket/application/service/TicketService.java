@@ -1,5 +1,6 @@
 package com.codeterian.ticket.application.service;
 
+import com.codeterian.ticket.application.feign.PerformanceService;
 import com.codeterian.ticket.domain.model.Ticket;
 import com.codeterian.ticket.domain.repository.TicketRepository;
 import com.codeterian.ticket.presentation.dto.request.TicketAddRequestDto;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -19,13 +21,22 @@ import java.util.stream.Collectors;
 public class TicketService {
 
     private final TicketRepository ticketRepository;
+    private final PerformanceService performanceService;
 
     @Transactional
     public void addTicket(TicketAddRequestDto requestDto) {
         Ticket ticket = Ticket.create(requestDto.performanceId(), requestDto.ticketStatus(), requestDto.price(),
                 requestDto.seatSection(), requestDto.seatNumber(), UUID.randomUUID());
 
+        Optional<Ticket> existedTicket = ticketRepository.findBySeatSectionAndSeatNumberAndDeletedAtIsNull(requestDto.seatSection(),
+                requestDto.seatNumber());
+
+        if (existedTicket.isPresent()) {
+            throw new IllegalStateException("예약할 수 없는 좌석입니다.");
+        }
+
         ticketRepository.save(ticket);
+        performanceService.decreaseTicketStock(requestDto.performanceId());
     }
 
     @Transactional(readOnly = true)
@@ -51,7 +62,7 @@ public class TicketService {
                 //Global Exception Handler
         );
 
-        ticket.update(requestDto.seatNumber(),requestDto.seatSection(),
+        ticket.update(requestDto.seatSection(), requestDto.seatNumber(),
                 requestDto.ticketStatus(), requestDto.price());
 
         return TicketModifyResponseDto.fromEntity(ticket);

@@ -9,7 +9,7 @@ public record TicketAddRequestDto(
         TicketStatus ticketStatus,
         Integer price,
         String seatSection,
-        String seatNumber
+        int seatNumber
 ) {
 
 }

@@ -28,7 +28,7 @@ public class UserServiceFallback implements UserFeignClient {
     }
 
     @Override
-    public ResponseDto<Void> addUser(UserAddRequestDto requestDto) {
+    public void addUser(UserAddRequestDto requestDto) {
 
         if (cause instanceof FeignException.NotFound) {
             log.error("Feign getByUserEmail error!!");
@@ -36,7 +36,6 @@ public class UserServiceFallback implements UserFeignClient {
             log.error("fallback error");
         }
 
-        return null;
     }
 
 }
