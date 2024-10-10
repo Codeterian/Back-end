@@ -1,13 +1,15 @@
 package com.codeterian.performance.infrastructure.persistence;
 
-import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
+import org.springframework.stereotype.Repository;
 
 import com.codeterian.performance.domain.performance.PerformanceDocument;
+import com.codeterian.performance.domain.repository.PerformanceDocumentRepository;
 
-public interface PerformanceDocumentRepositoryImpl extends ElasticsearchRepository<PerformanceDocument, UUID> {
-	List<PerformanceDocument>
-	findByTitleContainingOrDescriptionContainingOrLocationContaining(String title, String description, String location);
+@Repository
+public interface PerformanceDocumentRepositoryImpl extends ElasticsearchRepository<PerformanceDocument, UUID> ,
+	PerformanceDocumentRepository {
+
 }
