@@ -3,6 +3,10 @@ package com.codeterian.performance.application;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.elasticsearch.client.elc.NativeQuery;
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.elasticsearch.core.SearchHit;
+import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.stereotype.Service;
 
 import com.codeterian.performance.domain.category.Category;
@@ -22,12 +26,13 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class PerformanceService {
-	
+
     private final PerformanceRepository performanceRepository;
     private final CategoryRepositoryImpl categoryRepository;
     private final PerformanceDocumentRepositoryImpl performanceDocumentRepository;
     private final KafkaProducerService kafkaProducerService;
 	private final PerformanceKafkaProducer performanceKafkaProducer;
+    private final ElasticsearchOperations elasticsearchOperations;
 
     public void addPerformance(PerformanceAddRequestDto dto) {
         // 카테고리 존재 여부 확인
@@ -76,8 +81,30 @@ public class PerformanceService {
     }
 
     public List<PerformanceDocument> searchPerformance(String query) {
-       return performanceDocumentRepository
-            .findByTitleContainingOrDescriptionContainingOrLocationContaining(query, query, query);
+        NativeQuery nativeQuery = NativeQuery.builder()
+            .withQuery(q -> q
+                .bool(b -> b
+                    .should(s -> s.match(m -> m
+                        .field("title")
+                        .query(query)
+                    ))
+                    .should(s -> s.match(m -> m
+                        .field("description")
+                        .query(query)
+                    ))
+                    .should(s -> s.match(m -> m
+                        .field("location")
+                        .query(query)
+                    ))
+                )
+            )
+            .build();
+
+        SearchHits<PerformanceDocument> searchHits = elasticsearchOperations.search(nativeQuery, PerformanceDocument.class);
+
+        return searchHits.getSearchHits().stream()
+            .map(SearchHit::getContent)
+            .collect(Collectors.toList());
     }
 
 	@Transactional
