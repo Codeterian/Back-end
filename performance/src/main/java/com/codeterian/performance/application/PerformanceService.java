@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
@@ -20,6 +21,7 @@ import com.codeterian.performance.presentation.dto.request.PerformanceAddRequest
 import com.codeterian.performance.presentation.dto.request.PerformanceModifyRequestDto;
 import com.codeterian.performance.presentation.dto.response.PerformanceDetailsResponseDto;
 
+import co.elastic.clients.elasticsearch._types.SortOrder;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
@@ -78,7 +80,7 @@ public class PerformanceService {
         return PerformanceDetailsResponseDto.fromEntity(performance);
     }
 
-    public List<PerformanceDocument> searchPerformance(String query) {
+    public List<PerformanceDocument> searchPerformance(String query,int pageNumber, int pageSize) {
         NativeQuery nativeQuery = NativeQuery.builder()
             .withQuery(q -> q
                 .bool(b -> b
@@ -96,6 +98,7 @@ public class PerformanceService {
                     ))
                 )
             )
+            .withPageable(PageRequest.of(pageNumber,pageSize))
             .build();
 
         SearchHits<PerformanceDocument> searchHits = elasticsearchOperations.search(nativeQuery, PerformanceDocument.class);
