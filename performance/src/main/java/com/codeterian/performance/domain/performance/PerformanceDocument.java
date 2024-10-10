@@ -62,6 +62,9 @@ public class PerformanceDocument {
 	@Field(type = FieldType.Keyword)
 	private UUID categoryId;
 
+	@Field(type = FieldType.Boolean)
+	private boolean isDeleted;
+
 	public static PerformanceDocument from(Performance performance) {
 		return PerformanceDocument.builder()
 			.id(performance.getId())
@@ -78,6 +81,7 @@ public class PerformanceDocument {
 			.ticketStock(performance.getTicketStock())
 			.username(performance.getUsername())
 			.categoryId(performance.getCategory().getId())
+			.isDeleted(performance.isDeleted())
 			.build();
 
 	}

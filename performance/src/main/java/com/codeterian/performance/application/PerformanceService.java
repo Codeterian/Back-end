@@ -2,6 +2,7 @@ package com.codeterian.performance.application;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
@@ -13,7 +14,6 @@ import org.springframework.stereotype.Service;
 import com.codeterian.performance.domain.category.Category;
 import com.codeterian.performance.domain.performance.Performance;
 import com.codeterian.performance.domain.performance.PerformanceDocument;
-import com.codeterian.performance.domain.performance.PerformanceStatus;
 import com.codeterian.performance.domain.repository.PerformanceRepository;
 import com.codeterian.performance.infrastructure.persistence.CategoryRepositoryImpl;
 import com.codeterian.performance.presentation.dto.request.PerformanceAddRequestDto;
@@ -122,6 +122,19 @@ public class PerformanceService {
         return searchHits.getSearchHits().stream()
             .map(hit-> PerformanceSearchResponseDto.fromDocument(hit.getContent()))
             .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void removePerformance(UUID performanceId) {
+        Performance performance = performanceRepository.findByIdAndIsDeletedFalse(performanceId).orElseThrow(
+            () -> new IllegalArgumentException("존재하지 않는 공연입니다.")
+        );
+
+        // 나중에 userId 받아와서 수정하기
+        performance.delete(1L);
+        performanceRepository.save(performance);
+
+        kafkaProducerService.sendPerformanceToKafka(performanceId);
     }
 
 	@Transactional
