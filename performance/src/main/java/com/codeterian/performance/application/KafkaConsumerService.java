@@ -11,7 +11,9 @@ import com.codeterian.performance.domain.repository.PerformanceDocumentRepositor
 import com.codeterian.performance.domain.repository.PerformanceRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class KafkaConsumerService {
@@ -21,6 +23,8 @@ public class KafkaConsumerService {
 
 	@KafkaListener(topics = "performance_topic", groupId = "performance_group")
 	public void listen(String performanceId) {
+		log.info("Received performance id: {}", performanceId);
+
 		// performanceId를 UUID로 변환
 		UUID id = UUID.fromString(performanceId);
 

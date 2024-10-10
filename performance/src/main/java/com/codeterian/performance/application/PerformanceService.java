@@ -23,7 +23,9 @@ import com.codeterian.performance.presentation.dto.response.PerformanceSearchRes
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PerformanceService {
@@ -46,6 +48,8 @@ public class PerformanceService {
         Performance newPerformance = Performance.addPerformance(dto, category);
 
         Performance savedperformance = performanceRepository.save(newPerformance);
+
+        log.info("Performance DB 저장 성공");
 
         // Kafka를 통해 Elasticsearch에 저장하도록 메시지 발행
         kafkaProducerService.sendPerformanceToKafka(savedperformance.getId());
@@ -79,6 +83,7 @@ public class PerformanceService {
     }
 
     public List<PerformanceSearchResponseDto> searchPerformance(String query,int pageNumber, int pageSize) {
+        log.info("performance search query: {}", query);
         NativeQuery nativeQuery = NativeQuery.builder()
             .withQuery(q -> q
                 .bool(b -> b
