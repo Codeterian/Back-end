@@ -44,7 +44,19 @@ public class PerformanceController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<?> performanceSearch(@RequestParam String query, @RequestParam int pageNumber, @RequestParam int pageSize) {
+    public ResponseEntity<?> performanceSearch(
+        @RequestParam String query,
+        @RequestParam (required = false,defaultValue = "0")int pageNumber,
+        @RequestParam (required = false,defaultValue = "10")int pageSize) {
+
+        if (pageNumber < 0 ){
+            return ResponseEntity.badRequest().body("잘못된 pageNumber 요청입니다.");
+        }
+
+        if (pageSize <= 0 ){
+            return ResponseEntity.badRequest().body("잘못된 pageSize 요청입니다.");
+        }
+
         return ResponseEntity.ok(performanceService.searchPerformance(query,pageNumber,pageSize));
     }
 }
