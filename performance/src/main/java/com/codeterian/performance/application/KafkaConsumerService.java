@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 
 import com.codeterian.performance.domain.performance.Performance;
 import com.codeterian.performance.domain.performance.PerformanceDocument;
+import com.codeterian.performance.domain.repository.PerformanceDocumentRepository;
 import com.codeterian.performance.domain.repository.PerformanceRepository;
-import com.codeterian.performance.infrastructure.persistence.PerformanceDocumentRepositoryImpl;
 
 import lombok.RequiredArgsConstructor;
 
@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class KafkaConsumerService {
 
-	private final PerformanceDocumentRepositoryImpl performanceDocumentRepository;
+	private final PerformanceDocumentRepository performanceDocumentRepository;
 	private final PerformanceRepository performanceRepository;
 
 	@KafkaListener(topics = "performance_topic", groupId = "performance_group")

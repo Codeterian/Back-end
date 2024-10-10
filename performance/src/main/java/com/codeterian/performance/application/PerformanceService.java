@@ -16,12 +16,10 @@ import com.codeterian.performance.domain.performance.PerformanceDocument;
 import com.codeterian.performance.domain.performance.PerformanceStatus;
 import com.codeterian.performance.domain.repository.PerformanceRepository;
 import com.codeterian.performance.infrastructure.persistence.CategoryRepositoryImpl;
-import com.codeterian.performance.infrastructure.persistence.PerformanceDocumentRepositoryImpl;
 import com.codeterian.performance.presentation.dto.request.PerformanceAddRequestDto;
 import com.codeterian.performance.presentation.dto.request.PerformanceModifyRequestDto;
 import com.codeterian.performance.presentation.dto.response.PerformanceDetailsResponseDto;
 
-import co.elastic.clients.elasticsearch._types.SortOrder;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
@@ -31,7 +29,6 @@ public class PerformanceService {
 
     private final PerformanceRepository performanceRepository;
     private final CategoryRepositoryImpl categoryRepository;
-    private final PerformanceDocumentRepositoryImpl performanceDocumentRepository;
     private final KafkaProducerService kafkaProducerService;
 	private final PerformanceKafkaProducer performanceKafkaProducer;
     private final ElasticsearchOperations elasticsearchOperations;
