@@ -11,6 +11,8 @@ import com.codeterian.performance.presentation.dto.request.ChildCategoryAddReque
 import com.codeterian.performance.presentation.dto.request.ParentCategoryAddRequestDto;
 import com.codeterian.performance.presentation.dto.response.CategoryDetailsResponseDto;
 import com.codeterian.performance.presentation.dto.response.CategoryModifyResponseDto;
+import com.codeterian.performance.presentation.dto.response.ChildCategoryAddResponseDto;
+import com.codeterian.performance.presentation.dto.response.ParentCategoryAddResponseDto;
 
 import jakarta.transaction.Transactional;
 
@@ -22,7 +24,7 @@ public class CategoryService {
 
     private final CategoryRepositoryImpl categoryRepository;
 
-    public void addParentCategory(ParentCategoryAddRequestDto dto) {
+    public ParentCategoryAddResponseDto addParentCategory(ParentCategoryAddRequestDto dto) {
         if (categoryRepository.existsByNameAndIsDeletedFalse(dto.name())) {
             throw new IllegalArgumentException("이미 존재하는 카테고리입니다.");
         }
@@ -31,10 +33,11 @@ public class CategoryService {
                 .name(dto.name())
                 .build();
 
-        categoryRepository.save(newCategory);
+        Category saveCategory = categoryRepository.save(newCategory);
+        return ParentCategoryAddResponseDto.fromEntity(saveCategory);
     }
 
-    public void addChildCategory(ChildCategoryAddRequestDto dto) {
+    public ChildCategoryAddResponseDto addChildCategory(ChildCategoryAddRequestDto dto) {
         Category parentCategory = categoryRepository.findByIdAndIsDeletedFalse(dto.parentId()).orElseThrow(
                 () -> new IllegalArgumentException("상위 카테고리가 존재하지 않습니다.")
         );
@@ -49,7 +52,8 @@ public class CategoryService {
                 .parent(parentCategory)
                 .build();
 
-        categoryRepository.save(newCategory);
+        Category saveCategory = categoryRepository.save(newCategory);
+        return ChildCategoryAddResponseDto.fromEntity(saveCategory);
     }
 
     @Transactional

@@ -18,6 +18,8 @@ import com.codeterian.performance.presentation.dto.request.ChildCategoryAddReque
 import com.codeterian.performance.presentation.dto.request.ParentCategoryAddRequestDto;
 import com.codeterian.performance.presentation.dto.response.CategoryDetailsResponseDto;
 import com.codeterian.performance.presentation.dto.response.CategoryModifyResponseDto;
+import com.codeterian.performance.presentation.dto.response.ChildCategoryAddResponseDto;
+import com.codeterian.performance.presentation.dto.response.ParentCategoryAddResponseDto;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -31,16 +33,14 @@ public class CategoryController {
 
 	// 부모 카테고리 등록
 	@PostMapping("/parent")
-	public ResponseEntity<?> parentCategoryAdd(@Valid @RequestBody ParentCategoryAddRequestDto dto){
-		categoryService.addParentCategory(dto);
-		return ResponseEntity.ok().body("카테고리 등록에 성공했습니다.");
+	public ResponseEntity<ParentCategoryAddResponseDto> parentCategoryAdd(@Valid @RequestBody ParentCategoryAddRequestDto dto){
+		return ResponseEntity.ok().body(categoryService.addParentCategory(dto));
 	}
 
 	// 자식 카테고리 등록
 	@PostMapping("/child")
-	public ResponseEntity<?> childCategoryAdd(@Valid @RequestBody ChildCategoryAddRequestDto dto){
-		categoryService.addChildCategory(dto);
-		return ResponseEntity.ok().body("카테고리 등록에 성공했습니다.");
+	public ResponseEntity<ChildCategoryAddResponseDto> childCategoryAdd(@Valid @RequestBody ChildCategoryAddRequestDto dto){
+		return ResponseEntity.ok().body(categoryService.addChildCategory(dto));
 	}
 
 	// 카테고리 수정
