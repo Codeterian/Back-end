@@ -4,15 +4,16 @@ Content-Type: application/json
 
 {
   "userId": 10,
+  "performanceId": "81fbacef-da07-4153-b370-9fbaefeb7d94",
   "ticketAddRequestDtoList": [
     {
-      "performanceId": "88b28f9d-6481-4fd3-ba12-2aba07e9a51f",
+      "performanceId": "867f1d54-90ed-4249-bab5-d896f2a38453",
       "price": 10000,
       "seatSection": "A",
       "seatNumber": 15
     },
     {
-      "performanceId": "88b28f9d-6481-4fd3-ba12-2aba07e9a51f",
+      "performanceId": "867f1d54-90ed-4249-bab5-d896f2a38453",
       "price": 10000,
       "seatSection": "A",
       "seatNumber": 15

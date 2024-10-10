@@ -34,6 +34,13 @@ dependencies {
 
 	// Feign Client
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
+	// https://mvnrepository.com/artifact/io.github.openfeign/feign-okhttp
+	implementation group: 'io.github.openfeign', name: 'feign-okhttp', version: '13.4'
+
+	// TimeStamp
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.3'
+
 	// Spring Docs
 	implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.2.0'
 

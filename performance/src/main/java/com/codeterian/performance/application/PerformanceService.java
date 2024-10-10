@@ -1,10 +1,12 @@
 package com.codeterian.performance.application;
 
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import com.codeterian.common.infrastructure.dto.performance.PerformanceModifyStockRequestDto;
 import com.codeterian.performance.domain.category.Category;
 import com.codeterian.performance.domain.performance.Performance;
 import com.codeterian.performance.domain.performance.PerformanceStatus;
@@ -101,5 +103,12 @@ public class PerformanceService {
             performance.getTicketStock(),
             performance.getCategory().getId()
         );
+    }
+
+    @Transactional
+    public void modifyStock(PerformanceModifyStockRequestDto performanceModifyStockRequestDto) {
+        Performance performance = performanceRepository.findByIdAndIsDeletedFalse(performanceModifyStockRequestDto.performanceId())
+            .orElseThrow(NoSuchElementException::new);
+        performance.modifyStock(performanceModifyStockRequestDto.number());
     }
 }

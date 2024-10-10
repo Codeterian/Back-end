@@ -3,6 +3,7 @@ package com.codeterian.performance.domain.performance;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import com.codeterian.common.infrastructure.entity.BaseEntity;
 import com.codeterian.performance.domain.category.Category;
 
 import jakarta.persistence.Entity;
@@ -24,7 +25,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Performance {
+public class Performance extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -75,5 +76,9 @@ public class Performance {
         this.status = PerformanceStatus.valueOf(status); // 상태 값은 enum 처리
         this.ticketStock = ticketStock;
         this.category = category;
+    }
+
+	public void modifyStock(Integer number) {
+        this.ticketStock -= number;
     }
 }

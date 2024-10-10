@@ -11,6 +11,7 @@ import feign.RequestTemplate;
 @Configuration
 public class FeignConfig {
 
+
 	@Bean
 	public RequestInterceptor customHeaderInterceptor(){
 		return new RequestInterceptor() {
