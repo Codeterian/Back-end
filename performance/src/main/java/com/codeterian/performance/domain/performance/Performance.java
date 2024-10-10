@@ -3,6 +3,7 @@ package com.codeterian.performance.domain.performance;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import com.codeterian.common.infrastructure.entity.BaseEntity;
 import com.codeterian.performance.domain.category.Category;
 import com.codeterian.performance.presentation.dto.request.PerformanceAddRequestDto;
 import com.codeterian.performance.presentation.dto.request.PerformanceModifyRequestDto;
@@ -26,7 +27,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Performance {
+public class Performance extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
