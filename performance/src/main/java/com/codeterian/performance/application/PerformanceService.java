@@ -19,6 +19,7 @@ import com.codeterian.performance.infrastructure.persistence.CategoryRepositoryI
 import com.codeterian.performance.presentation.dto.request.PerformanceAddRequestDto;
 import com.codeterian.performance.presentation.dto.request.PerformanceModifyRequestDto;
 import com.codeterian.performance.presentation.dto.response.PerformanceDetailsResponseDto;
+import com.codeterian.performance.presentation.dto.response.PerformanceSearchResponseDto;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -77,7 +78,7 @@ public class PerformanceService {
         return PerformanceDetailsResponseDto.fromEntity(performance);
     }
 
-    public List<PerformanceDocument> searchPerformance(String query,int pageNumber, int pageSize) {
+    public List<PerformanceSearchResponseDto> searchPerformance(String query,int pageNumber, int pageSize) {
         NativeQuery nativeQuery = NativeQuery.builder()
             .withQuery(q -> q
                 .bool(b -> b
@@ -99,9 +100,8 @@ public class PerformanceService {
             .build();
 
         SearchHits<PerformanceDocument> searchHits = elasticsearchOperations.search(nativeQuery, PerformanceDocument.class);
-
         return searchHits.getSearchHits().stream()
-            .map(SearchHit::getContent)
+            .map(hit-> PerformanceSearchResponseDto.fromDocument(hit.getContent()))
             .collect(Collectors.toList());
     }
 }
