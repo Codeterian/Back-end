@@ -121,4 +121,17 @@ public class PerformanceService {
             .map(hit-> PerformanceSearchResponseDto.fromDocument(hit.getContent()))
             .collect(Collectors.toList());
     }
+
+    @Transactional
+    public void removePerformance(UUID performanceId) {
+        Performance performance = performanceRepository.findByIdAndIsDeletedFalse(performanceId).orElseThrow(
+            () -> new IllegalArgumentException("존재하지 않는 공연입니다.")
+        );
+
+        // 나중에 userId 받아와서 수정하기
+        performance.delete(1L);
+        performanceRepository.save(performance);
+
+        kafkaProducerService.sendPerformanceToKafka(performanceId);
+    }
 }

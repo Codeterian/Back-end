@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -52,5 +53,11 @@ public class PerformanceController {
         @RequestParam (required = false,defaultValue = "10")int pageSize) {
 
         return ResponseEntity.ok(performanceService.searchPerformance(query,pageNumber,pageSize));
+    }
+
+    @DeleteMapping("/{performanceId}")
+    public ResponseEntity<?> performanceRemove(@PathVariable UUID performanceId) {
+        performanceService.removePerformance(performanceId);
+        return ResponseEntity.ok().body("공연 삭제에 성공했습니다.");
     }
 }
