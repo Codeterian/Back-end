@@ -36,22 +36,17 @@ public class Orders extends BaseEntity implements Serializable {
 
 	private Long userId;
 
-	@Embedded
-	private OrderLine orderLine;
-
 	@Enumerated(EnumType.STRING)
 	private OrderStatus orderStatus;
 
-	public static Orders add(OrderAddRequestDto requestDto) {
+	private Money totalPrice;
+
+	public static Orders add(Integer totalPrice, Long userId) {
 		return Orders.builder()
-			.userId(requestDto.userId())
-			.orderLine(new OrderLine(requestDto.ticketId(), requestDto.quantity(), requestDto.price()))
+			.userId(userId)
+			.totalPrice(Money.create(totalPrice))
 			.orderStatus(OrderStatus.PENDING)
 			.build();
-	}
-
-	public void update(OrderModifyRequestDto requestDto) {
-		this.orderLine = new OrderLine(requestDto.ticketId(), requestDto.quantity(), requestDto.price());
 	}
 
 	public void success() {
@@ -64,5 +59,9 @@ public class Orders extends BaseEntity implements Serializable {
 
 	public void delete(Long userId) {
 		this.delete(userId);
+	}
+
+	public void update(OrderModifyRequestDto requestDto) {
+		this.totalPrice = Money.create(requestDto.price());
 	}
 }

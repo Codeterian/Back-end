@@ -7,15 +7,16 @@ import java.util.UUID;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.codeterian.common.infrastructure.dto.ResponseDto;
-import com.codeterian.common.infrastructure.dto.payment.PaymentAddRequestDto;
-import com.codeterian.common.infrastructure.entity.enums.PaymentType;
+import com.codeterian.common.infrastructure.dto.ticket.TicketAddFromOrdersRequestDto;
+import com.codeterian.common.infrastructure.dto.ticket.TicketAddFromOrdersResponseDto;
 import com.codeterian.order.domain.entity.order.Orders;
 import com.codeterian.order.domain.repository.OrderRepository;
 import com.codeterian.order.infrastructure.client.PaymentClient;
+import com.codeterian.order.infrastructure.client.TicketClient;
 import com.codeterian.order.presentation.dto.OrderAddRequestDto;
 import com.codeterian.order.presentation.dto.OrderAddResponseDto;
 import com.codeterian.order.presentation.dto.OrderDetailsResponseDto;
@@ -23,33 +24,49 @@ import com.codeterian.order.presentation.dto.OrderModifyRequestDto;
 import com.codeterian.order.presentation.dto.OrderModifyResponseDto;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class OrderService {
 
 	private final OrderRepository orderRepository;
 	private final RedisTemplate<String, Orders> redisTemplate;
 	private final PaymentClient paymentClient;
+	private final TicketClient ticketClient;
 
 	//Write - Through 전략
 	@Transactional
 	public OrderAddResponseDto addOrder(OrderAddRequestDto requestDto) {
-		Orders orders = orderRepository.save(Orders.add(requestDto));
+		// 1. 주문 생성
+		Orders orders = orderRepository.save(Orders.add(0, requestDto.userId()));
+
+		// 2. 티켓 생성 요청
+		ResponseEntity<TicketAddFromOrdersResponseDto> responseTicket = ticketClient.addTicketFromOrders(
+			requestDto.userId(),
+			TicketAddFromOrdersRequestDto.create(
+				orders.getId(),
+				requestDto.ticketAddRequestDtoList()));
+
+
+
+		//
+		// Orders orders = orderRepository.save(Orders.add(requestDto));
 
 		// 2.Redis에 Orders 엔티티를 저장
-		String redisKey = "orderCache::" + orders.getId();
-		redisTemplate.opsForValue().set(redisKey, orders);
-		PaymentAddRequestDto paymentAddRequestDto = new PaymentAddRequestDto(orders.getId(), PaymentType.TOSS);
-
-		ResponseDto responseDto = paymentClient.paymentAdd(paymentAddRequestDto);
-
-		if (responseDto.getCode() == 200)
-			orders.success();
-		else {
-			orders.fail();
-		}
-
+		// String redisKey = "orderCache::" + orders.getId();
+		// redisTemplate.opsForValue().set(redisKey, orders);
+		// PaymentAddRequestDto paymentAddRequestDto = new PaymentAddRequestDto(orders.getId(), PaymentType.TOSS);
+		//
+		// ResponseDto responseDto = paymentClient.paymentAdd(paymentAddRequestDto);
+		//
+		// if (responseDto.getCode() == 200)
+		// 	orders.success();
+		// else {
+		// 	orders.fail();
+		// }
+		//
 		return OrderAddResponseDto.fromEntity(orders);
 	}
 

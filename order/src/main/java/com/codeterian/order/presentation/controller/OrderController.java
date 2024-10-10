@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.codeterian.common.infrastructure.dto.ResponseDto;
+import com.codeterian.common.infrastructure.util.CurrentPassport;
+import com.codeterian.common.infrastructure.util.Passport;
 import com.codeterian.order.application.OrderService;
 import com.codeterian.order.presentation.dto.OrderAddRequestDto;
 import com.codeterian.order.presentation.dto.OrderAddResponseDto;

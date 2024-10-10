@@ -8,18 +8,12 @@ import com.codeterian.order.domain.entity.order.Orders;
 public record OrderAddResponseDto (
 
 	UUID orderId,
-	Long userId,
-	UUID ticketId,
-	Integer quantity,
-	Integer money
+	Long userId
 
 ) implements Serializable {
 	public static OrderAddResponseDto fromEntity(Orders orders) {
 		return new OrderAddResponseDto(
 			orders.getId(),
-			orders.getUserId(),
-			orders.getOrderLine().getTicketId(),
-			orders.getOrderLine().getQuantity(),
-			orders.getOrderLine().getPrice().getValue());
+			orders.getUserId());
 	}
 }
