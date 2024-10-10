@@ -59,6 +59,9 @@ public class PerformanceDocument {
 	@Field(type = FieldType.Text)
 	private String username;
 
+	@Field(type = FieldType.Keyword)
+	private UUID categoryId;
+
 	public static PerformanceDocument from(Performance performance) {
 		return PerformanceDocument.builder()
 			.id(performance.getId())
@@ -74,6 +77,7 @@ public class PerformanceDocument {
 			.status(performance.getStatus().name())
 			.ticketStock(performance.getTicketStock())
 			.username(performance.getUsername())
+			.categoryId(performance.getCategory().getId())
 			.build();
 
 	}
