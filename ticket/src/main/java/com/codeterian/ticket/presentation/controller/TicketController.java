@@ -10,15 +10,12 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.codeterian.common.infrastructure.dto.ResponseDto;
-import com.codeterian.common.infrastructure.dto.ticket.TicketAddFromOrdersRequestDto;
-import com.codeterian.common.infrastructure.dto.ticket.TicketAddFromOrdersResponseDto;
 import com.codeterian.common.infrastructure.dto.ticket.TicketAddRequestDto;
-import com.codeterian.ticket.application.service.TicketOrdersService;
+import com.codeterian.ticket.application.service.TicketPerformanceService;
 import com.codeterian.ticket.application.service.TicketService;
 import com.codeterian.ticket.presentation.dto.request.TicketModifyRequestDto;
 import com.codeterian.ticket.presentation.dto.response.TicketFindResponseDto;
@@ -33,7 +30,7 @@ public class TicketController {
 
     private final TicketService ticketService;
 
-    private final TicketOrdersService ticketOrdersService;
+    private final TicketPerformanceService ticketOrdersService;
 
     @PostMapping
     public ResponseEntity<ResponseDto<Void>> ticketAdd(@RequestBody TicketAddRequestDto requestDto) {
@@ -70,13 +67,5 @@ public class TicketController {
         ticketService.deleteTicketById(ticketId);
 
         return ResponseEntity.ok(ResponseDto.ok());
-    }
-
-    @PostMapping("/fromOrders")
-    public ResponseEntity<TicketAddFromOrdersResponseDto> ticketAddFromOrders(
-        @RequestHeader("X-User-Id") Long userId,
-        @RequestBody TicketAddFromOrdersRequestDto requestDto
-    ){
-        return ResponseEntity.ok(ticketOrdersService.addTicketFromOrders(userId, requestDto));
     }
 }

@@ -1,16 +1,16 @@
-package com.codeterian.order.presentation.dto;
+package com.codeterian.common.infrastructure.dto.performance;
 
 import java.util.List;
 import java.util.UUID;
 
 import com.codeterian.common.infrastructure.dto.ticket.TicketAddRequestDto;
 
-public record OrderAddRequestDto(
+public record PerformanceDecreaseStockRequestDto(
 
-	Long userId,
 	UUID performanceId,
-
-	Integer totalPrice,
+	UUID orderId,
+	Long userId,
 	List<TicketAddRequestDto> ticketAddRequestDtoList
 ) {
+
 }

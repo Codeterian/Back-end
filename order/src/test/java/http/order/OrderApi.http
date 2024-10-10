@@ -5,6 +5,7 @@ Content-Type: application/json
 {
   "userId": 10,
   "performanceId": "81fbacef-da07-4153-b370-9fbaefeb7d94",
+  "totalPrice" : 20000,
   "ticketAddRequestDtoList": [
     {
       "performanceId": "867f1d54-90ed-4249-bab5-d896f2a38453",

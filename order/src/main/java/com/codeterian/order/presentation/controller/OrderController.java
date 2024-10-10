@@ -21,6 +21,7 @@ import com.codeterian.order.presentation.dto.OrderAddResponseDto;
 import com.codeterian.order.presentation.dto.OrderDetailsResponseDto;
 import com.codeterian.order.presentation.dto.OrderModifyRequestDto;
 import com.codeterian.order.presentation.dto.OrderModifyResponseDto;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -34,8 +35,8 @@ public class OrderController {
 	@PostMapping
 	public ResponseDto<OrderAddResponseDto> orderAdd(
 		@RequestBody OrderAddRequestDto requestDto
-	){
-		return ResponseDto.okWithData(orderService.addOrder("addOrder",requestDto));
+	) throws JsonProcessingException {
+		return ResponseDto.okWithData(orderService.addOrder("addOrder", requestDto));
 	}
 
 	@GetMapping("/{orderId}")

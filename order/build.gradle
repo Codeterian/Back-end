@@ -41,17 +41,17 @@ dependencies {
 	// redisson
 	implementation 'org.redisson:redisson-spring-boot-starter:3.27.0'
 
-	// TimeStamp
-	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.3'
-
 	// Spring Docs
 	implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.2.0'
+
+	// kafka
+	implementation 'org.springframework.kafka:spring-kafka'
+	testImplementation 'org.springframework.kafka:spring-kafka-test'
 
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
-	implementation project(path: ':payment')
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'org.postgresql:postgresql'
 	annotationProcessor 'org.projectlombok:lombok'

@@ -2,29 +2,24 @@ package com.codeterian.order.application;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.UUID;
 
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.codeterian.common.infrastructure.dto.performance.PerformanceModifyStockRequestDto;
-import com.codeterian.common.infrastructure.dto.ticket.TicketAddFromOrdersRequestDto;
-import com.codeterian.common.infrastructure.dto.ticket.TicketAddFromOrdersResponseDto;
 import com.codeterian.order.domain.entity.order.Orders;
 import com.codeterian.order.domain.repository.OrderRepository;
-import com.codeterian.order.infrastructure.client.PerformanceClient;
-import com.codeterian.order.infrastructure.client.TicketClient;
+import com.codeterian.order.infrastructure.kafka.OrderKafkaProducer;
 import com.codeterian.order.infrastructure.redisson.aspect.DistributedLock;
 import com.codeterian.order.presentation.dto.OrderAddRequestDto;
 import com.codeterian.order.presentation.dto.OrderAddResponseDto;
 import com.codeterian.order.presentation.dto.OrderDetailsResponseDto;
 import com.codeterian.order.presentation.dto.OrderModifyRequestDto;
 import com.codeterian.order.presentation.dto.OrderModifyResponseDto;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,31 +31,18 @@ public class OrderService {
 
 	private final OrderRepository orderRepository;
 	private final RedisTemplate<String, Orders> redisTemplate;
-	private final TicketClient ticketClient;
-	private final PerformanceClient performanceClient;
+	private final OrderKafkaProducer orderKafkaProducer;
 
 	//Write - Through 전략
 	@DistributedLock(key = "#lockName")
-	public OrderAddResponseDto addOrder(String lockName, OrderAddRequestDto requestDto) {
+	public OrderAddResponseDto addOrder(String lockName, OrderAddRequestDto requestDto) throws JsonProcessingException {
 		// 1. 주문 생성
-		Orders orders = orderRepository.save(Orders.add(0, requestDto.userId()));
+		Orders orders = orderRepository.save(Orders.add(requestDto.totalPrice(), requestDto.userId()));
 
 		// 2. 공연장 재고 감소
-		performanceClient.modifyStockPerformanceFromOrders(
-			new PerformanceModifyStockRequestDto(requestDto.performanceId() ,requestDto.ticketAddRequestDtoList().size()));
+		orderKafkaProducer.decreaseStock(requestDto.performanceId(), orders.getId(),requestDto.userId() ,requestDto.ticketAddRequestDtoList());
 
-		// 3. 티켓 생성 요청
-		ResponseEntity<TicketAddFromOrdersResponseDto> responseTicket = ticketClient.addTicketFromOrders(
-			requestDto.userId(),
-			TicketAddFromOrdersRequestDto.create(
-				orders.getId(),
-				requestDto.ticketAddRequestDtoList()));
-
-		// 4. order 가격 변경
-		orders.updatePrice(Objects.requireNonNull(responseTicket.getBody()).totalPrice());
-
-
-		// 5. Redis에 Orders 엔티티를 저장
+		// 3. Redis에 Orders 엔티티를 저장
 		String redisKey = "orderCache::" + orders.getId();
 		redisTemplate.opsForValue().set(redisKey, orders);
 
