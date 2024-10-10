@@ -18,7 +18,9 @@ import com.codeterian.performance.domain.repository.PerformanceRepository;
 import com.codeterian.performance.infrastructure.persistence.CategoryRepositoryImpl;
 import com.codeterian.performance.presentation.dto.request.PerformanceAddRequestDto;
 import com.codeterian.performance.presentation.dto.request.PerformanceModifyRequestDto;
+import com.codeterian.performance.presentation.dto.response.PerformanceAddResponseDto;
 import com.codeterian.performance.presentation.dto.response.PerformanceDetailsResponseDto;
+import com.codeterian.performance.presentation.dto.response.PerformanceModifyResponseDto;
 import com.codeterian.performance.presentation.dto.response.PerformanceSearchResponseDto;
 
 import jakarta.transaction.Transactional;
@@ -34,7 +36,7 @@ public class PerformanceService {
     private final KafkaProducerService kafkaProducerService;
     private final ElasticsearchOperations elasticsearchOperations;
 
-    public void addPerformance(PerformanceAddRequestDto dto) {
+    public PerformanceAddResponseDto addPerformance(PerformanceAddRequestDto dto) {
         // 카테고리 존재 여부 확인
         Category category = categoryRepository.findByIdAndIsDeletedFalse(dto.categoryId()).orElseThrow(
                 () -> new IllegalArgumentException("존재하지 않는 카테고리 입니다.")
@@ -54,10 +56,11 @@ public class PerformanceService {
         // Kafka를 통해 Elasticsearch에 저장하도록 메시지 발행
         kafkaProducerService.sendPerformanceToKafka(savedperformance.getId());
 
+        return PerformanceAddResponseDto.fromEntity(savedperformance);
     }
 
     @Transactional
-    public void modifyPerformance(UUID performanceId, PerformanceModifyRequestDto dto) {
+    public PerformanceModifyResponseDto modifyPerformance(UUID performanceId, PerformanceModifyRequestDto dto) {
         Performance existedPerformance = performanceRepository.findByIdAndIsDeletedFalse(performanceId).orElseThrow(
             () -> new IllegalArgumentException("존재하지 않는 공연입니다.")
         );
@@ -69,10 +72,12 @@ public class PerformanceService {
         // 일괄 업데이트 메서드 호출
         existedPerformance.updatePerformance(dto, existingcategory);
 
-        performanceRepository.save(existedPerformance);
+        Performance savedPerformance = performanceRepository.save(existedPerformance);
 
         // Kafka를 통해 Elasticsearch에 저장하도록 메시지 발행
         kafkaProducerService.sendPerformanceToKafka(existedPerformance.getId());
+
+        return PerformanceModifyResponseDto.fromEntity(savedPerformance);
     }
 
     public PerformanceDetailsResponseDto findPerformanceDetails(UUID performanceId) {
@@ -83,6 +88,13 @@ public class PerformanceService {
     }
 
     public List<PerformanceSearchResponseDto> searchPerformance(String query,int pageNumber, int pageSize) {
+        if (pageNumber < 0) {
+            throw new IllegalArgumentException("잘못된 pageNumber 요청입니다.");
+        }
+
+        if (pageSize <= 0) {
+            throw new IllegalArgumentException("잘못된 pageSize 요청입니다.");
+        }
         log.info("performance search query: {}", query);
         NativeQuery nativeQuery = NativeQuery.builder()
             .withQuery(q -> q

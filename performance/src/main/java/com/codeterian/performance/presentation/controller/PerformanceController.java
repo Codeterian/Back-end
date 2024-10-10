@@ -1,5 +1,6 @@
 package com.codeterian.performance.presentation.controller;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
@@ -15,7 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.codeterian.performance.application.PerformanceService;
 import com.codeterian.performance.presentation.dto.request.PerformanceAddRequestDto;
 import com.codeterian.performance.presentation.dto.request.PerformanceModifyRequestDto;
+import com.codeterian.performance.presentation.dto.response.PerformanceAddResponseDto;
 import com.codeterian.performance.presentation.dto.response.PerformanceDetailsResponseDto;
+import com.codeterian.performance.presentation.dto.response.PerformanceModifyResponseDto;
+import com.codeterian.performance.presentation.dto.response.PerformanceSearchResponseDto;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,15 +31,13 @@ public class PerformanceController {
     private final PerformanceService performanceService;
 
     @PostMapping
-    public ResponseEntity<?> performanceAdd(@RequestBody PerformanceAddRequestDto dto){
-        performanceService.addPerformance(dto);
-        return ResponseEntity.ok().body("공연 등록에 성공했습니다.");
+    public ResponseEntity<PerformanceAddResponseDto> performanceAdd(@RequestBody PerformanceAddRequestDto dto){
+        return ResponseEntity.ok().body( performanceService.addPerformance(dto));
     }
 
     @PutMapping("/{performanceId}")
-    public ResponseEntity<?> performanceModify(@PathVariable UUID performanceId, @RequestBody PerformanceModifyRequestDto dto){
-        performanceService.modifyPerformance(performanceId,dto);
-        return ResponseEntity.ok().body("공연 수정에 성공했습니다.");
+    public ResponseEntity<PerformanceModifyResponseDto> performanceModify(@PathVariable UUID performanceId, @RequestBody PerformanceModifyRequestDto dto){
+        return ResponseEntity.ok().body(performanceService.modifyPerformance(performanceId,dto));
     }
 
     @GetMapping("/{performanceId}")
@@ -44,18 +46,10 @@ public class PerformanceController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<?> performanceSearch(
+    public ResponseEntity<List<PerformanceSearchResponseDto>> performanceSearch(
         @RequestParam String query,
         @RequestParam (required = false,defaultValue = "0")int pageNumber,
         @RequestParam (required = false,defaultValue = "10")int pageSize) {
-
-        if (pageNumber < 0 ){
-            return ResponseEntity.badRequest().body("잘못된 pageNumber 요청입니다.");
-        }
-
-        if (pageSize <= 0 ){
-            return ResponseEntity.badRequest().body("잘못된 pageSize 요청입니다.");
-        }
 
         return ResponseEntity.ok(performanceService.searchPerformance(query,pageNumber,pageSize));
     }
