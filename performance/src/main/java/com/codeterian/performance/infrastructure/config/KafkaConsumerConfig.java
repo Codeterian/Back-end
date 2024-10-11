@@ -17,7 +17,7 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 public class KafkaConsumerConfig {
 
 	@Bean
-	public ConsumerFactory<String, String> consumerFactory() {
+	public ConsumerFactory<String, Object> consumerFactory() {
 		Map<String, Object> configProps = new HashMap<>();
 		configProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
 		configProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
@@ -26,8 +26,8 @@ public class KafkaConsumerConfig {
 	}
 
 	@Bean
-	public ConcurrentKafkaListenerContainerFactory<String, String> kafkaListenerContainerFactory() {
-		ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
+	public ConcurrentKafkaListenerContainerFactory<String, Object> kafkaListenerContainerFactory() {
+		ConcurrentKafkaListenerContainerFactory<String, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
 		factory.setConsumerFactory(consumerFactory());
 		return factory;
 	}

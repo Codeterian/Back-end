@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class KafkaProducerService {
 
-	private final KafkaTemplate<String, String> kafkaTemplate;
+	private final KafkaTemplate<String, Object> kafkaTemplate;
 
 	public void sendPerformanceToKafka(UUID performanceId) {
 		log.info("Sending performance to Kafka topic {}", performanceId);
