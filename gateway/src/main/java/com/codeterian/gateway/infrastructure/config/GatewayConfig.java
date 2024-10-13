@@ -12,13 +12,6 @@ public class GatewayConfig {
     @Bean
     public RouteLocator gatewayRoute(RouteLocatorBuilder builder) {
         return builder.routes()
-            .route("auth", r->r.path("/auth/**").uri("lb://auth"))
-            // .route("auth-swagger", r -> r.path("/swagger/auth/v3/api-docs/**")
-            //     .and()
-            //     .method(HttpMethod.GET)
-            //     .filters(f -> f.rewritePath("/swagger/auth/(?<segment>.*)", "/${segment}"))
-            //     .uri("lb://auth"))
-
 
             .route("performance", r-> r.path("/api/v1/performances/**").uri("lb://performance"))
             .route("performance-swagger", r -> r.path("/swagger/performances/v3/api-docs/**")
@@ -48,7 +41,7 @@ public class GatewayConfig {
                 .filters(f -> f.rewritePath("/swagger/payments/(?<segment>.*)", "/${segment}"))
                 .uri("lb://payment"))
 
-            .route("user", r->r.path("/api/v1/users/**").uri("lb://user"))
+            .route("user", r->r.path("/api/v1/users/**", "/login", "/sign-up", "/logout").uri("lb://user"))
             .route("user-swagger", r -> r.path("/swagger/users/v3/api-docs/**")
                 .and()
                 .method(HttpMethod.GET)
