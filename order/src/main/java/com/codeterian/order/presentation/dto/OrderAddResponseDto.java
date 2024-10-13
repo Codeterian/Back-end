@@ -9,17 +9,14 @@ public record OrderAddResponseDto (
 
 	UUID orderId,
 	Long userId,
-	UUID ticketId,
-	Integer quantity,
-	Integer money
+
+	Integer totalPrice
 
 ) implements Serializable {
 	public static OrderAddResponseDto fromEntity(Orders orders) {
 		return new OrderAddResponseDto(
 			orders.getId(),
 			orders.getUserId(),
-			orders.getOrderLine().getTicketId(),
-			orders.getOrderLine().getQuantity(),
-			orders.getOrderLine().getPrice().getValue());
+			orders.getTotalPrice().getValue());
 	}
 }

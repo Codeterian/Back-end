@@ -32,6 +32,14 @@ eureka:
     service-url:
       defaultZone: http://localhost:19090/eureka/
 
+logging:
+  level:
+    com.netflix.discovery: DEBUG
+    com.netflix.eureka: DEBUG
+    com.netflix.client: DEBUG
+    com.netflix.loadbalancer: DEBUG
+    feign: DEBUG
+
 springdoc:
   api-docs:
     version: openapi_3_1

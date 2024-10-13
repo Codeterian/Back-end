@@ -1,6 +1,7 @@
 package com.codeterian.ticket.domain.model;
 
 import com.codeterian.common.infrastructure.entity.BaseEntity;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -39,22 +40,27 @@ public class Ticket extends BaseEntity {
     private String seatSection;
 
     @Column(name = "seat_number")
-    private int seatNumber;
+    private Integer seatNumber;
 
     @Column(name = "user_id", nullable = false)
-    private UUID userId;
+    private Long userId;
 
-    public static Ticket create(UUID performanceId, TicketStatus ticketStatus, Integer price, String seatSection, int seatNumber, UUID userId) {
-       return new Ticket(performanceId, ticketStatus, price, seatSection, seatNumber,userId);
+    @Column(nullable = false)
+    private UUID orderID;
+
+
+    public static Ticket create(UUID performanceId, TicketStatus ticketStatus, Integer price, String seatSection, Integer seatNumber, Long userId, UUID orderID) {
+       return new Ticket(performanceId, ticketStatus, price, seatSection, seatNumber, userId, orderID);
     }
 
-    private Ticket(UUID performanceId, TicketStatus ticketStatus, Integer price, String seatSection, int seatNumber, UUID userId) {
+    private Ticket(UUID performanceId, TicketStatus ticketStatus, Integer price, String seatSection, Integer seatNumber, Long userId, UUID orderId) {
         this.performanceId = performanceId;
         this.ticketStatus = ticketStatus;
         this.price = price;
         this.seatSection = seatSection;
         this.seatNumber = seatNumber;
         this.userId = userId;
+        this.orderID = orderId;
     }
 
     public void update(String seatSection, int seatNumber, TicketStatus ticketStatus, Integer price) {

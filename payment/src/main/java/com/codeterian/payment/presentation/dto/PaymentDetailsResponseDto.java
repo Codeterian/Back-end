@@ -2,7 +2,7 @@ package com.codeterian.payment.presentation.dto;
 
 import java.util.UUID;
 
-import com.codeterian.payment.domain.entity.enums.PaymentType;
+import com.codeterian.common.infrastructure.entity.enums.PaymentType;
 import com.codeterian.payment.domain.entity.payment.Payment;
 
 public record PaymentDetailsResponseDto(

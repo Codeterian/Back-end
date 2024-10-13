@@ -1,4 +1,4 @@
-package com.codeterian.common.infrastructure.aspect;
+package com.codeterian.order.infrastructure.redisson.aspect;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +23,7 @@ public class DistributeLockAop {
     private final RedissonClient redissonClient;
     private final AopForTransaction aopForTransaction;
 
-    @Around("@annotation(com.codeterian.common.infrastructure.aspect.DistributedLock)")
+    @Around("@annotation(com.codeterian.order.infrastructure.redisson.aspect.DistributedLock)")
     public Object redissonLock(ProceedingJoinPoint joinPoint) {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();

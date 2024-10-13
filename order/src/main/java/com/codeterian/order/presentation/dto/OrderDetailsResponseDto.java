@@ -9,9 +9,6 @@ public record OrderDetailsResponseDto(
 
 	UUID orderId,
 	Long userId,
-	UUID ticketId,
-	Integer quantity,
-	Integer amount,
 	String orderStatus
 
 ) implements Serializable {
@@ -19,9 +16,6 @@ public record OrderDetailsResponseDto(
 		return new OrderDetailsResponseDto(
 			order.getId(),
 			order.getUserId(),
-			order.getOrderLine().getTicketId(),
-			order.getOrderLine().getQuantity(),
-			order.getOrderLine().getAmounts().getValue(),
 			order.getOrderStatus().toString()
 		);
 	}

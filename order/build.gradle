@@ -28,8 +28,25 @@ ext {
 }
 
 dependencies {
+
+	// common module
+	implementation project(':common')
+
+	// Feign Client
+	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
+	// https://mvnrepository.com/artifact/io.github.openfeign/feign-okhttp
+	implementation group: 'io.github.openfeign', name: 'feign-okhttp', version: '13.4'
+
+	// redisson
+	implementation 'org.redisson:redisson-spring-boot-starter:3.27.0'
+
 	// Spring Docs
 	implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.2.0'
+
+	// kafka
+	implementation 'org.springframework.kafka:spring-kafka'
+	testImplementation 'org.springframework.kafka:spring-kafka-test'
 
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'

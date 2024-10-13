@@ -1,32 +1,33 @@
 package com.codeterian.ticket.application.service;
 
-import com.codeterian.ticket.application.feign.PerformanceService;
-import com.codeterian.ticket.domain.model.Ticket;
-import com.codeterian.ticket.domain.repository.TicketRepository;
-import com.codeterian.ticket.presentation.dto.request.TicketAddRequestDto;
-import com.codeterian.ticket.presentation.dto.request.TicketModifyRequestDto;
-import com.codeterian.ticket.presentation.dto.response.TicketFindResponseDto;
-import com.codeterian.ticket.presentation.dto.response.TicketModifyResponseDto;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.codeterian.common.infrastructure.dto.ticket.TicketAddRequestDto;
+import com.codeterian.ticket.domain.model.Ticket;
+import com.codeterian.ticket.domain.model.TicketStatus;
+import com.codeterian.ticket.domain.repository.TicketRepository;
+import com.codeterian.ticket.presentation.dto.request.TicketModifyRequestDto;
+import com.codeterian.ticket.presentation.dto.response.TicketFindResponseDto;
+import com.codeterian.ticket.presentation.dto.response.TicketModifyResponseDto;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class TicketService {
 
     private final TicketRepository ticketRepository;
-    private final PerformanceService performanceService;
 
     @Transactional
     public void addTicket(TicketAddRequestDto requestDto) {
-        Ticket ticket = Ticket.create(requestDto.performanceId(), requestDto.ticketStatus(), requestDto.price(),
-                requestDto.seatSection(), requestDto.seatNumber(), UUID.randomUUID());
+        Ticket ticket = Ticket.create(requestDto.performanceId(), TicketStatus.BOOKING, requestDto.price(),
+            requestDto.seatSection(), requestDto.seatNumber(), 1L, requestDto.orderId());
 
         Optional<Ticket> existedTicket = ticketRepository.findBySeatSectionAndSeatNumberAndDeletedAtIsNull(requestDto.seatSection(),
                 requestDto.seatNumber());
@@ -36,7 +37,6 @@ public class TicketService {
         }
 
         ticketRepository.save(ticket);
-        performanceService.decreaseTicketStock(requestDto.performanceId());
     }
 
     @Transactional(readOnly = true)

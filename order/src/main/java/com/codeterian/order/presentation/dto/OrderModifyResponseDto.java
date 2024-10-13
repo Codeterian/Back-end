@@ -8,9 +8,6 @@ import com.codeterian.order.domain.entity.order.Orders;
 public record OrderModifyResponseDto(
 	UUID orderId,
 	Long userId,
-	UUID ticketId,
-	Integer quantity,
-	Integer amount,
 	String orderStatus
 
 ) implements Serializable {
@@ -18,9 +15,6 @@ public record OrderModifyResponseDto(
 		return new OrderModifyResponseDto(
 			order.getId(),
 			order.getUserId(),
-			order.getOrderLine().getTicketId(),
-			order.getOrderLine().getQuantity(),
-			order.getOrderLine().getAmounts().getValue(),
 			order.getOrderStatus().toString()
 		);
 	}

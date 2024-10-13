@@ -2,9 +2,9 @@ package com.codeterian.payment.domain.entity.payment;
 
 import java.util.UUID;
 
-import com.codeterian.payment.domain.entity.enums.PaymentStatus;
-import com.codeterian.payment.domain.entity.enums.PaymentType;
-import com.codeterian.payment.presentation.dto.PaymentAddRequestDto;
+import com.codeterian.common.infrastructure.entity.enums.PaymentStatus;
+import com.codeterian.common.infrastructure.entity.enums.PaymentType;
+import com.codeterian.common.infrastructure.dto.payment.PaymentAddRequestDto;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

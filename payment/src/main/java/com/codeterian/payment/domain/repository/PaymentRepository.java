@@ -5,7 +5,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import com.codeterian.payment.domain.entity.payment.Payment;
-import com.codeterian.payment.presentation.dto.PaymentDetailsResponseDto;
 
 public interface PaymentRepository {
 

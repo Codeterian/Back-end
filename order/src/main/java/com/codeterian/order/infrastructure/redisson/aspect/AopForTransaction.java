@@ -1,4 +1,4 @@
-package com.codeterian.common.infrastructure.aspect;
+package com.codeterian.order.infrastructure.redisson.aspect;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.springframework.stereotype.Component;

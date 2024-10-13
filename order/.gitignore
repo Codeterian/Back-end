@@ -36,4 +36,4 @@ out/
 ### VS Code ###
 .vscode/
 
-docker/postgres-data
+../docker/postgres-data

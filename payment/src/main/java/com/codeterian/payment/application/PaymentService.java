@@ -7,10 +7,9 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.codeterian.common.infrastructure.dto.payment.PaymentAddRequestDto;
 import com.codeterian.payment.domain.entity.payment.Payment;
 import com.codeterian.payment.domain.repository.PaymentRepository;
-import com.codeterian.payment.presentation.dto.PaymentAddRequestDto;
-import com.codeterian.payment.presentation.dto.PaymentAddResponseDto;
 import com.codeterian.payment.presentation.dto.PaymentDetailsResponseDto;
 
 import lombok.RequiredArgsConstructor;
@@ -22,8 +21,8 @@ public class PaymentService {
 	private final PaymentRepository paymentRepository;
 
 	@Transactional
-	public PaymentAddResponseDto addPayment(PaymentAddRequestDto requestDto) {
-		return PaymentAddResponseDto.fromEntity(paymentRepository.save(Payment.add(requestDto)));
+	public void addPayment(PaymentAddRequestDto requestDto) {
+		paymentRepository.save(Payment.add(requestDto));
 	}
 
 	@Transactional(readOnly = true)

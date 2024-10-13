@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.codeterian.common.infrastructure.dto.ResponseDto;
 import com.codeterian.payment.application.PaymentService;
-import com.codeterian.payment.presentation.dto.PaymentAddRequestDto;
-import com.codeterian.payment.presentation.dto.PaymentAddResponseDto;
+import com.codeterian.common.infrastructure.dto.payment.PaymentAddRequestDto;
 import com.codeterian.payment.presentation.dto.PaymentDetailsResponseDto;
 
 import lombok.RequiredArgsConstructor;
@@ -25,10 +25,11 @@ public class PaymentController {
 
 	private final PaymentService paymentService;
 	@PostMapping
-	public ResponseEntity<PaymentAddResponseDto> paymentAdd(
+	public ResponseDto paymentAdd(
 		@RequestBody PaymentAddRequestDto requestDto
 	){
-		return ResponseEntity.ok(paymentService.addPayment(requestDto));
+		paymentService.addPayment(requestDto);
+		return ResponseDto.ok();
 	}
 
 	@GetMapping("/{paymentId}")

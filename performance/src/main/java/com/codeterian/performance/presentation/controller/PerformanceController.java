@@ -42,6 +42,4 @@ public class PerformanceController {
         return ResponseEntity.ok(performanceService.findPerformanceDetails(performanceId));
     }
 
-
-
 }

@@ -3,10 +3,23 @@ POST http://localhost:19095/api/v1/orders
 Content-Type: application/json
 
 {
-  "userId" :  5,
-  "ticketId" :  "3a222f44-a3e1-49f5-aeab-67319b33b3a5",
-  "price" : 30000,
-  "quantity" : 2
+  "userId": 10,
+  "performanceId": "81fbacef-da07-4153-b370-9fbaefeb7d94",
+  "totalPrice" : 20000,
+  "ticketAddRequestDtoList": [
+    {
+      "performanceId": "867f1d54-90ed-4249-bab5-d896f2a38453",
+      "price": 10000,
+      "seatSection": "A",
+      "seatNumber": 15
+    },
+    {
+      "performanceId": "867f1d54-90ed-4249-bab5-d896f2a38453",
+      "price": 10000,
+      "seatSection": "A",
+      "seatNumber": 15
+    }
+  ]
 }
 
 ### Order Details - Send Get request with json body
