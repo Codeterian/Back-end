@@ -18,6 +18,7 @@ public class Passport {
     private String userName;
 
     private Date expirationTime;
+
     private UserRole userRole;
 
     public Passport(Integer userId, String userName, String email, Date expirationTime,
