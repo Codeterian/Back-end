@@ -5,6 +5,7 @@ import com.codeterian.common.infrastructure.util.Passport;
 import com.codeterian.user.domain.model.User;
 import com.codeterian.user.domain.repository.UserRepository;
 import com.codeterian.common.infrastructure.dto.UserAddRequestDto;
+import com.codeterian.user.presentation.dto.UserLoginRequestDto;
 import com.codeterian.user.presentation.dto.request.UserModifyRequestDto;
 import com.codeterian.user.presentation.dto.response.UserFindAllInfoResponseDto;
 import com.codeterian.user.presentation.dto.response.UserFindResponseDto;
@@ -102,6 +103,14 @@ public class UserService {
                 //Global Exception Handler
         );
         user.delete(user.getId());
+    }
+
+    public void loginUser(UserLoginRequestDto requestDto) {
+
+    }
+
+    public void logoutUser(String token) {
+
     }
 
 }
