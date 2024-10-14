@@ -27,8 +27,9 @@ public class SecurityConfig {
                 .cors(ServerHttpSecurity.CorsSpec::disable)
                 .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
                 .authorizeExchange(exchange -> exchange
+                        .pathMatchers("/login", "/sign-up", "/logout").permitAll()  // 로그인 경로는 허용
                         .pathMatchers(HttpMethod.GET, "/webjars/**").permitAll()
-                        .pathMatchers("/login", "/sign-up", "/swagger-ui.html").permitAll()
+                        .pathMatchers("/swagger-ui.html").permitAll()
                         .anyExchange().permitAll()
                 )
                 .addFilterAt(jwtAuthenticationFilter, SecurityWebFiltersOrder.AUTHENTICATION);
