@@ -1,8 +1,14 @@
 package com.codeterian.performance.application;
 
-import java.util.Objects;
+import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.elasticsearch.client.elc.NativeQuery;
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.stereotype.Service;
 
 import com.codeterian.common.infrastructure.dto.performance.PerformanceDecreaseStockRequestDto;
