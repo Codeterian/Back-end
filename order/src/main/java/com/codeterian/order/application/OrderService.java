@@ -10,6 +10,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.codeterian.common.exception.CommonErrorCode;
+import com.codeterian.common.exception.RestApiException;
 import com.codeterian.order.domain.entity.order.Orders;
 import com.codeterian.order.domain.repository.OrderRepository;
 import com.codeterian.order.infrastructure.kafka.OrderKafkaProducer;
@@ -90,8 +92,10 @@ public class OrderService {
 		orders.delete(orders.getUserId());
 	}
 
+	// RestControllerAdvice 사용법
 	public Orders findById(UUID orderId) {
-		return orderRepository.findById(orderId).orElseThrow(NoSuchElementException::new);
+		return orderRepository.findById(orderId).orElseThrow(
+			() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
 	}
 
 }
