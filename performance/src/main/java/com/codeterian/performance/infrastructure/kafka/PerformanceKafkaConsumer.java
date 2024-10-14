@@ -32,6 +32,7 @@ public class PerformanceKafkaConsumer {
 	public void decreaseStock(final String decreaseStockMessage) throws JsonProcessingException {
 		final PerformanceDecreaseStockRequestDto message = objectMapper.readValue(decreaseStockMessage,
 			PerformanceDecreaseStockRequestDto.class);
+		log.info("Received Decrease Stock Message : {} ", message);
 		performanceService.modifyStock(message);
 	}
 
