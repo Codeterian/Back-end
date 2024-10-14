@@ -13,7 +13,4 @@ public interface CategoryRepositoryImpl extends JpaRepository<Category, UUID> {
 
     Boolean existsByNameAndIsDeletedFalse(String name);
 
-    Optional<Category> findByNameAndIsDeletedFalse(String name);
-
-    Boolean existsByIdAndIsDeletedFalse(UUID id);
 }

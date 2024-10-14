@@ -13,7 +13,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class PerformanceKafkaProducer {
@@ -26,6 +28,11 @@ public class PerformanceKafkaProducer {
 		TicketAddFromPerformanceRequestDto ticketAddFromPerformanceRequestDto = new TicketAddFromPerformanceRequestDto(
 			orderId, userId, ticketAddRequestDtoList);
 		kafkaTemplate.send(DECREASE_STOCK_TOPIC, objectMapper.writeValueAsString(ticketAddFromPerformanceRequestDto));
+	}
+
+	public void sendPerformanceToKafka(UUID performanceId) {
+		log.info("Sending performance to Kafka topic {}", performanceId);
+		kafkaTemplate.send("performance_topic",performanceId.toString());
 	}
 
 }

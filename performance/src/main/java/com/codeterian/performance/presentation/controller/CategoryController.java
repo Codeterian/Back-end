@@ -3,6 +3,7 @@ package com.codeterian.performance.presentation.controller;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +17,9 @@ import com.codeterian.performance.presentation.dto.request.CategoryModifyRequest
 import com.codeterian.performance.presentation.dto.request.ChildCategoryAddRequestDto;
 import com.codeterian.performance.presentation.dto.request.ParentCategoryAddRequestDto;
 import com.codeterian.performance.presentation.dto.response.CategoryDetailsResponseDto;
+import com.codeterian.performance.presentation.dto.response.CategoryModifyResponseDto;
+import com.codeterian.performance.presentation.dto.response.ChildCategoryAddResponseDto;
+import com.codeterian.performance.presentation.dto.response.ParentCategoryAddResponseDto;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,31 +33,28 @@ public class CategoryController {
 
 	// 부모 카테고리 등록
 	@PostMapping("/parent")
-	public ResponseEntity<?> parentCategoryAdd(@Valid @RequestBody ParentCategoryAddRequestDto dto){
-		categoryService.addParentCategory(dto);
-		return ResponseEntity.ok().body("카테고리 등록에 성공했습니다.");
+	public ResponseEntity<ParentCategoryAddResponseDto> parentCategoryAdd(@Valid @RequestBody ParentCategoryAddRequestDto dto){
+		return ResponseEntity.ok().body(categoryService.addParentCategory(dto));
 	}
 
 	// 자식 카테고리 등록
 	@PostMapping("/child")
-	public ResponseEntity<?> childCategoryAdd(@Valid @RequestBody ChildCategoryAddRequestDto dto){
-		categoryService.addChildCategory(dto);
-		return ResponseEntity.ok().body("카테고리 등록에 성공했습니다.");
+	public ResponseEntity<ChildCategoryAddResponseDto> childCategoryAdd(@Valid @RequestBody ChildCategoryAddRequestDto dto){
+		return ResponseEntity.ok().body(categoryService.addChildCategory(dto));
 	}
 
 	// 카테고리 수정
 	@PutMapping("/{categoryId}")
-	public ResponseEntity<?> categoryModify(@PathVariable UUID categoryId, @Valid @RequestBody CategoryModifyRequestDto dto){
-		categoryService.modifyCategory(categoryId,dto);
-		return ResponseEntity.ok().body("카테고리 수정에 성공했습니다.");
+	public ResponseEntity<CategoryModifyResponseDto> categoryModify(@PathVariable UUID categoryId, @Valid @RequestBody CategoryModifyRequestDto dto){
+		return ResponseEntity.ok().body(categoryService.modifyCategory(categoryId,dto));
 	}
 
-	// // 카테고리 삭제
-	// @DeleteMapping("/{categoryId}")
-	// public ResponseEntity<?> CategoryRemove(@PathVariable UUID categoryId){
-	// 	categoryService.removeCategory(categoryId);
-	// 	return ResponseEntity.ok().body("카테고리 삭제에 성공했습니다.");
-	// }
+	// 카테고리 삭제
+	@DeleteMapping("/{categoryId}")
+	public ResponseEntity<?> CategoryRemove(@PathVariable UUID categoryId){
+		categoryService.removeCategory(categoryId);
+		return ResponseEntity.ok().body("카테고리 삭제에 성공했습니다.");
+	}
 
 	// 카테고리 단건 조회
 	@GetMapping("/{categoryId}")

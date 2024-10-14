@@ -1,39 +1,25 @@
-package com.codeterian.performance.infrastructure.kafka;
+package com.codeterian.performance.application;
 
 import java.util.UUID;
 
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import com.codeterian.common.infrastructure.dto.performance.PerformanceDecreaseStockRequestDto;
-import com.codeterian.performance.application.PerformanceService;
 import com.codeterian.performance.domain.performance.Performance;
 import com.codeterian.performance.domain.performance.PerformanceDocument;
 import com.codeterian.performance.domain.repository.PerformanceDocumentRepository;
 import com.codeterian.performance.domain.repository.PerformanceRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Component
+@Service
 @RequiredArgsConstructor
-public class PerformanceKafkaConsumer {
+public class KafkaConsumerService {
 
-	private final PerformanceService performanceService;
-	private final PerformanceRepository performanceRepository;
 	private final PerformanceDocumentRepository performanceDocumentRepository;
-	private final ObjectMapper objectMapper;
-
-	@KafkaListener(topics = "decrease-stock")
-	public void decreaseStock(final String decreaseStockMessage) throws JsonProcessingException {
-		final PerformanceDecreaseStockRequestDto message = objectMapper.readValue(decreaseStockMessage,
-			PerformanceDecreaseStockRequestDto.class);
-		performanceService.modifyStock(message);
-	}
+	private final PerformanceRepository performanceRepository;
 
 	@KafkaListener(topics = "performance_topic", groupId = "performance_group")
 	public void listen(String performanceId) {
@@ -49,4 +35,5 @@ public class PerformanceKafkaConsumer {
 		// Elasticsearch에 저장
 		performanceDocumentRepository.save(PerformanceDocument.from(performance));
 	}
+
 }
