@@ -28,7 +28,7 @@ public class SecurityConfig {
                 .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
                 .authorizeExchange(exchange -> exchange
                         .pathMatchers(HttpMethod.GET, "/webjars/**").permitAll()
-                        .pathMatchers("/auth/login", "/auth/sign-up", "/swagger-ui.html").permitAll()
+                        .pathMatchers("/login", "/sign-up", "/swagger-ui.html").permitAll()
                         .anyExchange().permitAll()
                 )
                 .addFilterAt(jwtAuthenticationFilter, SecurityWebFiltersOrder.AUTHENTICATION);
