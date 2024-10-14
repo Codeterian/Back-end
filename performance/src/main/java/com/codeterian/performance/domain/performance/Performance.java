@@ -1,6 +1,7 @@
 package com.codeterian.performance.domain.performance;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import com.codeterian.common.infrastructure.entity.BaseEntity;
@@ -8,6 +9,7 @@ import com.codeterian.performance.domain.category.Category;
 import com.codeterian.performance.presentation.dto.request.PerformanceAddRequestDto;
 import com.codeterian.performance.presentation.dto.request.PerformanceModifyRequestDto;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -16,6 +18,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -52,8 +56,14 @@ public class Performance extends BaseEntity {
     @JoinColumn(name = "category_id")
     private Category category;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    private PerformanceImage titleImage;
 
-    public static Performance addPerformance(PerformanceAddRequestDto dto,Category category) {
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<PerformanceImage> images;
+
+    public static Performance addPerformance(PerformanceAddRequestDto dto,Category category,
+        PerformanceImage titleImageEntity, List<PerformanceImage> imageEntities) {
 
         if (dto.startDate().isAfter(dto.endDate())) {
             throw new IllegalArgumentException("시작일은 종료일보다 이전이어야 합니다.");
@@ -72,6 +82,8 @@ public class Performance extends BaseEntity {
             .status(PerformanceStatus.valueOf(dto.status()))
             .ticketStock(dto.ticketStock())
             .category(category)
+            .titleImage(titleImageEntity)
+            .images(imageEntities)
             .build();
     }
 
@@ -95,7 +107,7 @@ public class Performance extends BaseEntity {
         this.category = category;
     }
 
-	public void modifyStock(Integer number) {
+    public void modifyStock(Integer number) {
         this.ticketStock -= number;
     }
 }

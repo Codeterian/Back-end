@@ -1,7 +1,9 @@
 package com.codeterian.performance.presentation.dto.response;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import com.codeterian.performance.domain.performance.Performance;
 
@@ -21,7 +23,9 @@ public record PerformanceAddResponseDto(
 	String ageRestriction,
 	String status,
 	Integer ticketStock,
-	UUID categoryId
+	UUID categoryId,
+	String titleImageUrl,
+	List<String> imagesUrl
 ) {
 
 	public static PerformanceAddResponseDto fromEntity(Performance performance) {
@@ -39,6 +43,10 @@ public record PerformanceAddResponseDto(
 			.status(performance.getStatus().name())
 			.ticketStock(performance.getTicketStock())
 			.categoryId(performance.getCategory().getId())
+			.titleImageUrl(performance.getTitleImage().getImageUrl())
+			.imagesUrl(performance.getImages().stream()
+				.map(image -> image.getImageUrl()) // 각 이미지의 URL 추출
+				.collect(Collectors.toList())) // List<String>으로 변환
 			.build();
 	}
 }

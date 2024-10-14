@@ -1,5 +1,6 @@
 package com.codeterian.performance.application;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -10,11 +11,13 @@ import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.codeterian.common.infrastructure.dto.performance.PerformanceDecreaseStockRequestDto;
 import com.codeterian.performance.domain.category.Category;
 import com.codeterian.performance.domain.performance.Performance;
 import com.codeterian.performance.domain.performance.PerformanceDocument;
+import com.codeterian.performance.domain.performance.PerformanceImage;
 import com.codeterian.performance.domain.repository.PerformanceRepository;
 import com.codeterian.performance.infrastructure.kafka.PerformanceKafkaProducer;
 import com.codeterian.performance.infrastructure.persistence.CategoryRepositoryImpl;
@@ -39,11 +42,13 @@ public class PerformanceService {
     private final CategoryRepositoryImpl categoryRepository;
 	private final PerformanceKafkaProducer performanceKafkaProducer;
     private final ElasticsearchOperations elasticsearchOperations;
+    private final S3Service s3Service;
 
-    public PerformanceAddResponseDto addPerformance(PerformanceAddRequestDto dto) {
+    public PerformanceAddResponseDto addPerformance(PerformanceAddRequestDto dto, MultipartFile titleImage,
+        List<MultipartFile> images) throws IOException {
         // 카테고리 존재 여부 확인
         Category category = categoryRepository.findByIdAndIsDeletedFalse(dto.categoryId()).orElseThrow(
-                () -> new IllegalArgumentException("존재하지 않는 카테고리 입니다.")
+            () -> new IllegalArgumentException("존재하지 않는 카테고리 입니다.")
         );
 
         // 공연 title 중복 확인
@@ -51,7 +56,24 @@ public class PerformanceService {
             throw new IllegalArgumentException("중복되는 공연 입니다.");
         }
 
-        Performance newPerformance = Performance.addPerformance(dto, category);
+        // S3에 타이틀 이미지 업로드
+        String titleImageUrl = s3Service.uploadFile(titleImage);
+
+        PerformanceImage titleImageEntity = new PerformanceImage(titleImageUrl);
+
+        // S3에 설명 이미지들 업로드
+        List<PerformanceImage> imageEntities = images.stream()
+            .map(file -> {
+                try {
+                    String url = s3Service.uploadFile(file);
+                    return new PerformanceImage(url);
+                } catch (IOException e) {
+                    throw new RuntimeException("Failed to upload image", e);
+                }
+            })
+            .toList();
+
+        Performance newPerformance = Performance.addPerformance(dto, category,titleImageEntity,imageEntities);
 
         Performance savedperformance = performanceRepository.save(newPerformance);
 
