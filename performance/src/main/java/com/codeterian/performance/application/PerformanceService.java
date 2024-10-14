@@ -146,14 +146,15 @@ public class PerformanceService {
 				performanceDecreaseStockRequestDto.performanceId())
 			.orElseThrow(NoSuchElementException::new);
 
-		//rollback logic
+		// 재고가 없을 시에 -> roll back
 		if(performance.getTicketStock() < performanceDecreaseStockRequestDto.ticketAddRequestDtoList().size()){
-
+            performanceKafkaProducer.stockIsEmpty(performanceDecreaseStockRequestDto.orderId());
 		}
-		performance.modifyStock(performanceDecreaseStockRequestDto.ticketAddRequestDtoList().size());
-
-		performanceKafkaProducer.makeTicket(performanceDecreaseStockRequestDto.orderId(),
-			performanceDecreaseStockRequestDto.userId(),
-			performanceDecreaseStockRequestDto.ticketAddRequestDtoList());
+        else{
+            performance.modifyStock(performanceDecreaseStockRequestDto.ticketAddRequestDtoList().size());
+            performanceKafkaProducer.makeTicket(performanceDecreaseStockRequestDto.orderId(),
+                performanceDecreaseStockRequestDto.userId(),
+                performanceDecreaseStockRequestDto.ticketAddRequestDtoList());
+        }
 	}
 }

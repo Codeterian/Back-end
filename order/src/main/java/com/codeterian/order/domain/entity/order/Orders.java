@@ -63,9 +63,10 @@ public class Orders extends BaseEntity implements Serializable {
 
 	public void update(OrderModifyRequestDto requestDto) {
 		this.totalPrice = Money.create(requestDto.price());
+		this.userId = requestDto.userId();
 	}
 
-	public void updatePrice(Integer totalPrice) {
-		this.totalPrice = Money.create(totalPrice);
+	public void updateStatus(OrderStatus orderStatus) {
+		this.orderStatus = orderStatus;
 	}
 }

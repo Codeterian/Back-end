@@ -8,6 +8,7 @@ import com.codeterian.common.infrastructure.dto.ticket.TicketAddRequestDto;
 import com.codeterian.ticket.domain.model.Ticket;
 import com.codeterian.ticket.domain.model.TicketStatus;
 import com.codeterian.ticket.domain.repository.TicketRepository;
+import com.codeterian.ticket.infrastructure.kafka.TicketKafkaProducer;
 
 import lombok.RequiredArgsConstructor;
 
@@ -16,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 public class TicketPerformanceService {
 
 	private final TicketRepository ticketRepository;
+	private final TicketKafkaProducer ticketKafkaProducer;
 
 	@Transactional
 	public void addTicketFromPerformance(TicketAddFromPerformanceRequestDto requestDto){
@@ -23,5 +25,6 @@ public class TicketPerformanceService {
 			ticketRepository.save(Ticket.create(dto.performanceId(), TicketStatus.BOOKING, dto.price(),
 				dto.seatSection(), dto.seatNumber(), requestDto.userId(), requestDto.orderId()));
 		}
+		ticketKafkaProducer.handleOrderApproved(requestDto.orderId());
 	}
 }

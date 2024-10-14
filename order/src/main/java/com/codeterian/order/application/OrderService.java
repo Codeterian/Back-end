@@ -1,7 +1,6 @@
 package com.codeterian.order.application;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import org.springframework.cache.annotation.CacheEvict;
@@ -13,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.codeterian.common.exception.CommonErrorCode;
 import com.codeterian.common.exception.RestApiException;
 import com.codeterian.order.domain.entity.order.Orders;
+import com.codeterian.order.domain.entity.status.OrderStatus;
 import com.codeterian.order.domain.repository.OrderRepository;
 import com.codeterian.order.infrastructure.kafka.OrderKafkaProducer;
 import com.codeterian.order.infrastructure.redisson.aspect.DistributedLock;
@@ -38,6 +38,7 @@ public class OrderService {
 	//Write - Through 전략
 	@DistributedLock(key = "#lockName")
 	public OrderAddResponseDto addOrder(String lockName, OrderAddRequestDto requestDto) throws JsonProcessingException {
+
 		// 1. 주문 생성
 		Orders orders = orderRepository.save(Orders.add(requestDto.totalPrice(), requestDto.userId()));
 
@@ -90,6 +91,17 @@ public class OrderService {
 	public void removeOrder(UUID orderId) {
 		Orders orders = findById(orderId);
 		orders.delete(orders.getUserId());
+	}
+
+	@Transactional
+	public void deleteOrder(UUID orderId) {
+		orderRepository.deleteById(orderId);
+	}
+
+	@Transactional
+	public void modifyOrderStatus(UUID orderId, OrderStatus orderStatus){
+		Orders order = findById(orderId);
+		order.updateStatus(orderStatus);
 	}
 
 	// RestControllerAdvice 사용법

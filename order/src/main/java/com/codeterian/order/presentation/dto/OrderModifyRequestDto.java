@@ -5,9 +5,7 @@ import java.util.UUID;
 public record OrderModifyRequestDto(
 
 	Long userId,
-	UUID ticketId,
-	Integer price,
-	Integer quantity
+	Integer price
 
 ) {
 }
