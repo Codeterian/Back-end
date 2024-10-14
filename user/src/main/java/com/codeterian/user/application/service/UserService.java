@@ -24,6 +24,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder; // PasswordEncoder 주입
+    private final JwtTokenGenerator jwtTokenGenerator;
 
 
 
@@ -105,8 +106,13 @@ public class UserService {
         user.delete(user.getId());
     }
 
-    public void loginUser(UserLoginRequestDto requestDto) {
+    public String loginUser(UserLoginRequestDto requestDto) {
+        User user = userRepository.findByNameAndDeletedAtIsNull(requestDto.name()).orElseThrow(
+                //Global Exception Handler
+        );
 
+        return jwtTokenGenerator.createJwtToken(user.getId(), user.getEmail(),
+                user.getName(), user.getRole());
     }
 
     public void logoutUser(String token) {

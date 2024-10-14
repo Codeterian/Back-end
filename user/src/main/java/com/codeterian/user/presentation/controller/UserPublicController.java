@@ -19,8 +19,7 @@ public class UserPublicController {
 
     @PostMapping("/login")
     public String userLogin(@RequestBody UserLoginRequestDto requestDto) {
-        userService.loginUser(requestDto);
-        return "token";
+        return "Bearer "+userService.loginUser(requestDto);
     }
 
 

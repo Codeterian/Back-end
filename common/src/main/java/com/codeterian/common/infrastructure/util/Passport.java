@@ -6,12 +6,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.UUID;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Passport {
 
-    private Integer userId;
+    private UUID id;
+
+    private Long userId;
 
     private String email;
 
@@ -21,8 +24,9 @@ public class Passport {
 
     private UserRole userRole;
 
-    public Passport(Integer userId, String userName, String email, Date expirationTime,
+    public Passport(Long userId, String userName, String email, Date expirationTime,
                     UserRole userRole) {
+        this.id = UUID.randomUUID();
         this.userId = userId;
         this.userName = userName;
         this.email = email;

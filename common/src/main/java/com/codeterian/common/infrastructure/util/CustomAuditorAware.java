@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @Component
 @Slf4j
-public class CustomAuditorAware implements AuditorAware<Integer> {
+public class CustomAuditorAware implements AuditorAware<Long> {
 
 
     private final TokenUtils tokenUtils;
@@ -26,7 +26,7 @@ public class CustomAuditorAware implements AuditorAware<Integer> {
 
 
     @Override
-    public Optional<Integer> getCurrentAuditor() {
+    public Optional<Long> getCurrentAuditor() {
 
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
 
