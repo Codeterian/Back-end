@@ -2,12 +2,15 @@ package com.codeterian.user.presentation.controller;
 
 import com.codeterian.common.infrastructure.dto.ResponseDto;
 import com.codeterian.common.infrastructure.dto.UserAddRequestDto;
+import com.codeterian.user.application.service.JwtTokenGenerator;
 import com.codeterian.user.application.service.UserService;
 import com.codeterian.user.presentation.dto.UserLoginRequestDto;
+import com.codeterian.user.presentation.dto.response.UserFindWithoutPasswordResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -28,12 +31,22 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserPublicController {
 
     private final UserService userService;
+    private final JwtTokenGenerator jwtTokenGenerator;
 
     @PostMapping("/login")
     @Operation(summary = "로그인",
             description = "로그인 API 입니다. 다른 기능 사용 시 로그인 요청 시 반환되는 값을 그대로 복사하여 헤더에 Authorization을 key로 등록하면 됩니다.")
-    public String userLogin(@RequestBody UserLoginRequestDto requestDto) {
-        return "Bearer "+userService.loginUser(requestDto);
+    public ResponseEntity<ResponseDto<UserFindWithoutPasswordResponseDto>> userLogin(@RequestBody UserLoginRequestDto requestDto,
+                                                                                     HttpServletResponse response) {
+
+        UserFindWithoutPasswordResponseDto responseDto = userService.loginUser(requestDto);
+
+        String token = jwtTokenGenerator.createJwtToken(responseDto.id(), responseDto.email(),
+                responseDto.name(), responseDto.userRole());
+
+        response.setHeader("Authorization", "Bearer " + token);
+
+        return ResponseEntity.ok(ResponseDto.okWithData(responseDto));
     }
 
 
