@@ -1,20 +1,22 @@
 package com.codeterian.performance.application;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
-import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.stereotype.Service;
 
+import com.codeterian.common.infrastructure.dto.performance.PerformanceDecreaseStockRequestDto;
 import com.codeterian.performance.domain.category.Category;
 import com.codeterian.performance.domain.performance.Performance;
 import com.codeterian.performance.domain.performance.PerformanceDocument;
 import com.codeterian.performance.domain.repository.PerformanceRepository;
+import com.codeterian.performance.infrastructure.kafka.PerformanceKafkaProducer;
 import com.codeterian.performance.infrastructure.persistence.CategoryRepositoryImpl;
 import com.codeterian.performance.presentation.dto.request.PerformanceAddRequestDto;
 import com.codeterian.performance.presentation.dto.request.PerformanceModifyRequestDto;
@@ -22,6 +24,7 @@ import com.codeterian.performance.presentation.dto.response.PerformanceAddRespon
 import com.codeterian.performance.presentation.dto.response.PerformanceDetailsResponseDto;
 import com.codeterian.performance.presentation.dto.response.PerformanceModifyResponseDto;
 import com.codeterian.performance.presentation.dto.response.PerformanceSearchResponseDto;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +37,6 @@ public class PerformanceService {
 
     private final PerformanceRepository performanceRepository;
     private final CategoryRepositoryImpl categoryRepository;
-    private final KafkaProducerService kafkaProducerService;
 	private final PerformanceKafkaProducer performanceKafkaProducer;
     private final ElasticsearchOperations elasticsearchOperations;
 
@@ -56,7 +58,7 @@ public class PerformanceService {
         log.info("Performance DB 저장 성공");
 
         // Kafka를 통해 Elasticsearch에 저장하도록 메시지 발행
-        kafkaProducerService.sendPerformanceToKafka(savedperformance.getId());
+        performanceKafkaProducer.sendPerformanceToKafka(savedperformance.getId());
 
         return PerformanceAddResponseDto.fromEntity(savedperformance);
     }
@@ -77,7 +79,7 @@ public class PerformanceService {
         Performance savedPerformance = performanceRepository.save(existedPerformance);
 
         // Kafka를 통해 Elasticsearch에 저장하도록 메시지 발행
-        kafkaProducerService.sendPerformanceToKafka(existedPerformance.getId());
+        performanceKafkaProducer.sendPerformanceToKafka(existedPerformance.getId());
 
         return PerformanceModifyResponseDto.fromEntity(savedPerformance);
     }
@@ -134,12 +136,12 @@ public class PerformanceService {
         performance.delete(1L);
         performanceRepository.save(performance);
 
-        kafkaProducerService.sendPerformanceToKafka(performanceId);
+        performanceKafkaProducer.sendPerformanceToKafka(performanceId);
     }
 
 	@Transactional
 	public void modifyStock(PerformanceDecreaseStockRequestDto performanceDecreaseStockRequestDto) throws
-		JsonProcessingException {
+        JsonProcessingException {
 		Performance performance = performanceRepository.findByIdAndIsDeletedFalse(
 				performanceDecreaseStockRequestDto.performanceId())
 			.orElseThrow(NoSuchElementException::new);
