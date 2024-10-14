@@ -3,7 +3,7 @@ spring:
     name: performance
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/performance
+    url: jdbc:postgresql://localhost:5432/order
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
