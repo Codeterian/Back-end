@@ -12,14 +12,12 @@ public class GatewayConfig {
     @Bean
     public RouteLocator gatewayRoute(RouteLocatorBuilder builder) {
         return builder.routes()
-
             .route("performance", r-> r.path("/api/v1/performances/**").uri("lb://performance"))
             .route("performance-swagger", r -> r.path("/swagger/performances/v3/api-docs/**")
                 .and()
                 .method(HttpMethod.GET)
                 .filters(f -> f.rewritePath("/swagger/performances/(?<segment>.*)", "/${segment}"))
                 .uri("lb://performance"))
-
             .route("ticket", r -> r.path("/api/v1/tickets/**").uri("lb://ticket"))
             .route("ticket-swagger", r -> r.path("/swagger/tickets/v3/api-docs/**")
                 .and()

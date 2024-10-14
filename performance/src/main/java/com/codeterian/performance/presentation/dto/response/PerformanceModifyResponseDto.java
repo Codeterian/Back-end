@@ -8,7 +8,7 @@ import com.codeterian.performance.domain.performance.Performance;
 import lombok.Builder;
 
 @Builder
-public record PerformanceDetailsResponseDto(
+public record PerformanceModifyResponseDto(
 	UUID id,
 	String title,
 	String description,
@@ -22,10 +22,10 @@ public record PerformanceDetailsResponseDto(
 	String status,
 	Integer ticketStock,
 	UUID categoryId
-){
+) {
 
-	public static PerformanceDetailsResponseDto fromEntity(Performance performance) {
-		return PerformanceDetailsResponseDto.builder()
+	public static PerformanceModifyResponseDto fromEntity(Performance performance) {
+		return PerformanceModifyResponseDto.builder()
 			.id(performance.getId())
 			.title(performance.getTitle())
 			.description(performance.getDescription())

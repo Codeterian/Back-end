@@ -1,22 +1,33 @@
 package com.codeterian.performance.domain.category;
 
-import jakarta.persistence.*;
-import lombok.*;
-
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import com.codeterian.common.infrastructure.entity.BaseEntity;
 import com.codeterian.performance.domain.performance.Performance;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Category{
+public class Category extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
@@ -28,8 +39,6 @@ public class Category{
 	@ManyToOne
 	@JoinColumn(name = "parent_id")
 	private Category parent;
-
-	private boolean isDeleted = false;
 
 	@OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<Category> children = new HashSet<>();
@@ -45,8 +54,8 @@ public class Category{
 		this.parent = Category.builder().id(parentId).build();
 	}
 
-	// public void softDelete(Integer handlerId) {
-	// 	delete(handlerId);
-	// }
+	public void deleteCategory(Long handlerId) {
+		delete(handlerId);
+	}
 
 }

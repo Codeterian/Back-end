@@ -9,6 +9,7 @@ import com.codeterian.user.presentation.dto.UserLoginRequestDto;
 import com.codeterian.user.presentation.dto.request.UserModifyRequestDto;
 import com.codeterian.user.presentation.dto.response.UserFindAllInfoResponseDto;
 import com.codeterian.user.presentation.dto.response.UserFindResponseDto;
+import com.codeterian.user.presentation.dto.response.UserFindWithoutPasswordResponseDto;
 import com.codeterian.user.presentation.dto.response.UserModifyResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,7 +25,6 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder; // PasswordEncoder 주입
-    private final JwtTokenGenerator jwtTokenGenerator;
 
 
 
@@ -106,13 +106,12 @@ public class UserService {
         user.delete(user.getId());
     }
 
-    public String loginUser(UserLoginRequestDto requestDto) {
+    public UserFindWithoutPasswordResponseDto loginUser(UserLoginRequestDto requestDto) {
         User user = userRepository.findByNameAndDeletedAtIsNull(requestDto.name()).orElseThrow(
                 //Global Exception Handler
         );
 
-        return jwtTokenGenerator.createJwtToken(user.getId(), user.getEmail(),
-                user.getName(), user.getRole());
+        return UserFindWithoutPasswordResponseDto.fromEntity(user);
     }
 
     public void logoutUser(String token) {

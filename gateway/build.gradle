@@ -29,14 +29,12 @@ ext {
 
 dependencies {
 
-	// common module
-	implementation project(':common')
-
 	//security and jwt
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
-	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+
 	// jwt
 	implementation 'io.jsonwebtoken:jjwt:0.12.6'
 
@@ -54,6 +52,7 @@ dependencies {
 
 	// Spring Docs
 	implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webflux-ui', version: '2.5.0'
+	implementation 'org.projectlombok:lombok:1.18.28'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'io.projectreactor:reactor-test'
