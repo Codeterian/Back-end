@@ -1,4 +1,12 @@
 services:
+
+  server:
+    build:
+      dockerfile: Dockerfile
+      args:
+        - FILE_DIRECTORY=./server
+    image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/server
+
   postgresql:
     container_name: postgresql
     image: postgres:latest
