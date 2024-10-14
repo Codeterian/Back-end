@@ -26,7 +26,7 @@ public class SecurityConfig {
                 .cors(ServerHttpSecurity.CorsSpec::disable)
                 .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
                 .authorizeExchange(exchange -> exchange
-                        .pathMatchers("/auth/login", "/auth/sign-up").permitAll()  // 로그인 경로는 허용
+                        .pathMatchers("/login", "/sign-up", "/logout").permitAll()  // 로그인 경로는 허용
                         .anyExchange().permitAll()
                 )
                 .addFilterAt(jwtAuthenticationFilter, SecurityWebFiltersOrder.AUTHENTICATION);
