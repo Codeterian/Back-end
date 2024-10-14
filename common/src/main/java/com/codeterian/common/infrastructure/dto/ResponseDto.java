@@ -1,6 +1,6 @@
 package com.codeterian.common.infrastructure.dto;
 
-import com.codeterian.common.infrastructure.exception.ErrorCode;
+import com.codeterian.common.exception.ErrorCode;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Getter;
@@ -45,32 +45,4 @@ public class ResponseDto<T> {
                 .responseAt(LocalDateTime.now())
                 .build();
     }
-
-    public static <T> ResponseDto<T> okWithDataAndMessage(String message, T data) {
-        return ResponseDto.<T>builder()
-                .code(HttpStatus.OK.value())
-                .message(message)
-                .data(data)
-                .responseAt(LocalDateTime.now())
-                .build();
-    }
-
-    public static ResponseDto<Void> error(ErrorCode errorCode) {
-        return ResponseDto.<Void>builder()
-                .code(errorCode.getHttpStatus().value())
-                .message(errorCode.getMessage())
-                .data(null)
-                .responseAt(LocalDateTime.now())
-                .build();
-    }
-
-    public static <T> ResponseDto<T> errorWithMessage(HttpStatus httpStatus, String errorMessage) {
-        return ResponseDto.<T>builder()
-                .code(httpStatus.value())
-                .message(errorMessage)
-                .data(null)
-                .responseAt(LocalDateTime.now())
-                .build();
-    }
-
 }
