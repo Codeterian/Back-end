@@ -30,13 +30,31 @@ public class TokenUtils {
         }
     }
 
+    public String passportToToken(Passport passport, String internalSecretKey) {
+
+        SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64URL.decode(internalSecretKey));
+
+        return Jwts.builder()
+                .claim("userId", passport.getUserId())
+                .claim("email", passport.getEmail())
+                .claim("username", passport.getUserName())
+                .claim("role", passport.getUserRole())
+                .setExpiration(passport.getExpirationTime())
+                .signWith(key)
+                .compact();
+
+    }
+
     //security filter를 사용하지 않는 경우 - 바로 Passport 객체로 변환
     public Passport toPassport(String internalToken, String internalSecretKey) {
         Claims claims = getClaimsByInternalToken(internalToken, internalSecretKey);
         validateClaims(claims);
 
-        return new Passport(claims.get("userId", Integer.class), claims.get("email", String.class),
+        Passport passport = new Passport(claims.get("userId", Long.class), claims.get("email", String.class),
                 claims.get("username", String.class), claims.getExpiration(), UserRole.valueOf(claims.get("role", String.class)));
+
+        PassportContextHolder.setPassport(passport);
+        return passport;
     }
 
     private void validateClaims(Claims claims) {

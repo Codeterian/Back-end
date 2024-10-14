@@ -5,6 +5,7 @@ import com.codeterian.common.infrastructure.util.Passport;
 import com.codeterian.user.domain.model.User;
 import com.codeterian.user.domain.repository.UserRepository;
 import com.codeterian.common.infrastructure.dto.UserAddRequestDto;
+import com.codeterian.user.presentation.dto.UserLoginRequestDto;
 import com.codeterian.user.presentation.dto.request.UserModifyRequestDto;
 import com.codeterian.user.presentation.dto.response.UserFindAllInfoResponseDto;
 import com.codeterian.user.presentation.dto.response.UserFindResponseDto;
@@ -23,6 +24,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder; // PasswordEncoder 주입
+    private final JwtTokenGenerator jwtTokenGenerator;
 
 
 
@@ -102,6 +104,19 @@ public class UserService {
                 //Global Exception Handler
         );
         user.delete(user.getId());
+    }
+
+    public String loginUser(UserLoginRequestDto requestDto) {
+        User user = userRepository.findByNameAndDeletedAtIsNull(requestDto.name()).orElseThrow(
+                //Global Exception Handler
+        );
+
+        return jwtTokenGenerator.createJwtToken(user.getId(), user.getEmail(),
+                user.getName(), user.getRole());
+    }
+
+    public void logoutUser(String token) {
+
     }
 
 }

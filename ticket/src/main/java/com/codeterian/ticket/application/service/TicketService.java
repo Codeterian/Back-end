@@ -5,6 +5,8 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.codeterian.common.infrastructure.util.Passport;
+import com.codeterian.ticket.application.feign.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,11 +25,15 @@ import lombok.RequiredArgsConstructor;
 public class TicketService {
 
     private final TicketRepository ticketRepository;
+    private final UserService userService;
 
     @Transactional
-    public void addTicket(TicketAddRequestDto requestDto) {
+    public void addTicket(TicketAddRequestDto requestDto, Long userId, Passport passport) {
+
+        userService.findById(userId);
+
         Ticket ticket = Ticket.create(requestDto.performanceId(), TicketStatus.BOOKING, requestDto.price(),
-            requestDto.seatSection(), requestDto.seatNumber(), 1L, requestDto.orderId());
+            requestDto.seatSection(), requestDto.seatNumber(), userId, requestDto.orderId());
 
         Optional<Ticket> existedTicket = ticketRepository.findBySeatSectionAndSeatNumberAndDeletedAtIsNull(requestDto.seatSection(),
                 requestDto.seatNumber());

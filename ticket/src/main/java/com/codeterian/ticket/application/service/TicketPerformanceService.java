@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.codeterian.common.infrastructure.dto.ticket.TicketAddFromPerformanceRequestDto;
-import com.codeterian.common.infrastructure.dto.ticket.TicketAddFromOrdersResponseDto;
 import com.codeterian.common.infrastructure.dto.ticket.TicketAddRequestDto;
 import com.codeterian.ticket.domain.model.Ticket;
 import com.codeterian.ticket.domain.model.TicketStatus;

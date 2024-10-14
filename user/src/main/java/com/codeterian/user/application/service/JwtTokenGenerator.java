@@ -1,4 +1,4 @@
-package com.codeterian.auth.application.service;
+package com.codeterian.user.application.service;
 
 import com.codeterian.common.infrastructure.entity.UserRole;
 import io.jsonwebtoken.Jwts;

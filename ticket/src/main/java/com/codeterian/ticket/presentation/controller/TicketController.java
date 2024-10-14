@@ -3,6 +3,9 @@ package com.codeterian.ticket.presentation.controller;
 import java.util.List;
 import java.util.UUID;
 
+import com.codeterian.common.infrastructure.entity.UserRole;
+import com.codeterian.common.infrastructure.util.CurrentPassport;
+import com.codeterian.common.infrastructure.util.Passport;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,9 +36,9 @@ public class TicketController {
     private final TicketPerformanceService ticketOrdersService;
 
     @PostMapping
-    public ResponseEntity<ResponseDto<Void>> ticketAdd(@RequestBody TicketAddRequestDto requestDto) {
-
-        ticketService.addTicket(requestDto);
+    public ResponseEntity<ResponseDto<Void>> ticketAdd(@RequestBody TicketAddRequestDto requestDto,
+                                                       @CurrentPassport Passport passport) {
+        ticketService.addTicket(requestDto, passport.getUserId(), passport);
 
         return ResponseEntity.ok(ResponseDto.ok());
     }
@@ -48,7 +51,14 @@ public class TicketController {
     }
 
     @GetMapping
-    public ResponseEntity<ResponseDto<List<TicketFindResponseDto>>> ticketList() {
+    public ResponseEntity<ResponseDto<List<TicketFindResponseDto>>> ticketList(
+            @CurrentPassport Passport passport
+    ) throws IllegalAccessException {
+
+        if (passport.getUserRole()== UserRole.CUSTOMER) {
+            throw new IllegalAccessException("접근 불가");
+        }
+
         return ResponseEntity.ok(ResponseDto.okWithData(ticketService.findAllTicket()));
     }
 
