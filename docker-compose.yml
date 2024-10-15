@@ -10,6 +10,13 @@ services:
     # 010928219716.dkr.ecr.ap-northeast-2.amazonaws.com/sparta/server
     image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/server
 
+  common:
+    build:
+      dockerfile: Dockerfile
+      args:
+        - FILE_DIRECTORY=./common
+    image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/common
+
   gateway:
     build:
       dockerfile: Dockerfile
