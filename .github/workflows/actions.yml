@@ -37,37 +37,37 @@ jobs:
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
-          username: ${{ env.DOCKER_USERNAME }}
-          password: ${{ env.DOCKER_PASSWORD }}
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
             # Docker 이미지 빌드
       - name: Build Docker images
         run: |
-            docker build -t ${{ env.DOCKER_USERNAME }}/codeterian-user:latest \
+            docker build -t ${{ secrets.DOCKER_USERNAME }}/codeterian-user:latest \
               --build-arg FILE_DIRECTORY=user -f ./Dockerfile .
-            docker build -t ${{ env.DOCKER_USERNAME }}/codeterian-payment:latest \
+            docker build -t ${{ secrets.DOCKER_USERNAME }}/codeterian-payment:latest \
               --build-arg FILE_DIRECTORY=payment -f ./Dockerfile .
-            docker build -t ${{ env.DOCKER_USERNAME }}/codeterian-order:latest \
+            docker build -t ${{ secrets.DOCKER_USERNAME }}/codeterian-order:latest \
               --build-arg FILE_DIRECTORY=order -f ./Dockerfile .
-            docker build -t ${{ env.DOCKER_USERNAME }}/codeterian-ticket:latest \
+            docker build -t ${{ secrets.DOCKER_USERNAME }}/codeterian-ticket:latest \
               --build-arg FILE_DIRECTORY=ticket -f ./Dockerfile .
-            docker build -t ${{ env.DOCKER_USERNAME }}/codeterian-performance:latest \
+            docker build -t ${{ secrets.DOCKER_USERNAME }}/codeterian-performance:latest \
               --build-arg FILE_DIRECTORY=service/coupon/coupon-api -f ./Dockerfile .
-            docker build -t ${{ env.DOCKER_USERNAME }}/codeterian-eureka:latest \
+            docker build -t ${{ secrets.DOCKER_USERNAME }}/codeterian-eureka:latest \
               --build-arg FILE_DIRECTORY=eureka -f ./Dockerfile .
-            docker build -t ${{ env.DOCKER_USERNAME }}/codeterian-gateway:latest \
+            docker build -t ${{ secrets.DOCKER_USERNAME }}/codeterian-gateway:latest \
               --build-arg FILE_DIRECTORY=gateway -f ./Dockerfile .
 
       # Docker Hub에 이미지 푸시
       - name: Push Docker image to Hub
         run: |
-          docker push ${{ env.DOCKER_USERNAME }}/codeterian-user:latest
-          docker push ${{ env.DOCKER_USERNAME }}/codeterian-payment:latest
-          docker push ${{ env.DOCKER_USERNAME }}/codeterian-order:latest
-          docker push ${{ env.DOCKER_USERNAME }}/codeterian-ticket:latest
-          docker push ${{ env.DOCKER_USERNAME }}/codeterian-performance:latest
-          docker push ${{ env.DOCKER_USERNAME }}/codeterian-eureka:latest
-          docker push ${{ env.DOCKER_USERNAME }}/codeterian-gateway:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/codeterian-user:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/codeterian-payment:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/codeterian-order:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/codeterian-ticket:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/codeterian-performance:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/codeterian-eureka:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/codeterian-gateway:latest
       
   deploy:
     needs: build
@@ -81,9 +81,9 @@ jobs:
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ env.EC2_HOST }}
+          host: ${{ secrets.EC2_HOST }}
           username: ubuntu
-          key: ${{ env.EC2_KEY }}
+          key: ${{ secrets.EC2_KEY }}
           script: |
             echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
             docker compose -f ./docker-compose-deploy.yml down
@@ -94,11 +94,11 @@ jobs:
             docker rm -f codeterian-performance
             docker rm -f codeterian-eureka
             docker rm -f codeterian-gateway
-            docker pull ${{ env.DOCKER_USERNAME }}/codeterian-user:latest
-            docker pull ${{ env.DOCKER_USERNAME }}/codeterian-ticket:latest
-            docker pull ${{ env.DOCKER_USERNAME }}/codeterian-order:latest
-            docker pull ${{ env.DOCKER_USERNAME }}/codeterian-performance:latest
-            docker pull ${{ env.DOCKER_USERNAME }}/codeterian-payment:latest
-            docker pull ${{ env.DOCKER_USERNAME }}/codeterian-eureka:latest
-            docker pull ${{ env.DOCKER_USERNAME }}/codeterian-gateway:latest
+            docker pull ${{ secrets.DOCKER_USERNAME }}/codeterian-user:latest
+            docker pull ${{ secrets.DOCKER_USERNAME }}/codeterian-ticket:latest
+            docker pull ${{ secrets.DOCKER_USERNAME }}/codeterian-order:latest
+            docker pull ${{ secrets.DOCKER_USERNAME }}/codeterian-performance:latest
+            docker pull ${{ secrets.DOCKER_USERNAME }}/codeterian-payment:latest
+            docker pull ${{ secrets.DOCKER_USERNAME }}/codeterian-eureka:latest
+            docker pull ${{ secrets.DOCKER_USERNAME }}/codeterian-gateway:latest
             docker compose -f ./docker-compose-deploy.yml up -d
