@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile
       args:
         - FILE_DIRECTORY=./server
-    image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/server
+    image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/docker
 
   postgresql:
     container_name: postgresql

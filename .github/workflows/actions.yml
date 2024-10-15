@@ -16,7 +16,7 @@ jobs:
     # https://docs.github.com/ko/actions/writing-workflows/choosing-what-your-workflow-does/running-variations-of-jobs-in-a-workflow
     strategy:
       matrix:
-       service: [server]
+       service: [docker]
 #        service: [server, user, gateway]
 
     steps:
