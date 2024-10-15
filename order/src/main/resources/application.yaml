@@ -10,7 +10,7 @@ spring:
       password: systempass
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/order
+    url: jdbc:postgresql://localhost:5432/orders
     driver-class-name: org.postgresql.Driver
     username: postgres
     password: postgres
