@@ -20,7 +20,7 @@ public class TicketKafkaConsumer {
 	private final TicketPerformanceService ticketPerformanceService;
 	private final ObjectMapper objectMapper;
 
-	@KafkaListener(topics = "make-ticket")
+	@KafkaListener(topics = "make-ticket-from-order")
 	public void decreaseStock(final String makeTicketMessage) throws JsonProcessingException {
 		final TicketAddFromPerformanceRequestDto message = objectMapper.readValue(makeTicketMessage,
 			TicketAddFromPerformanceRequestDto.class);
