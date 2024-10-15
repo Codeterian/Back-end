@@ -13,6 +13,7 @@ public interface TicketRepository extends JpaRepository<Ticket, UUID> {
 
     List<Ticket> findAllByDeletedAtIsNull();
 
-    Optional<Ticket> findBySeatSectionAndSeatNumberAndDeletedAtIsNull (String seatSection, int seatNumber);
+    Optional<Ticket> findBySeatSectionAndSeatNumberAndPerformanceIdAndDeletedAtIsNull (String seatSection, int seatNumber,
+                                                                                       UUID performanceId);
 
 }

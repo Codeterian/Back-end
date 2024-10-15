@@ -7,6 +7,7 @@ import com.codeterian.common.infrastructure.entity.UserRole;
 import com.codeterian.common.infrastructure.util.CurrentPassport;
 import com.codeterian.common.infrastructure.util.Passport;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -54,7 +55,7 @@ public class TicketController {
     @PostMapping
     @Operation(summary = "티켓 추가 테스트", description = "티켓 추가 테스트 API")
     public ResponseEntity<ResponseDto<Void>> ticketAdd(@RequestBody TicketAddRequestDto requestDto,
-                                                       @CurrentPassport Passport passport) {
+                                                       @Parameter(hidden = true) @CurrentPassport Passport passport) {
         ticketService.addTicket(requestDto, passport.getUserId(), passport);
 
         return ResponseEntity.ok(ResponseDto.ok());
@@ -71,7 +72,7 @@ public class TicketController {
     @GetMapping
     @Operation(summary = "티켓 전체 조회", description = "티켓 전체 조회 API")
     public ResponseEntity<ResponseDto<List<TicketFindResponseDto>>> ticketList(
-            @CurrentPassport Passport passport
+            @Parameter(hidden = true) @CurrentPassport Passport passport
     ) throws IllegalAccessException {
 
         if (passport.getUserRole()== UserRole.CUSTOMER) {
@@ -85,16 +86,28 @@ public class TicketController {
     @Operation(summary = "티켓 수정", description = "티켓 수정 API")
     public ResponseEntity<ResponseDto<TicketModifyResponseDto>> ticketModify(
             @PathVariable("ticketId") UUID ticketId,
-            @RequestBody TicketModifyRequestDto requestDto
-    ) {
+            @RequestBody TicketModifyRequestDto requestDto,
+            @Parameter(hidden = true) @CurrentPassport Passport passport
+    ) throws IllegalAccessException {
+        if(passport.getUserRole()==UserRole.CUSTOMER) {
+            throw new IllegalAccessException();
+        }
+
         return ResponseEntity.ok(ResponseDto.okWithData(ticketService.modifyTicket(ticketId, requestDto)));
     }
 
     @DeleteMapping("/{ticketId}")
     @Operation(summary = "티켓 삭제", description = "티켓 삭제 API")
     public ResponseEntity<ResponseDto<Void>> ticketDelete(
-            @PathVariable("ticketId") UUID ticketId
-    ) {
+            @PathVariable("ticketId") UUID ticketId,
+            @Parameter(hidden = true) @CurrentPassport Passport passport
+    ) throws IllegalAccessException {
+
+        if(passport.getUserRole()==UserRole.CUSTOMER) {
+            throw new IllegalAccessException();
+        }
+
+
         ticketService.deleteTicketById(ticketId);
 
         return ResponseEntity.ok(ResponseDto.ok());
