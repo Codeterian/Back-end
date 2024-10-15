@@ -22,6 +22,7 @@ RUN gradle clean bootJar --project-dir /app/eureka  # eureka 서비스 빌드 �
 
 FROM openjdk:17-jdk-slim
 
-COPY --from=build /app/eureka/build/libs/*SNAPSHOT.jar /app.jar  # eureka 서비스의 JAR 파일 복사
+COPY --from=build /app/eureka/build/libs/*SNAPSHOT.jar /app.jar
+# eureka 서비스의 JAR 파일 복사
 
 CMD ["java", "-jar", "app.jar"]
