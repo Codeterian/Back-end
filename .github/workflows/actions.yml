@@ -15,7 +15,7 @@ jobs:
 
     strategy:
       matrix:
-       service: [server, user, gateway, performance, order, payment, ticket,common]
+       service: [eureka, user, gateway, performance, order, payment, ticket,common]
 
     steps:
       - name: Checkout
