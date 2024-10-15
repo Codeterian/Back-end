@@ -16,7 +16,7 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 @EnableKafka
 public class KafkaConsumerConfig {
 
-	private static final String KAFKA_BROKER_URL = "localhost:9092";
+	private static final String KAFKA_BROKER_URL = "13.125.41.207:9092";
 	private static final String TEMP_GROUP_ID = "group-a";
 
 

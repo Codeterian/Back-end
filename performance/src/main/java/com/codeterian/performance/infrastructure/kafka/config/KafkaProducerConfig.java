@@ -14,7 +14,7 @@ import org.springframework.kafka.core.ProducerFactory;
 @Configuration
 public class KafkaProducerConfig {
 
-	private static final String KAFKA_BROKER_URL = "localhost:9092";
+	private static final String KAFKA_BROKER_URL = "13.125.41.207:9092";
 
 	@Bean
 	public ProducerFactory<String, Object> producerFactory() {

@@ -16,7 +16,7 @@ spring:
 
   data:
     redis:
-      host: localhost
+      host: 13.125.41.207
       port: 6379
 
 server:
@@ -25,7 +25,7 @@ server:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:19090/eureka/
+      defaultZone: http://13.125.41.207:19090/eureka/
 
 logging:
   level:

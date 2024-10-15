@@ -10,7 +10,7 @@ spring:
       password: systempass
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/orders
+    url: jdbc:postgresql://13.125.41.207:5432/orders
     driver-class-name: org.postgresql.Driver
     username: postgres
     password: postgres
@@ -30,7 +30,7 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:19090/eureka/
+      defaultZone: http://13.125.41.207:19090/eureka/
 
 logging:
   level:
