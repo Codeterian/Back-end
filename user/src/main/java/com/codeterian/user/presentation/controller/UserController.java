@@ -10,6 +10,7 @@ import com.codeterian.user.presentation.dto.response.UserFindAllInfoResponseDto;
 import com.codeterian.user.presentation.dto.response.UserFindResponseDto;
 import com.codeterian.user.presentation.dto.response.UserModifyResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -47,7 +48,7 @@ public class UserController {
     @GetMapping("/{userId}")
     @Operation(summary = "유저 단건 조회 by ID", description = "유저 단건 조회 by ID API")
     public ResponseEntity<ResponseDto<UserFindResponseDto>> userDetails(@PathVariable("userId") Long userId,
-                                                                        @CurrentPassport Passport passport) throws IllegalAccessException {
+                                                                        @Parameter(hidden = true) @CurrentPassport Passport passport) throws IllegalAccessException {
         return ResponseEntity.ok(ResponseDto.okWithData(userService.findUserById(userId, passport)));
     }
 
@@ -59,7 +60,8 @@ public class UserController {
 
     @GetMapping
     @Operation(summary = "유저 전체 조회", description = "유저 전체 조회 API")
-    public ResponseEntity<ResponseDto<List<UserFindResponseDto>>> userList(@CurrentPassport Passport passport) throws IllegalAccessException {
+    public ResponseEntity<ResponseDto<List<UserFindResponseDto>>> userList(
+            @Parameter(hidden = true) @CurrentPassport Passport passport) throws IllegalAccessException {
         return ResponseEntity.ok(ResponseDto.okWithData(userService.findAllUser(passport)));
     }
 
@@ -67,14 +69,14 @@ public class UserController {
     @Operation(summary = "유저 정보 수정", description = "유저 정보 수정 API")
     public ResponseEntity<ResponseDto<UserModifyResponseDto>> userModify(@PathVariable("userId") Long userId,
                                                                          @RequestBody UserModifyRequestDto requestDto,
-                                                                         @CurrentPassport Passport passport) throws IllegalAccessException {
+                                                                         @Parameter(hidden = true) @CurrentPassport Passport passport) throws IllegalAccessException {
         return ResponseEntity.ok(ResponseDto.okWithData(userService.modifyUser(userId, requestDto, passport)));
     }
 
     @DeleteMapping("/{userId}")
     @Operation(summary = "유저 삭제", description = "유저 삭제 API")
     public ResponseEntity<ResponseDto<Void>> userDelete(@PathVariable("userId") Long userId,
-                                                        @CurrentPassport Passport passport) throws IllegalAccessException {
+                                                        @Parameter(hidden = true) @CurrentPassport Passport passport) throws IllegalAccessException {
 
         userService.deleteUser(userId, passport);
 
