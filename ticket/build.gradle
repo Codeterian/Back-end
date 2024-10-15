@@ -1,5 +1,7 @@
 dependencies {
 
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+
 	// jwt
 	implementation 'io.jsonwebtoken:jjwt:0.12.6'
 
