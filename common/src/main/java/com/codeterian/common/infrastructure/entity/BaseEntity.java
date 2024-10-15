@@ -6,8 +6,10 @@ import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
 import org.hibernate.annotations.Comment;
 //import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 //import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -48,12 +50,10 @@ public class BaseEntity {
     private LocalDateTime deletedAt;
 
 
-//    @CreatedBy
-//    @Column(updatable = false)
-//    private Long createdBy;
+   @Column(updatable = false)
+   private Long createdBy;
 
-//    @LastModifiedBy
-//    private Long updatedBy;
+   private Long updatedBy;
 
     private Long deletedBy;
 
@@ -69,6 +69,14 @@ public class BaseEntity {
         this.deletedBy = null;
         this.deletedAt = null;
         this.isDeleted = false;
+    }
+
+    public void createBy(Long handlerId) {
+        this.createdBy = handlerId;
+    }
+
+    public void updateBy(Long handlerId) {
+        this.updatedBy = handlerId;
     }
 
 }

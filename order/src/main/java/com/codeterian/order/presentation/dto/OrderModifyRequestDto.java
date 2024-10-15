@@ -2,9 +2,10 @@ package com.codeterian.order.presentation.dto;
 
 import java.util.UUID;
 
-public record OrderModifyRequestDto(
+import jakarta.validation.constraints.NotNull;
 
-	Long userId,
+public record OrderModifyRequestDto(
+	@NotNull(message = "price is not Null")
 	Integer price
 
 ) {

@@ -27,15 +27,6 @@ public class CustomAuditorAware implements AuditorAware<Long> {
 
     @Override
     public Optional<Long> getCurrentAuditor() {
-
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-
-        String passportToken = extractToken(request);
-        log.info(passportToken);
-        if (passportToken != null) {
-            Passport passPort = tokenUtils.toPassport(passportToken, internalSecretKey);
-            return Optional.of(passPort.getUserId());
-        }
         return Optional.empty();
     }
 

@@ -49,21 +49,12 @@ public class Orders extends BaseEntity implements Serializable {
 			.build();
 	}
 
-	public void success() {
-		this.orderStatus = OrderStatus.COMPLETED;
-	}
-
-	public void fail() {
-		this.orderStatus = OrderStatus.FAILED;
-	}
-
 	public void delete(Long userId) {
 		this.delete(userId);
 	}
 
-	public void update(OrderModifyRequestDto requestDto) {
-		this.totalPrice = Money.create(requestDto.price());
-		this.userId = requestDto.userId();
+	public void updateMoney(Integer money) {
+		this.totalPrice = Money.create(money);
 	}
 
 	public void updateStatus(OrderStatus orderStatus) {
