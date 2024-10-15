@@ -72,7 +72,7 @@ public class TicketController {
     @GetMapping
     @Operation(summary = "티켓 전체 조회", description = "티켓 전체 조회 API")
     public ResponseEntity<ResponseDto<List<TicketFindResponseDto>>> ticketList(
-            @CurrentPassport Passport passport
+            @Parameter(hidden = true) @CurrentPassport Passport passport
     ) throws IllegalAccessException {
 
         if (passport.getUserRole()== UserRole.CUSTOMER) {
@@ -99,8 +99,15 @@ public class TicketController {
     @DeleteMapping("/{ticketId}")
     @Operation(summary = "티켓 삭제", description = "티켓 삭제 API")
     public ResponseEntity<ResponseDto<Void>> ticketDelete(
-            @PathVariable("ticketId") UUID ticketId
-    ) {
+            @PathVariable("ticketId") UUID ticketId,
+            @Parameter(hidden = true) @CurrentPassport Passport passport
+    ) throws IllegalAccessException {
+
+        if(passport.getUserRole()==UserRole.CUSTOMER) {
+            throw new IllegalAccessException();
+        }
+
+
         ticketService.deleteTicketById(ticketId);
 
         return ResponseEntity.ok(ResponseDto.ok());

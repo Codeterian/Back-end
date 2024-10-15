@@ -2,6 +2,7 @@ package com.codeterian.user.presentation.controller;
 
 
 import com.codeterian.common.infrastructure.dto.ResponseDto;
+import com.codeterian.common.infrastructure.entity.UserRole;
 import com.codeterian.common.infrastructure.util.CurrentPassport;
 import com.codeterian.common.infrastructure.util.Passport;
 import com.codeterian.user.application.service.UserService;
@@ -62,6 +63,11 @@ public class UserController {
     @Operation(summary = "유저 전체 조회", description = "유저 전체 조회 API")
     public ResponseEntity<ResponseDto<List<UserFindResponseDto>>> userList(
             @Parameter(hidden = true) @CurrentPassport Passport passport) throws IllegalAccessException {
+
+        if(passport.getUserRole()== UserRole.CUSTOMER) {
+            throw new IllegalAccessException();
+        }
+
         return ResponseEntity.ok(ResponseDto.okWithData(userService.findAllUser(passport)));
     }
 
@@ -77,6 +83,10 @@ public class UserController {
     @Operation(summary = "유저 삭제", description = "유저 삭제 API")
     public ResponseEntity<ResponseDto<Void>> userDelete(@PathVariable("userId") Long userId,
                                                         @Parameter(hidden = true) @CurrentPassport Passport passport) throws IllegalAccessException {
+
+        if(passport.getUserRole()== UserRole.CUSTOMER) {
+            throw new IllegalAccessException();
+        }
 
         userService.deleteUser(userId, passport);
 

@@ -35,8 +35,8 @@ public class TicketService {
         Ticket ticket = Ticket.create(requestDto.performanceId(), TicketStatus.BOOKING, requestDto.price(),
             requestDto.seatSection(), requestDto.seatNumber(), userId, requestDto.orderId());
 
-        Optional<Ticket> existedTicket = ticketRepository.findBySeatSectionAndSeatNumberAndDeletedAtIsNull(requestDto.seatSection(),
-                requestDto.seatNumber());
+        Optional<Ticket> existedTicket = ticketRepository.findBySeatSectionAndSeatNumberAndPerformanceIdAndDeletedAtIsNull(requestDto.seatSection(),
+                requestDto.seatNumber(), requestDto.performanceId());
 
         if (existedTicket.isPresent()) {
             throw new IllegalStateException("예약할 수 없는 좌석입니다.");
