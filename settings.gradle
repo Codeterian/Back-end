@@ -7,6 +7,6 @@ include('user')
 include('performance')
 include('payment')
 include('order')
-include('config')
+//include('config')
 include('ticket')
 
