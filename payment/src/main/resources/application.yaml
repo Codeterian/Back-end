@@ -3,7 +3,7 @@ spring:
     name: payment
 
   datasource:
-    url: jdbc:postgresql://13.125.41.207:5432/payment
+    url: jdbc:postgresql://3.38.183.159:5432/payment
     driver-class-name: org.postgresql.Driver
     username: postgres
     password: postgres
@@ -23,7 +23,7 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: http://13.125.41.207:19090/eureka/
+      defaultZone: http://3.38.183.159:19090/eureka/
 
 springdoc:
   api-docs:

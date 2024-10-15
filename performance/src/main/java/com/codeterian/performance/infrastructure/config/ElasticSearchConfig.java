@@ -19,7 +19,7 @@ public class ElasticSearchConfig extends ElasticsearchConfiguration {
     @Override
     public ClientConfiguration clientConfiguration() {
         return ClientConfiguration.builder()
-                .connectedTo("13.125.41.207:9200")
+                .connectedTo("3.38.183.159:9200")
                 .withBasicAuth(username, password)
                 .build();
     }

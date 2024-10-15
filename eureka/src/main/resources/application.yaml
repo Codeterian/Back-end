@@ -12,9 +12,9 @@ eureka:
     register-with-eureka: false
     fetch-registry: false
     service-url:
-      defaultZone: http://13.125.41.207:19090/eureka
+      defaultZone: http://3.38.183.159:19090/eureka
   instance:
-    hostname: 13.125.41.207
+    hostname: 3.38.183.159
 
 logging:
   level:
