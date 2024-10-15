@@ -52,7 +52,7 @@ jobs:
             docker build -t ${{ secrets.DOCKER_USERNAME }}/codeterian-ticket:latest \
               --build-arg FILE_DIRECTORY=ticket -f ./Dockerfile .
             docker build -t ${{ secrets.DOCKER_USERNAME }}/codeterian-performance:latest \
-              --build-arg FILE_DIRECTORY=service/coupon/coupon-api -f ./Dockerfile .
+              --build-arg FILE_DIRECTORY=performance -f ./Dockerfile .
             docker build -t ${{ secrets.DOCKER_USERNAME }}/codeterian-eureka:latest \
               --build-arg FILE_DIRECTORY=eureka -f ./Dockerfile .
             docker build -t ${{ secrets.DOCKER_USERNAME }}/codeterian-gateway:latest \
