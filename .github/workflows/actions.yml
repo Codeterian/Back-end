@@ -12,12 +12,10 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    # 3개의 서비스를 모두 빌드할 수 있도록 변수로 지정합니다.
-    # https://docs.github.com/ko/actions/writing-workflows/choosing-what-your-workflow-does/running-variations-of-jobs-in-a-workflow
+
     strategy:
       matrix:
-       service: [docker]
-#        service: [server, user, gateway]
+       service: [server, user, gateway, performance, order, payment, ticket]
 
     steps:
       - name: Checkout
@@ -28,6 +26,10 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+        working-directory: ${{ matrix.service }}
 
       - name: Build with Gradle
         run: ./gradlew clean build
