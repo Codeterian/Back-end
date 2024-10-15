@@ -4,11 +4,11 @@ services:
     build:
       dockerfile: Dockerfile
       args:
-        - FILE_DIRECTORY=./server
+        - FILE_DIRECTORY=./eureka
     # 빌드 시에 해당 Image 이름으로 build된다.
     # pull 할 때도 이 Image 이름을 사용한다.
     # 010928219716.dkr.ecr.ap-northeast-2.amazonaws.com/sparta/server
-    image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/server
+    image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/eureka
 
   common:
     build:
