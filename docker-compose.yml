@@ -73,5 +73,113 @@ services:
     volumes:
       - elasticsearch-data:/usr/share/elasticsearch/data
 
-  eureka-sever:
+  eureka:
+    image: whdrb2643/codeterian-eureka:latest
+    container_name: codeterian-eureka
+    build:
+      dockerfile: Dockerfile
+      args:
+        - FILE_DIRECTORY=eureka
+    ports:
+      - "19090:19090"
+    network_mode: host
+
+  gateway:
+    image: whdrb2643/codeterian-gateway:latest
+    container_name: codeterian-gateway
+    build:
+      dockerfile: Dockerfile
+      args:
+        - FILE_DIRECTORY=gateway
+    ports:
+      - "19091:19091"
+    network_mode: host
+    depends_on:
+      - eureka
+
+  order:
+    image: whdrb2643/codeterian-order:latest
+    container_name: codeterian-order
+    build:
+      dockerfile: Dockerfile
+      args:
+        - FILE_DIRECTORY=order
+    ports:
+      - "19095:19095"
+    network_mode: host
+    depends_on:
+      - postgresql
+      - redis-stack
+      - kafka
+      - kafka-ui
+      - zookeeper
+      - eureka
+
+  performance:
+    image: whdrb2643/codeterian-performance:latest
+    container_name: codeterian-performance
+    build:
+      dockerfile: Dockerfile
+      args:
+        - FILE_DIRECTORY=performance
+    ports:
+      - "19093:19093"
+    network_mode: host
+    depends_on:
+      - postgresql
+      - kafka
+      - kafka-ui
+      - zookeeper
+      - eureka
+      - elasticsearch
+
+  ticket:
+    image: whdrb2643/codeterian-ticket:latest
+    container_name: codeterian-ticket
+    build:
+      dockerfile: Dockerfile
+      args:
+        - FILE_DIRECTORY=ticket
+    ports:
+      - "19094:19094"
+    network_mode: host
+    depends_on:
+      - postgresql
+      - kafka
+      - kafka-ui
+      - zookeeper
+      - eureka
+
+  payment:
+    image: whdrb2643/codeterian-payment:latest
+    container_name: codeterian-payment
+    build:
+      dockerfile: Dockerfile
+      args:
+        - FILE_DIRECTORY=payment
+    ports:
+        - "19096:19096"
+    network_mode: host
+    depends_on:
+      - postgresql
+      - kafka
+      - kafka-ui
+      - zookeeper
+      - eureka
+
+  user:
+    image: whdrb2643/codeterian-user:latest
+    container_name: codeterian-user
+    build:
+      dockerfile: Dockerfile
+      args:
+        - FILE_DIRECTORY=user
+    ports:
+      - "19097:19097"
+    network_mode: host
+    depends_on:
+      - postgresql
+      - eureka
+
+
 
