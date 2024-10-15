@@ -1,72 +1,62 @@
-# docker-compose.yml
+version: '3.9'
+
 services:
-  server:
-    build:
-      dockerfile: Dockerfile
-      args:
-        - FILE_DIRECTORY=./eureka
-    # 빌드 시에 해당 Image 이름으로 build된다.
-    # pull 할 때도 이 Image 이름을 사용한다.
-    # 010928219716.dkr.ecr.ap-northeast-2.amazonaws.com/sparta/server
-    image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/eureka
-
-  common:
-    build:
-      dockerfile: Dockerfile
-      args:
-        - FILE_DIRECTORY=./common
-    image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/common
-
-  gateway:
-    build:
-      dockerfile: Dockerfile
-      args:
-        - FILE_DIRECTORY=./gateway
-    image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/gateway
+  postgresql:
+    container_name: postgresql
+    image: postgres:latest
+    restart: always
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
     ports:
-      - "19091:19091"
-
-  user:
-    build:
-      dockerfile: Dockerfile
-      args:
-        - FILE_DIRECTORY=./user
-    image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/user
+      - 5432:5432
     environment:
-      - DATABASE_URL=jdbc:postgresql://user-db:5433/user
-    depends_on:
-      - user-db
-
-  user-db:
-    image: postgres
-    environment:
-      POSTGRES_DB : user
-      POSTGRES_USER : postgres
-      POSTGRES_PASSWORD : postgres
-    ports:
-      - "5433:5432"
-
-  performance:
-    build:
-      dockerfile: Dockerfile
-      args:
-        - FILE_DIRECTORY=./performance
-    image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/performance
-    environment:
-      - DATABASE_URL=jdbc:postgresql://performance-db:5434/performance
-    depends_on:
-      - performance-db
-      - elasticsearch
-      - kafka
-
-  performance-db:
-    image: postgres
-    environment:
-      POSTGRES_DB: performance
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: order
+
+  redis-stack:
+    image: redis/redis-stack
+    container_name: redis-stack
+    restart: always
+    environment:
+      REDIS_ARGS: "--requirepass systempass"
     ports:
-      - "5434:5432"
+      - 6379:6379
+      - 8001:8001
+
+  zookeeper:
+    image: wurstmeister/zookeeper:latest
+    platform: linux/amd64
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  kafka:
+    image: wurstmeister/kafka:latest
+    platform: linux/amd64
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: INSIDE://kafka:29092,OUTSIDE://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+      KAFKA_LISTENERS: INSIDE://0.0.0.0:29092,OUTSIDE://0.0.0.0:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    platform: linux/amd64
+    ports:
+      - "8080:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+      KAFKA_CLUSTERS_0_READONLY: "false"
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.15.2
@@ -83,115 +73,5 @@ services:
     volumes:
       - elasticsearch-data:/usr/share/elasticsearch/data
 
-  order:
-    build:
-      dockerfile: Dockerfile
-      args:
-        - FILE_DIRECTORY=./order
-    image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/order
-    environment:
-      - DATABASE_URL=jdbc:postgresql://order-db:5435/order
-    depends_on:
-      - order-db
-      - order-redis
-      - kafka
+  eureka-sever:
 
-  order-db:
-    image: postgres
-    environment:
-      POSTGRES_DB: order
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    ports:
-      - "5435:5432"
-
-  order-redis:
-    image: "redis/redis-stack"
-    container_name: order-redis
-    restart: always
-    ports:
-      - "6379:6379"
-      - "8001:8001"
-    environment:
-      - REDIS_ARGS=--requirepass systempass
-
-  payment:
-    build:
-      dockerfile: Dockerfile
-      args:
-        - FILE_DIRECTORY=./payment
-    image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/payment
-    environment:
-      - DATABASE_URL=jdbc:postgresql://payment-db:5436/payment
-    depends_on:
-      - payment-db
-
-  payment-db:
-    image: postgres
-    environment:
-      POSTGRES_DB: payment
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    ports:
-      - "5436:5432"
-
-  ticket:
-    build:
-      dockerfile: Dockerfile
-      args:
-        - FILE_DIRECTORY=./ticket
-    image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/ticket
-    environment:
-      - DATABASE_URL=jdbc:postgresql://ticket-db:5437/ticket
-    depends_on:
-      - ticket-db
-      - kafka
-
-  ticket-db:
-    image: postgres
-    environment:
-      POSTGRES_DB: ticket
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    ports:
-      - "5437:5432"
-      
-  zookeeper:
-    image: wurstmeister/zookeeper:latest
-    platform: linux/amd64
-    restart: always
-    ports:
-      - "2181:2181"
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-
-  kafka:
-    image: wurstmeister/kafka:latest
-    platform: linux/amd64
-    restart: always
-    ports:
-      - "9092:9092"
-    environment:
-      KAFKA_ADVERTISED_LISTENERS: INSIDE://kafka:29092,OUTSIDE://localhost:9092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
-      KAFKA_LISTENERS: INSIDE://0.0.0.0:29092,OUTSIDE://0.0.0.0:9092
-      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-
-  kafka-ui:
-    image: provectuslabs/kafka-ui:latest
-    platform: linux/amd64
-    restart: always
-    ports:
-      - "8080:8080"
-    environment:
-      KAFKA_CLUSTERS_0_NAME: local
-      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
-      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
-      KAFKA_CLUSTERS_0_READONLY: "false"
-
-volumes:
-  elasticsearch-data:
