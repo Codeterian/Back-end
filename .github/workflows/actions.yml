@@ -196,6 +196,7 @@ jobs:
     name: Build docker image and Push to registry
     needs: build_eureka  # build_services 중 하나로 변경
     runs-on: ubuntu-latest
+    if: success()
 
     steps:
       - name: Checkout
@@ -226,6 +227,7 @@ jobs:
     name: Deploy
     needs: Docker
     runs-on: ubuntu-latest
+    if: success()
 
     steps:
       - uses: actions/checkout@v4
