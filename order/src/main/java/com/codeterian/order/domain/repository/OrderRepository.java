@@ -17,4 +17,5 @@ public interface OrderRepository {
 
 	void deleteById(UUID orderId);
 
+	Optional<Orders> findByIdAndIsDeletedFalse(UUID orderId);
 }

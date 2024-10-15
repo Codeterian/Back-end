@@ -25,7 +25,7 @@ public class OrderKafkaConsumer {
 	@KafkaListener(topics = "stock-is-empty", groupId = "group-a")
 	public void rollbackOrder(final String orderId){
 		log.info("stock-is-empty get Message : {} ",orderId);
-		orderService.deleteOrder(UUID.fromString(orderId));
+		orderService.modifyOrderStatus(UUID.fromString(orderId), OrderStatus.FAILED);
 	}
 
 	@KafkaListener(topics = "order-make-approved", groupId = "group-a")
