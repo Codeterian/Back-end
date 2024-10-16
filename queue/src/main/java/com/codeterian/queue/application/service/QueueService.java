@@ -7,6 +7,7 @@ import com.codeterian.queue.presentation.dto.QueueResponseDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -16,6 +17,7 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class QueueService {
 
     private final RedisTemplate<String, String> redisTemplate;
@@ -55,7 +57,7 @@ public class QueueService {
             //실행큐에 추가
             redisTemplate.opsForZSet().add(RUNNING_QUEUE, requestDto.userId().toString(), System.currentTimeMillis());
 
-            processNextUserInRunningQueue();
+            log.info("redis에 저장되어 있는지 확인"+redisTemplate.opsForZSet().range(RUNNING_QUEUE, 0, 0));
         }
     }
 
@@ -63,7 +65,7 @@ public class QueueService {
      * 대기큐에서 사용자를 꺼내서 실행큐로 이동
      * 스케줄러로 실행하여 대기큐에서의 대기 시간을 최소화
      */
-    @Scheduled(fixedRate = 5000)
+    @Scheduled(fixedDelay = 5000)
     public void getNextUserFrom() {
         Set<String> nextUsers = redisTemplate.opsForZSet().range(WAITING_QUEUE, 0, 0);
 
@@ -73,6 +75,8 @@ public class QueueService {
 
             //실행큐로 이동
             redisTemplate.opsForZSet().add(RUNNING_QUEUE, nextUser, System.currentTimeMillis());
+
+
         }
     }
 
@@ -92,6 +96,7 @@ public class QueueService {
                 userId, "/queue/errors", "대기열 접속은 성공했으나 주문 처리에 실패했습니다. 다시 시도해 주세요.");
     }
 
+    @Scheduled(fixedDelay = 2000)
     public void processNextUserInRunningQueue() {
         Set<String> nextUsers = redisTemplate.opsForZSet().range(RUNNING_QUEUE, 0, 0);
         if (nextUsers != null && !nextUsers.isEmpty()) {

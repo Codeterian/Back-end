@@ -12,6 +12,13 @@ public class GatewayConfig {
     @Bean
     public RouteLocator gatewayRoute(RouteLocatorBuilder builder) {
         return builder.routes()
+                .route("queue", r->r.path("/api/v1/queues/**").uri("lb://queue"))
+                .route("queue-swagger", r -> r.path("/swagger/queues/v3/api-docs/**")
+                        .and()
+                        .method(HttpMethod.GET)
+                        .filters(f -> f.rewritePath("/swagger/queues/(?<segment>.*)", "/${segment}"))
+                        .uri("lb://queue"))
+
             .route("performance", r-> r.path("/api/v1/performances/**").uri("lb://performance"))
             .route("performance-swagger", r -> r.path("/swagger/performances/v3/api-docs/**")
                 .and()
@@ -45,7 +52,6 @@ public class GatewayConfig {
                 .method(HttpMethod.GET)
                 .filters(f -> f.rewritePath("/swagger/users/(?<segment>.*)", "/${segment}"))
                 .uri("lb://user"))
-
             .build();
     }
 

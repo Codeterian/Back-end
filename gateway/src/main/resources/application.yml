@@ -25,7 +25,7 @@ server:
 eureka:
   client:
     service-url:
-      defaultZone: http://3.38.183.159:19090/eureka/
+      defaultZone: http://localhost:19090/eureka/
 
 logging:
   level:
@@ -49,6 +49,9 @@ springdoc:
     urls[4]:
       name: 유저 명세서
       url: /swagger/users/v3/api-docs
+    urls[5]:
+      name: 대기열 명세서
+      url: /swagger/queues/v3/api-docs
     use-root-path: true
 
 jwt:

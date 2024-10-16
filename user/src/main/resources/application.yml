@@ -3,9 +3,9 @@ spring:
     name: user
 
   datasource:
-    url: jdbc:postgresql://3.38.183.159:5432/users
+    url: jdbc:postgresql://localhost:5432/users
     username: postgres
-    password: postgres
+    password: 1234
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -30,7 +30,7 @@ springdoc:
 eureka:
   client:
     service-url:
-      defaultZone: http://3.38.183.159:19090/eureka/
+      defaultZone: http://localhost:19090/eureka/
 
 logging:
   level:

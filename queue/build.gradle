@@ -20,6 +20,9 @@ dependencies {
 
 	//openfeign
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
+	//embedded redis for test
+	testImplementation 'it.ozimov:embedded-redis:0.7.2'
 }
 
 dependencyManagement {

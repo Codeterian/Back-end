@@ -2,16 +2,16 @@ spring:
   application:
     name: queue
 
+    # Redis만 사용
+  autoconfigure:
+    exclude:
+        - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
+        - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+
     data:
       redis:
         host: localhost
         port: 6379
-
-    # Redis만 사용
-    autoconfigure:
-      exclude:
-        - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
-        - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 
 server:
   port: 19099
