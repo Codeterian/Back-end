@@ -38,22 +38,22 @@ public class QueueService {
     /**
      * 사용자를 대기큐 or 실행큐에 추가, requestDto를 userId를 키로 해서 저장
      */
-    public void joinQueue(Long userId, OrderAddRequestDto requestDto) {
+    public void joinQueue(OrderAddRequestDto requestDto) {
         Long currentRunningQueueSize = redisTemplate.opsForZSet().size(RUNNING_QUEUE);
 
-        redisTemplate.opsForValue().set(ORDER_REQUEST + userId.toString(), convertToJson(requestDto));
+        redisTemplate.opsForValue().set(ORDER_REQUEST + requestDto.userId().toString(), convertToJson(requestDto));
 
         if (currentRunningQueueSize != null && currentRunningQueueSize >= TRAFFIC_THRESHOLD) {
             //임계치 초과: 대기큐에 사용자 추가
-            redisTemplate.opsForZSet().add(WAITING_QUEUE, userId.toString(), System.currentTimeMillis());
+            redisTemplate.opsForZSet().add(WAITING_QUEUE, requestDto.userId().toString(), System.currentTimeMillis());
 
 
             // 대기열에서의 순서 확인
-            Long waitingPosition = redisTemplate.opsForZSet().rank(WAITING_QUEUE, userId);
-            sendQueuePosition(userId, waitingPosition);
+            Long waitingPosition = redisTemplate.opsForZSet().rank(WAITING_QUEUE, requestDto.userId().toString());
+            sendQueuePosition(requestDto.userId().toString(), waitingPosition);
         } else {
             //실행큐에 추가
-            redisTemplate.opsForZSet().add(RUNNING_QUEUE, userId.toString(), System.currentTimeMillis());
+            redisTemplate.opsForZSet().add(RUNNING_QUEUE, requestDto.userId().toString(), System.currentTimeMillis());
 
             processNextUserInRunningQueue();
         }
@@ -79,8 +79,8 @@ public class QueueService {
     /**
      * WebSocket으로 대기열 순위 전송
      */
-    private void sendQueuePosition(Long userId, Long position) {
-        simpMessagingTemplate.convertAndSendToUser(userId.toString(),
+    private void sendQueuePosition(String userId, Long position) {
+        simpMessagingTemplate.convertAndSendToUser(userId,
                 "/queue/position", new QueueResponseDto(position));
     }
 

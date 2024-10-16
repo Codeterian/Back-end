@@ -28,7 +28,7 @@ public class QueueController {
             @CurrentPassport Passport passport) {
 
         //서비스 로직
-        queueService.joinQueue(passport.getUserId(), requestDto);
+        queueService.joinQueue(requestDto);
 
 
         return ResponseEntity.ok(ResponseDto.ok());
