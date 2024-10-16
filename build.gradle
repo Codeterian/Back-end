@@ -91,6 +91,12 @@ project(':gateway') {
 	}
 }
 
+project(':queue') {
+	dependencies {
+		implementation project(':common')
+	}
+}
+
 
 
 

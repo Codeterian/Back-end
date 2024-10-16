@@ -9,4 +9,5 @@ include('payment')
 include('order')
 //include('config')
 include('ticket')
+include('queue')
 
