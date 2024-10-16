@@ -4,9 +4,12 @@ import com.codeterian.common.infrastructure.dto.ResponseDto;
 import com.codeterian.common.infrastructure.entity.UserRole;
 import com.codeterian.common.infrastructure.util.CurrentPassport;
 import com.codeterian.common.infrastructure.util.Passport;
+import com.codeterian.queue.application.feign.dto.OrderAddRequestDto;
+import com.codeterian.queue.application.service.QueueService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -15,12 +18,18 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class QueueController {
 
+    private final QueueService queueService;
+
 
     //사용자 대기열 진입
     @GetMapping("/join")
-    public ResponseEntity<ResponseDto<Void>> joinQueue(@CurrentPassport Passport passport) {
+    public ResponseEntity<ResponseDto<Void>> joinQueue(
+            @RequestBody OrderAddRequestDto requestDto,
+            @CurrentPassport Passport passport) {
 
         //서비스 로직
+        queueService.joinQueue(passport.getUserId(), requestDto);
+
 
         return ResponseEntity.ok(ResponseDto.ok());
     }
@@ -35,6 +44,7 @@ public class QueueController {
         }
 
         //서비스 로직
+        queueService.getNextUserFrom();
 
         return ResponseEntity.ok(ResponseDto.ok());
     }
