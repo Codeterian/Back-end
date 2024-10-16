@@ -1,6 +1,6 @@
 package com.codeterian.queue.application.service;
 
-import com.codeterian.queue.application.feign.OrderFeignClient;
+import com.codeterian.queue.application.feign.OrderService;
 import com.codeterian.queue.application.feign.dto.OrderAddRequestDto;
 import com.codeterian.queue.application.feign.dto.OrderAddResponseDto;
 import com.codeterian.queue.presentation.dto.QueueResponseDto;
@@ -19,26 +19,31 @@ import java.util.Set;
 public class QueueService {
 
     private final RedisTemplate<String, String> redisTemplate;
+
     private final SimpMessagingTemplate simpMessagingTemplate;
+
     private final ObjectMapper objectMapper;
+
+    private final OrderService orderService;
 
     // 대기열 임계치 설정
     private static final int TRAFFIC_THRESHOLD = 100; // 대기 없이 최대 100명까지 처리
+
     private static final String WAITING_QUEUE = "WaitingQueue";
+
     private static final String RUNNING_QUEUE = "RunningQueue";
+
     private static final String ORDER_REQUEST = "OrderRequest:";
 
-    private OrderFeignClient orderFeignClient;
-
     /**
-     *  사용자를 대기큐 or 실행큐에 추가, requestDto를 userId를 키로 해서 저장
+     * 사용자를 대기큐 or 실행큐에 추가, requestDto를 userId를 키로 해서 저장
      */
     public void joinQueue(Long userId, OrderAddRequestDto requestDto) {
         Long currentRunningQueueSize = redisTemplate.opsForZSet().size(RUNNING_QUEUE);
 
-        redisTemplate.opsForValue().set(ORDER_REQUEST+userId.toString(), convertToJson(requestDto));
+        redisTemplate.opsForValue().set(ORDER_REQUEST + userId.toString(), convertToJson(requestDto));
 
-        if(currentRunningQueueSize!=null && currentRunningQueueSize >= TRAFFIC_THRESHOLD) {
+        if (currentRunningQueueSize != null && currentRunningQueueSize >= TRAFFIC_THRESHOLD) {
             //임계치 초과: 대기큐에 사용자 추가
             redisTemplate.opsForZSet().add(WAITING_QUEUE, userId.toString(), System.currentTimeMillis());
 
@@ -62,7 +67,7 @@ public class QueueService {
     public void getNextUserFrom() {
         Set<String> nextUsers = redisTemplate.opsForZSet().range(WAITING_QUEUE, 0, 0);
 
-        if(nextUsers!=null && !nextUsers.isEmpty()) {
+        if (nextUsers != null && !nextUsers.isEmpty()) {
             String nextUser = nextUsers.iterator().next();
             redisTemplate.opsForZSet().remove(WAITING_QUEUE, nextUser);
 
@@ -93,7 +98,7 @@ public class QueueService {
             String nextUser = nextUsers.iterator().next();
 
             //redis에서 해당 유저의 reqeustDto를 가져와야 됨.
-            String requestJson = redisTemplate.opsForValue().get(ORDER_REQUEST+nextUser);
+            String requestJson = redisTemplate.opsForValue().get(ORDER_REQUEST + nextUser);
 
             // 주문 처리
             processOrder(nextUser, convertFromJson(requestJson));
@@ -104,12 +109,12 @@ public class QueueService {
      * 주문 처리 로직
      */
     private void processOrder(String userId, OrderAddRequestDto requestDto) {
-        OrderAddResponseDto responseDto = orderFeignClient.orderAdd(requestDto).getData();
+        OrderAddResponseDto responseDto = orderService.orderAdd(requestDto).getData();
 
-        if(responseDto!=null && responseDto.orderId()!=null) {
+        if (responseDto != null && responseDto.orderId() != null) {
             //처리된 사용자의 정보 삭제
             redisTemplate.opsForZSet().remove(RUNNING_QUEUE, userId);
-            redisTemplate.delete(ORDER_REQUEST+userId);
+            redisTemplate.delete(ORDER_REQUEST + userId);
         } else {
             sendFailureNotification(userId);
         }
