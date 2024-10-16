@@ -22,13 +22,13 @@ public class QueueService {
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final ObjectMapper objectMapper;
 
-    private OrderFeignClient orderFeignClient;
-
     // 대기열 임계치 설정
     private static final int TRAFFIC_THRESHOLD = 100; // 대기 없이 최대 100명까지 처리
     private static final String WAITING_QUEUE = "WaitingQueue";
     private static final String RUNNING_QUEUE = "RunningQueue";
     private static final String ORDER_REQUEST = "OrderRequest:";
+
+    private OrderFeignClient orderFeignClient;
 
     /**
      *  사용자를 대기큐 or 실행큐에 추가, requestDto를 userId를 키로 해서 저장
@@ -82,9 +82,9 @@ public class QueueService {
     /**
      * 실패 알림을 사용자에게 전송하는 메서드
      */
-    private void sendFailureNotification(String userId, String message) {
+    private void sendFailureNotification(String userId) {
         simpMessagingTemplate.convertAndSendToUser(
-                userId, "/queue/errors", message);
+                userId, "/queue/errors", "대기열 접속은 성공했으나 주문 처리에 실패했습니다. 다시 시도해 주세요.");
     }
 
     public void processNextUserInRunningQueue() {
@@ -111,7 +111,7 @@ public class QueueService {
             redisTemplate.opsForZSet().remove(RUNNING_QUEUE, userId);
             redisTemplate.delete(ORDER_REQUEST+userId);
         } else {
-            sendFailureNotification(userId, "대기열 접속은 성공했으나 주문 처리에 실패했습니다. 다시 시도해 주세요.");
+            sendFailureNotification(userId);
         }
     }
 
@@ -126,7 +126,7 @@ public class QueueService {
         }
     }
 
-    private OrderAddRequestDto convertFromJson(String json) {;
+    private OrderAddRequestDto convertFromJson(String json) {
         try {
             return objectMapper.readValue(json, OrderAddRequestDto.class);
         } catch (JsonProcessingException e) {

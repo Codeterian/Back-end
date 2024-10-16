@@ -3,7 +3,10 @@ package com.codeterian.queue;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {
+		"com.codeterian.queue",
+		"com.codeterian.common"
+})
 public class QueueApplication {
 
 	public static void main(String[] args) {
