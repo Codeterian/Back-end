@@ -33,6 +33,8 @@ eureka:
 logging:
   level:
     org.springframework.security: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.web.socket: DEBUG
 
 jwt:
   secret:
