@@ -3,7 +3,7 @@ spring:
     name: ticket
 
   datasource:
-    url: jdbc:postgresql://3.38.183.159:5432/ticket
+    url: jdbc:postgresql://localhost:5432/ticket
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
@@ -18,7 +18,7 @@ spring:
           show_sql: true
   data:
     redis:
-      host: 3.38.183.159
+      host: localhost
       port: 6379
 
 server:
@@ -36,7 +36,7 @@ springdoc:
 eureka:
   client:
     service-url:
-      defaultZone: http://3.38.183.159:19090/eureka/
+      defaultZone: http://localhost:19090/eureka/
 
 
 jwt:

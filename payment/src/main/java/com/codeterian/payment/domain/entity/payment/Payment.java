@@ -2,9 +2,7 @@ package com.codeterian.payment.domain.entity.payment;
 
 import java.util.UUID;
 
-import com.codeterian.common.infrastructure.entity.enums.PaymentStatus;
-import com.codeterian.common.infrastructure.entity.enums.PaymentType;
-import com.codeterian.common.infrastructure.dto.payment.PaymentAddRequestDto;
+import com.codeterian.payment.domain.entity.enums.PaymentStatus;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -33,16 +31,4 @@ public class Payment {
 
 	@Enumerated(EnumType.STRING)
 	private PaymentStatus status;
-
-
-	@Enumerated(EnumType.STRING)
-	private PaymentType type;
-
-	public static Payment add(PaymentAddRequestDto requestDto) {
-		return Payment.builder()
-			.orderId(requestDto.orderId())
-			.status(PaymentStatus.PENDING)
-			.type(requestDto.paymentType())
-			.build();
-	}
 }
