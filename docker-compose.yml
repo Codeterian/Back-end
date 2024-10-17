@@ -80,7 +80,7 @@ services:
     ports:
       - "9090:9090"
     volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./common/src/main/resources/prometheus.yml:/etc/prometheus/prometheus.yml
     depends_on:
       - eureka
 
