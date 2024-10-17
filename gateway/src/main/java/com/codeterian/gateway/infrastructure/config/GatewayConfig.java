@@ -4,7 +4,12 @@ import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpMethod;
+import org.springframework.web.reactive.socket.client.TomcatWebSocketClient;
+import org.springframework.web.reactive.socket.client.WebSocketClient;
+import org.springframework.web.reactive.socket.server.RequestUpgradeStrategy;
+import org.springframework.web.reactive.socket.server.upgrade.TomcatRequestUpgradeStrategy;
 
 @Configuration
 public class GatewayConfig {
@@ -12,8 +17,9 @@ public class GatewayConfig {
     @Bean
     public RouteLocator gatewayRoute(RouteLocatorBuilder builder) {
         return builder.routes()
-                .route("queue", r->r.path("/api/v1/queues/**").uri("lb://queue"))
-                .route("queue-swagger", r -> r.path("/swagger/queues/v3/api-docs/**")
+            .route("queue", r->r.path("/api/v1/queues/**", "/ws-stomp")
+                        .uri("lb://queue"))
+            .route("queue-swagger", r -> r.path("/swagger/queues/v3/api-docs/**")
                         .and()
                         .method(HttpMethod.GET)
                         .filters(f -> f.rewritePath("/swagger/queues/(?<segment>.*)", "/${segment}"))
@@ -54,5 +60,18 @@ public class GatewayConfig {
                 .uri("lb://user"))
             .build();
     }
+
+    @Bean
+    @Primary
+    public WebSocketClient tomcatWebSocketClient() {
+        return new TomcatWebSocketClient();
+    }
+
+    @Bean
+    @Primary
+    public RequestUpgradeStrategy requestUpgradeStrategy() {
+        return new TomcatRequestUpgradeStrategy();
+    }
+
 
 }

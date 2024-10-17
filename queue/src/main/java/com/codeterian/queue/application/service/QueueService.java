@@ -80,6 +80,25 @@ public class QueueService {
         }
     }
 
+    public Long getQueuePosition(String userId) {
+        Long position = redisTemplate.opsForZSet().rank(WAITING_QUEUE, userId);
+
+        if (position != null) {
+            return position + 1; // 대기큐에서의 순위 반환 (0 기반이므로 1을 더함)
+        }
+
+        // 대기큐에 없을 경우 실행큐에서 순위 확인
+        position = redisTemplate.opsForZSet().rank(RUNNING_QUEUE, userId);
+
+        if (position != null) {
+            return position + 1; // 실행큐에서의 순위 반환
+        }
+
+        // 사용자 대기열과 실행큐 모두에서 순위를 찾지 못했을 때 예외 처리
+        throw new IllegalStateException("사용자를 찾을 수 없습니다: " + userId);
+    }
+
+
     /**
      * WebSocket으로 대기열 순위 전송
      */
@@ -96,7 +115,7 @@ public class QueueService {
                 userId, "/queue/errors", "대기열 접속은 성공했으나 주문 처리에 실패했습니다. 다시 시도해 주세요.");
     }
 
-    @Scheduled(fixedDelay = 2000)
+    @Scheduled(fixedDelay = 5000)
     public void processNextUserInRunningQueue() {
         Set<String> nextUsers = redisTemplate.opsForZSet().range(RUNNING_QUEUE, 0, 0);
         if (nextUsers != null && !nextUsers.isEmpty()) {
