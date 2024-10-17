@@ -10,6 +10,9 @@ import org.springframework.data.elasticsearch.repository.config.EnableElasticsea
 @EnableElasticsearchRepositories(basePackages = "org.springframework.data.elasticsearch.repository")
 public class ElasticSearchConfig extends ElasticsearchConfiguration {
 
+    @Value("${spring.data.elasticsearch.rest.uris}")
+    private String uri;
+
     @Value("${spring.data.elasticsearch.rest.username}")
     private String username;
 
@@ -19,7 +22,7 @@ public class ElasticSearchConfig extends ElasticsearchConfiguration {
     @Override
     public ClientConfiguration clientConfiguration() {
         return ClientConfiguration.builder()
-                .connectedTo("3.38.183.159:9200")
+                .connectedTo(uri)
                 .withBasicAuth(username, password)
                 .build();
     }

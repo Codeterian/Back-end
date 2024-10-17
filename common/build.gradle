@@ -14,4 +14,9 @@ dependencies {
 
 	//jpa: BaseEntity 사용을 위해
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+	// prometheus & grafana
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'io.micrometer:micrometer-registry-prometheus'
+	implementation 'io.micrometer:micrometer-core'
 }
