@@ -12,10 +12,21 @@ eureka:
     register-with-eureka: false
     fetch-registry: false
     service-url:
-      defaultZone: http://3.38.183.159:19090/eureka
+      defaultZone: http://localhost:19090/eureka
   instance:
-    hostname: 3.38.183.159
+    hostname: localhost
 
 logging:
   level:
     feign: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: always
+    prometheus:
+      enabled: true
