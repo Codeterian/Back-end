@@ -7,7 +7,8 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 import com.codeterian.order.application.OrderService;
-import com.codeterian.order.domain.entity.status.OrderStatus;
+import com.codeterian.common.infrastructure.enums.OrderStatus;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -25,13 +26,19 @@ public class OrderKafkaConsumer {
 	@KafkaListener(topics = "stock-is-empty", groupId = "group-a")
 	public void rollbackOrder(final String orderId){
 		log.info("stock-is-empty get Message : {} ",orderId);
-		orderService.modifyOrderStatus(UUID.fromString(orderId), OrderStatus.FAILED);
+		orderService.failedOrderStatus(UUID.fromString(orderId), OrderStatus.FAILED);
 	}
 
 	@KafkaListener(topics = "order-make-approved", groupId = "group-a")
-	public void handleOrderApproved(final String orderId){
+	public void handleOrderApproved(final String orderId) throws JsonProcessingException {
 		log.info("order-make-approved get Message : {} ",orderId);
-		orderService.modifyOrderStatus(UUID.fromString(orderId), OrderStatus.APPROVED);
+		orderService.approvedOrderStatus(UUID.fromString(orderId), OrderStatus.APPROVED);
+	}
+
+	@KafkaListener(topics = "success-payment-to-order", groupId = "group-a")
+	public void handleOrderCompleted(final String orderId){
+		log.info("order-make-completed get Message : {} ", orderId);
+		orderService.completedOrderStatus(UUID.fromString(orderId), OrderStatus.COMPLETED);
 	}
 
 }

@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.ui.Model;
 
+import com.codeterian.common.infrastructure.util.CurrentPassport;
+import com.codeterian.common.infrastructure.util.Passport;
+
 @Controller
 @RequestMapping("/api/v1/payments")
 public class PaymentViewController {

@@ -4,11 +4,8 @@ import java.io.Serializable;
 import java.util.UUID;
 
 import com.codeterian.common.infrastructure.entity.BaseEntity;
-import com.codeterian.order.domain.entity.status.OrderStatus;
-import com.codeterian.order.presentation.dto.OrderAddRequestDto;
-import com.codeterian.order.presentation.dto.OrderModifyRequestDto;
+import com.codeterian.common.infrastructure.enums.OrderStatus;
 
-import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

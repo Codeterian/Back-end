@@ -14,7 +14,7 @@ import com.codeterian.common.exception.RestApiException;
 import com.codeterian.common.infrastructure.entity.UserRole;
 import com.codeterian.common.infrastructure.util.Passport;
 import com.codeterian.order.domain.entity.order.Orders;
-import com.codeterian.order.domain.entity.status.OrderStatus;
+import com.codeterian.common.infrastructure.enums.OrderStatus;
 import com.codeterian.order.domain.repository.OrderRepository;
 import com.codeterian.order.infrastructure.kafka.OrderKafkaProducer;
 import com.codeterian.order.infrastructure.redisson.aspect.DistributedLock;
@@ -115,13 +115,29 @@ public class OrderService {
 		orderRepository.deleteById(orderId);
 	}
 
+
 	@Transactional
-	public void modifyOrderStatus(UUID orderId, OrderStatus orderStatus) {
+	public void approvedOrderStatus(UUID orderId, OrderStatus orderStatus) throws JsonProcessingException {
+		Orders order = findById(orderId);
+		order.updateStatus(orderStatus);
+		orderKafkaProducer.paymentValidatePrepare(order.getId(), order.getTotalPrice().getValue(), orderStatus);
+	}
+
+
+	@Transactional
+	public void failedOrderStatus(UUID orderId, OrderStatus orderStatus) {
 		Orders order = findById(orderId);
 		order.updateStatus(orderStatus);
 	}
 
-	// RestControllerAdvice 사용법
+
+	@Transactional
+	public void completedOrderStatus(UUID orderId, OrderStatus orderStatus) {
+		Orders order = findById(orderId);
+		order.updateStatus(orderStatus);
+	}
+
+
 	public Orders findById(UUID orderId) {
 		return orderRepository.findByIdAndIsDeletedFalse(orderId).orElseThrow(
 			() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));

@@ -1,4 +1,4 @@
-package com.codeterian.order.domain.entity.status;
+package com.codeterian.common.infrastructure.enums;
 
 public enum OrderStatus {
 	PENDING,            // 주문 대기

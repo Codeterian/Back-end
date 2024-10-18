@@ -16,7 +16,6 @@
         const merchantUid = [[${merchantUid}]];
         const amount = [[${amount}]];
         const buyerEmail = [[${buyerEmail}]];
-
     </script>
 
     <script>
@@ -25,6 +24,8 @@
         IMP.init("imp70154271");
 
         function requestPay() {
+            const jwtToken = document.getElementById('jwtToken').value;
+
             IMP.request_pay(
                 {
                     pg: "html5_inicis",
@@ -35,7 +36,20 @@
                 },
                 function (rsp) {
                     if (rsp.success) {
-
+                        alert("결제 성공: " + JSON.stringify(rsp));
+                        // 결제 성공 시 서버 요청
+                        jQuery.ajax({
+                            url: "/api/v1/payments/after/validate",
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            data: JSON.stringify({
+                                "payment_uid": rsp.imp_uid,      // 결제 고유번호
+                                "order_uid": rsp.merchant_uid,
+                                "price": rsp.paid_amount
+                            })
+                        })
                     } else {
                         alert("결제에 실패하였습니다. 에러 내용: " + rsp.error_msg);
                     }
@@ -47,6 +61,10 @@
     <title>Sample Payment</title>
 </head>
 <body>
+<form id="paymentForm">
+    <label for="jwtToken">JWT 토큰:</label>
+    <input type="text" id="jwtToken" name="jwtToken" placeholder="JWT 토큰 입력" required><br><br>
+</form>
 <button onclick="requestPay()">결제하기</button>
 <!-- 결제하기 버튼 생성 -->
 </body>
