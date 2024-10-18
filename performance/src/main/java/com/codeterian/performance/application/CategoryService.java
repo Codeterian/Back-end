@@ -4,6 +4,8 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import com.codeterian.common.infrastructure.entity.UserRole;
+import com.codeterian.common.infrastructure.util.Passport;
 import com.codeterian.performance.domain.category.Category;
 import com.codeterian.performance.infrastructure.persistence.CategoryRepositoryImpl;
 import com.codeterian.performance.presentation.dto.request.CategoryModifyRequestDto;
@@ -24,9 +26,12 @@ public class CategoryService {
 
     private final CategoryRepositoryImpl categoryRepository;
 
-    public ParentCategoryAddResponseDto addParentCategory(ParentCategoryAddRequestDto dto) {
+    public ParentCategoryAddResponseDto addParentCategory(ParentCategoryAddRequestDto dto, Passport passport) throws IllegalAccessException{
+
+        validateAdminRole(passport);
+
         if (categoryRepository.existsByNameAndIsDeletedFalse(dto.name())) {
-            throw new IllegalArgumentException("이미 존재하는 카테고리입니다.");
+            throw new IllegalAccessException();
         }
 
         Category newCategory = Category.builder()
@@ -37,7 +42,10 @@ public class CategoryService {
         return ParentCategoryAddResponseDto.fromEntity(saveCategory);
     }
 
-    public ChildCategoryAddResponseDto addChildCategory(ChildCategoryAddRequestDto dto) {
+    public ChildCategoryAddResponseDto addChildCategory(ChildCategoryAddRequestDto dto, Passport passport) {
+
+        validateAdminRole(passport);
+
         Category parentCategory = categoryRepository.findByIdAndIsDeletedFalse(dto.parentId()).orElseThrow(
                 () -> new IllegalArgumentException("상위 카테고리가 존재하지 않습니다.")
         );
@@ -57,7 +65,10 @@ public class CategoryService {
     }
 
     @Transactional
-    public CategoryModifyResponseDto modifyCategory(UUID categoryId, CategoryModifyRequestDto dto) {
+    public CategoryModifyResponseDto modifyCategory(UUID categoryId, CategoryModifyRequestDto dto, Passport passport) {
+
+        validateAdminRole(passport);
+
         Category category = categoryRepository.findByIdAndIsDeletedFalse(categoryId).orElseThrow(
                 ()-> new IllegalArgumentException("존재하지 않는 카테고리입니다.")
         );
@@ -86,18 +97,23 @@ public class CategoryService {
     }
 
     @Transactional
-    public void removeCategory(UUID categoryId) {
+    public void removeCategory(UUID categoryId, Passport passport) {
+
+        validateAdminRole(passport);
+
         Category category = categoryRepository.findByIdAndIsDeletedFalse(categoryId).orElseThrow(
                 () -> new IllegalArgumentException("존재하지 않는 카테고리입니다.")
         );
 
-        // 나중에 userId 받아와서 수정하기
-        category.delete(1L);
+        category.delete(passport.getUserId());
 
         categoryRepository.save(category);
     }
 
-    public CategoryDetailsResponseDto findCategoryDetails(UUID categoryId) {
+    public CategoryDetailsResponseDto findCategoryDetails(UUID categoryId, Passport passport) {
+
+        validateAdminRole(passport);
+
         Category category = categoryRepository.findByIdAndIsDeletedFalse(categoryId).orElseThrow(
                 () -> new IllegalArgumentException("존재하지 않는 카테고리입니다.")
         );
@@ -108,5 +124,13 @@ public class CategoryService {
         }
 
         return new CategoryDetailsResponseDto(category.getName(), category.getParent().getName());
+    }
+
+    private static void validateAdminRole(Passport passport) {
+        UserRole userRole = passport.getUserRole();
+
+        if (userRole == UserRole.CUSTOMER){
+            throw new IllegalArgumentException("관리자 회원이 아닙니다.");
+        }
     }
 }
