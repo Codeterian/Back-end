@@ -29,7 +29,7 @@ public class QueueController {
             @CurrentPassport Passport passport) {
 
         //서비스 로직
-        queueService.joinQueue(requestDto);
+        queueService.joinQueue(requestDto, passport);
 
 
         return ResponseEntity.ok(ResponseDto.ok());

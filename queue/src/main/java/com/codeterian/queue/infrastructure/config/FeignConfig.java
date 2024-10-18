@@ -4,14 +4,17 @@ import com.codeterian.common.infrastructure.util.Passport;
 import com.codeterian.common.infrastructure.util.PassportContextHolder;
 import com.codeterian.common.infrastructure.util.TokenUtils;
 import feign.RequestInterceptor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@Slf4j
 public class FeignConfig {
 
     private final TokenUtils tokenUtils;
+
     private final String internalSecretKey;
 
     public FeignConfig(TokenUtils tokenUtils, @Value("${jwt.secret.internal-secret-key}") String internalSecretKey) {
@@ -29,6 +32,8 @@ public class FeignConfig {
                 String token = tokenUtils.passportToToken(passport, internalSecretKey);
                 // JWT를 헤더에 추가
                 requestTemplate.header("InternalToken", "Bearer " + token);
+                log.info("InternalToken: " + token);
+
             }
 
         };

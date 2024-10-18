@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
         configuration = FeignConfig.class)
 public interface OrderFeignClient extends OrderService {
 
+    @Override
     @PostMapping("/api/v1/orders")
     ResponseDto<OrderAddResponseDto> orderAdd(OrderAddRequestDto requestDto);
 

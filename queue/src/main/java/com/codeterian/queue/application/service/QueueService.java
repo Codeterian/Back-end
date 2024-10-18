@@ -1,5 +1,7 @@
 package com.codeterian.queue.application.service;
 
+import com.codeterian.common.infrastructure.util.Passport;
+import com.codeterian.common.infrastructure.util.PassportContextHolder;
 import com.codeterian.queue.application.feign.OrderService;
 import com.codeterian.queue.application.feign.dto.OrderAddRequestDto;
 import com.codeterian.queue.application.feign.dto.OrderAddResponseDto;
@@ -37,13 +39,16 @@ public class QueueService {
 
     private static final String ORDER_REQUEST = "OrderRequest:";
 
+    private static final String PASSPORT_KEY = "Passport:";
+
     /**
      * 사용자를 대기큐 or 실행큐에 추가, requestDto를 userId를 키로 해서 저장
      */
-    public void joinQueue(OrderAddRequestDto requestDto) {
+    public void joinQueue(OrderAddRequestDto requestDto, Passport passport) {
         Long currentRunningQueueSize = redisTemplate.opsForZSet().size(RUNNING_QUEUE);
 
         redisTemplate.opsForValue().set(ORDER_REQUEST + requestDto.userId().toString(), convertToJson(requestDto));
+        redisTemplate.opsForValue().set(PASSPORT_KEY + requestDto.userId().toString(), convertPassportToJson(passport));
 
         if (currentRunningQueueSize != null && currentRunningQueueSize >= TRAFFIC_THRESHOLD) {
             //임계치 초과: 대기큐에 사용자 추가
@@ -58,6 +63,10 @@ public class QueueService {
             redisTemplate.opsForZSet().add(RUNNING_QUEUE, requestDto.userId().toString(), System.currentTimeMillis());
 
             log.info("redis에 저장되어 있는지 확인"+redisTemplate.opsForZSet().range(RUNNING_QUEUE, 0, 0));
+
+            // 대기열에서의 순서 확인
+            Long waitingPosition = redisTemplate.opsForZSet().rank(RUNNING_QUEUE, requestDto.userId().toString());
+            sendQueuePosition(requestDto.userId().toString(), waitingPosition);
         }
     }
 
@@ -76,6 +85,9 @@ public class QueueService {
             //실행큐로 이동
             redisTemplate.opsForZSet().add(RUNNING_QUEUE, nextUser, System.currentTimeMillis());
 
+            // 대기열에서의 순서 확인
+            Long waitingPosition = redisTemplate.opsForZSet().rank(RUNNING_QUEUE, nextUser);
+            sendQueuePosition(nextUser, waitingPosition);
 
         }
     }
@@ -123,6 +135,10 @@ public class QueueService {
 
             //redis에서 해당 유저의 reqeustDto를 가져와야 됨.
             String requestJson = redisTemplate.opsForValue().get(ORDER_REQUEST + nextUser);
+            String passportJson = redisTemplate.opsForValue().get(PASSPORT_KEY + nextUser);
+
+            Passport passport = convertJsonToPassport(passportJson);
+            PassportContextHolder.setPassport(passport); // PassportContext에 설정
 
             // 주문 처리
             processOrder(nextUser, convertFromJson(requestJson));
@@ -139,6 +155,7 @@ public class QueueService {
             //처리된 사용자의 정보 삭제
             redisTemplate.opsForZSet().remove(RUNNING_QUEUE, userId);
             redisTemplate.delete(ORDER_REQUEST + userId);
+            redisTemplate.delete(PASSPORT_KEY + userId);
         } else {
             sendFailureNotification(userId);
         }
@@ -160,6 +177,25 @@ public class QueueService {
             return objectMapper.readValue(json, OrderAddRequestDto.class);
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Failed to convert JSON to requestDto", e);
+        }
+    }
+
+    /**
+     * Passport를 Json 문자열로 변환, Json 문자열을 Passport로 변환
+     */
+    private String convertPassportToJson(Passport passport) {
+        try {
+            return objectMapper.writeValueAsString(passport);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Failed to convert Passport to JSON", e);
+        }
+    }
+
+    private Passport convertJsonToPassport(String json) {
+        try {
+            return objectMapper.readValue(json, Passport.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Failed to convert JSON to Passport", e);
         }
     }
 
