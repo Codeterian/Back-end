@@ -27,6 +27,7 @@ public class JwtAuthenticationFilter implements WebFilter {
         "/swagger-ui",
         "/swagger-resources/",
         "/webjars/",
+        "/ws-stomp"
     };
     private final String externalSecretKey;
 

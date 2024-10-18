@@ -19,7 +19,7 @@ public class TokenUtils {
     public Claims getClaimsByInternalToken(String internalToken, String internalSecretKey) {
 
         try {
-            log.info("Util internalToken", internalToken);
+            log.info("Util internalToken:"+internalToken);
             SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64URL.decode(internalSecretKey));
             return Jwts.parser()
                     .verifyWith(key).build()
