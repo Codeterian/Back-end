@@ -14,8 +14,19 @@ eureka:
     service-url:
       defaultZone: http://localhost:19090/eureka
   instance:
-    hostname: 3.38.183.159
+    hostname: localhost
 
 logging:
   level:
     feign: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: always
+    prometheus:
+      enabled: true
