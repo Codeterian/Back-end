@@ -18,6 +18,7 @@ public enum PerformanceErrorCode implements ErrorCode {
 	IMAGE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "이미지 업로드에 실패했습니다."),
 	INVALID_DATE_RANGE(HttpStatus.BAD_REQUEST, "시작일은 종료일보다 이전이어야 합니다."),
 	INVALID_PAGE_NUMBER(HttpStatus.BAD_REQUEST, "잘못된 pageNumber 요청입니다."),
+	DATABASE_SAVE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "데이터 저장에 실패했습니다."),
 	INVALID_PAGE_SIZE(HttpStatus.BAD_REQUEST, "잘못된 pageSize 요청입니다.");
 
 	private final HttpStatus httpStatus;

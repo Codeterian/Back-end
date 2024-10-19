@@ -78,6 +78,10 @@ public class PerformanceService {
 
         Performance savedperformance = performanceRepository.save(newPerformance);
 
+        if (savedperformance == null || savedperformance.getId() == null) {
+            throw new RestApiException(DATABASE_SAVE_FAILED);
+        }
+
         performanceKafkaProducer.sendPerformanceToKafka(savedperformance.getId());
 
         return PerformanceAddResponseDto.fromEntity(savedperformance);
