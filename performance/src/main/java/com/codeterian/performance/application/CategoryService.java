@@ -86,7 +86,7 @@ public class CategoryService {
             // 기존 parent가 null이 아닌 경우 비교, null이면 바로 업데이트
             if (category.getParent() == null || !category.getParent().getId().equals(dto.parentId())) {
                 if (!categoryRepository.existsById(dto.parentId())) {
-                    throw new IllegalArgumentException("상위 카테고리가 존재하지 않습니다.");
+                    throw new RestApiException(NOT_FOUND_PARENT_CATEGORY);
                 }
                 category.modifyParentId(dto.parentId());
             }
