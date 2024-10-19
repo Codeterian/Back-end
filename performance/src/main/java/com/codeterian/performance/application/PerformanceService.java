@@ -48,6 +48,7 @@ public class PerformanceService {
     private final ElasticsearchOperations elasticsearchOperations;
     private final S3Service s3Service;
 
+    @Transactional
     public PerformanceAddResponseDto addPerformance(PerformanceAddRequestDto dto, MultipartFile titleImage,
         List<MultipartFile> images, Passport passport) throws IOException {
 
