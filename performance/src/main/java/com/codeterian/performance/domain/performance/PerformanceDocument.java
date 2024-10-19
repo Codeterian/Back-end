@@ -4,6 +4,7 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import jakarta.persistence.Id;
@@ -65,6 +66,12 @@ public class PerformanceDocument {
 	@Field(type = FieldType.Boolean)
 	private boolean isDeleted;
 
+	@Field(type = FieldType.Text)
+	private String titleImage;
+
+	@Field(type = FieldType.Text)
+	private List<String> images;
+
 	public static PerformanceDocument from(Performance performance) {
 		return PerformanceDocument.builder()
 			.id(performance.getId())
@@ -82,9 +89,10 @@ public class PerformanceDocument {
 			.username(performance.getUsername())
 			.categoryId(performance.getCategory().getId())
 			.isDeleted(performance.isDeleted())
+			.titleImage(performance.getPerformanceImage().getTitleImage())
+			.images(performance.getPerformanceImage().getImages())
 			.build();
 
 	}
-
 
 }
