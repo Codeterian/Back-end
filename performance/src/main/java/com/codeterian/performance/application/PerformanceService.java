@@ -77,10 +77,6 @@ public class PerformanceService {
 
         Performance savedperformance = performanceRepository.save(newPerformance);
 
-        System.out.println("savedperformance.getPerformanceImage() = " + savedperformance.getPerformanceImage().getTitleImage());
-        System.out.println("savedperformance.getPerformanceImage().getImages() = " + savedperformance.getPerformanceImage().getImages());
-
-        // Kafka를 통해 Elasticsearch에 저장하도록 메시지 발행
         performanceKafkaProducer.sendPerformanceToKafka(savedperformance.getId());
 
         return PerformanceAddResponseDto.fromEntity(savedperformance);
@@ -118,12 +114,10 @@ public class PerformanceService {
                 .toList();
         }
 
-        // 일괄 업데이트 메서드 호출
         existedPerformance.updatePerformance(dto, existingcategory,titleImageUrl,imageUrls,passport.getUserId());
 
         Performance savedPerformance = performanceRepository.save(existedPerformance);
 
-        // Kafka를 통해 Elasticsearch에 저장하도록 메시지 발행
         performanceKafkaProducer.sendPerformanceToKafka(existedPerformance.getId());
 
         return PerformanceModifyResponseDto.fromEntity(savedPerformance);
