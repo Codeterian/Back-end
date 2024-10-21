@@ -28,12 +28,8 @@ public class PaymentKafkaConsumer {
 		IamportResponseException {
 		final PaymentBeforeValidateRequestDto message = objectMapper.readValue(paymentBeforeValidateMessage,
 			PaymentBeforeValidateRequestDto.class);
-		if (message.orderStatus() == OrderStatus.APPROVED) {
+		if(message.orderStatus() == OrderStatus.APPROVED){
 			paymentService.paymentBeforeValidate(message);
-		}
-		// 롤백 함수
-		else{
-
 		}
 	}
 }

@@ -21,6 +21,7 @@ import com.siot.IamportRestClient.IamportClient;
 import com.siot.IamportRestClient.exception.IamportResponseException;
 import com.siot.IamportRestClient.request.PrepareData;
 import com.siot.IamportRestClient.response.IamportResponse;
+import com.siot.IamportRestClient.response.Prepare;
 
 @Service
 public class PaymentService {
@@ -62,6 +63,8 @@ public class PaymentService {
 			payment.updateStatus(PaymentStatus.FAILED);
 			throw new RestApiException(PaymentErrorCode.INVALID_PAYMENT_AMOUNT);
 		}
+		paymentKafkaProducer.successPaymentToOrder(UUID.fromString(requestDto.orderUid()));
+
 		payment.updateStatus(PaymentStatus.PAID);
 	}
 
@@ -80,4 +83,13 @@ public class PaymentService {
 			() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
 	}
 
+	public String paymentCheckBeforeValidate(String orderId, Integer price) throws IamportResponseException, IOException {
+		int code = iamportClient.getPrepare(orderId).getCode();
+		if(code != 200){
+			throw new RestApiException(PaymentErrorCode.FAILED_PAYMENT);
+		}
+		else {
+			return "payment";
+		}
+	}
 }

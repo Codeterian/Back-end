@@ -132,9 +132,10 @@ public class OrderService {
 
 
 	@Transactional
-	public void completedOrderStatus(UUID orderId, OrderStatus orderStatus) {
+	public void completedOrderStatus(UUID orderId, OrderStatus orderStatus) throws JsonProcessingException {
 		Orders order = findById(orderId);
 		order.updateStatus(orderStatus);
+		orderKafkaProducer.ticketCompleted(orderId);
 	}
 
 

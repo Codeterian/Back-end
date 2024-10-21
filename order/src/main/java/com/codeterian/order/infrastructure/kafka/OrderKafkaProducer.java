@@ -25,6 +25,8 @@ public class OrderKafkaProducer {
 
 	private static final String PAYMENT_VALIDATE_PREPARE = "payment-validate-prepare";
 
+	private static final String TICKET_COMPLETED = "ticket-completed";
+
 	private final KafkaTemplate<String, Object> kafkaTemplate;
 	private final ObjectMapper objectMapper;
 
@@ -44,4 +46,8 @@ public class OrderKafkaProducer {
 		kafkaTemplate.send(PAYMENT_VALIDATE_PREPARE, objectMapper.writeValueAsString(paymentBeforeValidateRequestDto));
 	}
 
+	public void ticketCompleted(final UUID orderId) throws JsonProcessingException {
+		log.info("ticket-completed message : {} ",  orderId.toString());
+		kafkaTemplate.send(TICKET_COMPLETED, orderId.toString());
+	}
 }

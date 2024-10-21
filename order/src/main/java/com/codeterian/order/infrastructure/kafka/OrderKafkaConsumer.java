@@ -29,14 +29,14 @@ public class OrderKafkaConsumer {
 		orderService.failedOrderStatus(UUID.fromString(orderId), OrderStatus.FAILED);
 	}
 
-	@KafkaListener(topics = "order-make-approved", groupId = "group-a")
+	@KafkaListener(topics = "order-approved", groupId = "group-a")
 	public void handleOrderApproved(final String orderId) throws JsonProcessingException {
 		log.info("order-make-approved get Message : {} ",orderId);
 		orderService.approvedOrderStatus(UUID.fromString(orderId), OrderStatus.APPROVED);
 	}
 
-	@KafkaListener(topics = "success-payment-to-order", groupId = "group-a")
-	public void handleOrderCompleted(final String orderId){
+	@KafkaListener(topics = "completed-order", groupId = "group-a")
+	public void handleOrderCompleted(final String orderId) throws JsonProcessingException {
 		log.info("order-make-completed get Message : {} ", orderId);
 		orderService.completedOrderStatus(UUID.fromString(orderId), OrderStatus.COMPLETED);
 	}

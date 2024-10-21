@@ -22,7 +22,7 @@ public class PaymentKafkaProducer {
 	private static final String MAKE_TICKET = "prepare-payment";
 	private static final String STOCK_IS_EMPTY = "stock-is-empty";
 
-	private static final String SUCCESS_PAYMENT_TO_ORDER = "success-payment-to-order";
+	private static final String SUCCESS_PAYMENT_TO_ORDER = "completed-order";
 
 
 	private final KafkaTemplate<String, Object> kafkaTemplate;

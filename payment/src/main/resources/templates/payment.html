@@ -15,7 +15,6 @@
     <script th:inline="javascript">
         const merchantUid = [[${merchantUid}]];
         const amount = [[${amount}]];
-        const buyerEmail = [[${buyerEmail}]];
     </script>
 
     <script>
@@ -32,7 +31,6 @@
                     pay_method: "card",
                     merchant_uid: merchantUid,
                     amount: amount,
-                    buyer_email: buyerEmail,
                 },
                 function (rsp) {
                     if (rsp.success) {
