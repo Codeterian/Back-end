@@ -1,20 +1,11 @@
 package com.codeterian.order.application;
 
-import java.util.List;
-import java.util.UUID;
-
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.codeterian.common.exception.CommonErrorCode;
 import com.codeterian.common.exception.RestApiException;
 import com.codeterian.common.infrastructure.entity.UserRole;
+import com.codeterian.common.infrastructure.enums.OrderStatus;
 import com.codeterian.common.infrastructure.util.Passport;
 import com.codeterian.order.domain.entity.order.Orders;
-import com.codeterian.common.infrastructure.enums.OrderStatus;
 import com.codeterian.order.domain.repository.OrderRepository;
 import com.codeterian.order.infrastructure.kafka.OrderKafkaProducer;
 import com.codeterian.order.infrastructure.redisson.aspect.DistributedLock;
@@ -24,28 +15,49 @@ import com.codeterian.order.presentation.dto.OrderDetailsResponseDto;
 import com.codeterian.order.presentation.dto.OrderModifyRequestDto;
 import com.codeterian.order.presentation.dto.OrderModifyResponseDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
+@RequiredArgsConstructor
 public class OrderService {
 
 	private final OrderRepository orderRepository;
-	private final RedisTemplate<String, Orders> redisTemplate;
+
+	private final RedisTemplate<String, Object> redisTemplate;
+
 	private final OrderKafkaProducer orderKafkaProducer;
 
-	//Write - Through 전략
+
+	private static final String RUNNING_QUEUE = "RunningQueue";
+
+    //Write - Through 전략
 	@DistributedLock(key = "#lockName")
 	public OrderAddResponseDto addOrder(String lockName, Passport passport, OrderAddRequestDto requestDto) throws
 		JsonProcessingException {
+
+		String userId = requestDto.userId().toString();
 
 		// 0. 권한 체크
 		if(passport.getUserRole() != UserRole.CUSTOMER){
 			throw new RestApiException(CommonErrorCode.UNAUTHORIZED_USER);
 		}
+
+		// 0-1. 사용자 실행 큐 확인
+		Long userRank = redisTemplate.opsForZSet().rank(RUNNING_QUEUE, userId);
+		if (userRank == null) {
+			throw new RestApiException(CommonErrorCode.INVALID_ORDER_STATE);
+		}
+
 
 		// 1. 주문 생성
 		Orders orders = Orders.add(requestDto.totalPrice(), requestDto.userId());
@@ -61,6 +73,9 @@ public class OrderService {
 		String redisKey = "orderCache::" + orders.getId();
 		redisTemplate.opsForValue().set(redisKey, orders);
 
+		// 4. 실행 큐에서 삭제
+		redisTemplate.opsForZSet().remove(RUNNING_QUEUE,userId);
+
 		return OrderAddResponseDto.fromEntity(orders);
 	}
 
@@ -68,7 +83,7 @@ public class OrderService {
 	@Transactional(readOnly = true)
 	public OrderDetailsResponseDto findOrder(Passport passport, UUID orderId) {
 		String redisKey = "orderCache::" + orderId;
-		Orders orders = redisTemplate.opsForValue().get(redisKey);
+		Orders orders = (Orders) redisTemplate.opsForValue().get(redisKey);
 
 		if (orders == null) {
 			orders = findById(orderId);

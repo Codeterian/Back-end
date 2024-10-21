@@ -6,6 +6,7 @@ import java.util.UUID;
 import com.codeterian.common.infrastructure.entity.BaseEntity;
 import com.codeterian.common.infrastructure.enums.OrderStatus;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -25,6 +26,7 @@ import lombok.NoArgsConstructor;
 @Builder(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Orders extends BaseEntity implements Serializable {
 
 	@Id

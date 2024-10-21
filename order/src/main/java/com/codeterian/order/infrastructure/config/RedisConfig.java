@@ -1,10 +1,10 @@
 package com.codeterian.order.infrastructure.config;
 
-import java.time.Duration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
@@ -22,7 +22,9 @@ import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
-import com.codeterian.order.domain.entity.order.Orders;
+import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
 @EnableCaching
@@ -40,15 +42,43 @@ public class RedisConfig {
 	private static final String REDISSON_HOST_PREFIX = "redis://";
 
 	@Bean
-	public RedisTemplate<String, Orders> redisTemplate(RedisConnectionFactory connectionFactory) {
-		RedisTemplate<String, Orders> template = new RedisTemplate<>();
+	public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
+		RedisTemplate<String, Object> template = new RedisTemplate<>();
 		template.setConnectionFactory(connectionFactory);
 
+		// ObjectMapper 설정
+		ObjectMapper objectMapper = new ObjectMapper();
+
+		// JavaTimeModule 등록: LocalDate, LocalDateTime 등을 직렬화할 수 있게 설정
+		objectMapper.registerModule(new JavaTimeModule());
+
+		// 타임스탬프로 직렬화하지 않음 (ISO 8601 형식 사용)
+		objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+		// Default Typing 설정: NON_FINAL 타입만 직렬화
+		objectMapper.activateDefaultTyping(
+				LaissezFaireSubTypeValidator.instance,
+				ObjectMapper.DefaultTyping.NON_FINAL,
+				JsonTypeInfo.As.PROPERTY
+		);
+
+		// GenericJackson2JsonRedisSerializer로 설정
+		GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer(objectMapper);
+
+		// Key는 String으로 직렬화
 		template.setKeySerializer(new StringRedisSerializer());
-		template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+
+		// Value는 JSON으로 직렬화
+		template.setValueSerializer(serializer);
+
+		// HashKey, HashValue도 각각 설정 (필요에 따라 설정)
+		template.setHashKeySerializer(new StringRedisSerializer());
+		template.setHashValueSerializer(serializer);
 
 		return template;
 	}
+
+
 
 	@Bean
 	public RedisCacheManager cacheManager(
