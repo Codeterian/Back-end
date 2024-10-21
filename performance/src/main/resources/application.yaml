@@ -1,11 +1,29 @@
-server:
-  port: 19093
-
 spring:
   application:
     name: performance
-  profiles:
-    active: local
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/performance
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+        hibernate:
+          format_sql: true
+          show_sql: true
+
+  data:
+    elasticsearch:
+      rest:
+        username: elastic
+        password: 8zUSBpEzJmYnTn=EUZuR
+
+server:
+  port: 19093
 
 springdoc:
   api-docs:
@@ -15,6 +33,14 @@ springdoc:
   default-consumes-media-type: application/json
   default-produces-media-type: application/json
 
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://localhost:19090/eureka/
+    register-with-eureka: true
+    fetch-registry: true
 jwt:
   secret:
     key: 2e2ab37ae96a148bcb9919d74ecbd818ce9c097151c4b5d5d9049bcbdc05d349c59b9e1ad762c7b6ccf8b73e79fef4a82d13f08db22ca3c3070705b08df3f41c

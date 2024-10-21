@@ -1,4 +1,4 @@
-package com.codeterian.order.infrastructure.kafka.config;
+package com.codeterian.payment.infrastructure.config.kafka.config;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,8 +18,6 @@ public class KafkaConsumerConfig {
 
 	private static final String KAFKA_BROKER_URL = "localhost:9092";
 	private static final String TEMP_GROUP_ID = "group-a";
-
-
 	@Bean
 	public ConsumerFactory<String, Object> consumerFactory() {
 		Map<String, Object> configs = new HashMap<>();

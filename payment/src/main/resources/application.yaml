@@ -3,7 +3,7 @@ spring:
     name: payment
 
   datasource:
-    url: jdbc:postgresql://3.38.183.159:5432/payment
+    url: jdbc:postgresql://localhost:5432/payment
     driver-class-name: org.postgresql.Driver
     username: postgres
     password: postgres
@@ -23,7 +23,7 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: http://3.38.183.159:19090/eureka/
+      defaultZone: http://localhost:19090/eureka/
 
 springdoc:
   api-docs:
@@ -35,6 +35,18 @@ springdoc:
 
 server:
   port: 19096
+
+rest:
+  api:
+    key: 3650310136852026
+    secret: GpqO7GmXGom69BVWEazoljeZNNqBtr1hE3XPMEYTgD63GKnYiDONkC1lCO7Fquw3tGC5Vxr2ToBQx1PS
+
+jwt:
+  secret:
+    key: 2e2ab37ae96a148bcb9919d74ecbd818ce9c097151c4b5d5d9049bcbdc05d349c59b9e1ad762c7b6ccf8b73e79fef4a82d13f08db22ca3c3070705b08df3f41c
+    internal-secret-key: 45c7553fdd3c31912b36e569f8e26a4218051ef3709bf4ba16ec9c8d2ba14d535ce63db771f0a7b899b53a3d6f33f8dda7c6c6b1fb35c99d5bb9e93122f82a4b
+    expiration-time: 360000
+
 
 management:
   endpoints:

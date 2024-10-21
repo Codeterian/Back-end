@@ -1,5 +1,8 @@
 package com.codeterian.ticket.application.service;
 
+import java.util.List;
+import java.util.UUID;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,5 +29,13 @@ public class TicketPerformanceService {
 				dto.seatSection(), dto.seatNumber(), requestDto.userId(), requestDto.orderId()));
 		}
 		ticketKafkaProducer.handleOrderApproved(requestDto.orderId());
+	}
+
+	@Transactional
+	public void updateTicketsStatus(UUID orderId) {
+		List<Ticket> tickets = ticketRepository.findAllByOrderIdAndIsDeletedFalse(orderId);
+		for (Ticket ticket : tickets) {
+			ticket.updateStatus(TicketStatus.PAID);
+		}
 	}
 }

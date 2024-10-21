@@ -15,14 +15,14 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class TicketKafkaProducer {
 
-	private static final String ORDER_PROCESSING = "order-make-approved";
+	private static final String ORDER_APPROVED = "order-approved";
 
 	private final KafkaTemplate<String, Object> kafkaTemplate;
 	private final ObjectMapper objectMapper;
 
 	public void handleOrderApproved(final UUID orderId){
 		log.info("Order Processing to kafka topic : {} ", orderId);
-		kafkaTemplate.send(ORDER_PROCESSING, orderId.toString());
+		kafkaTemplate.send(ORDER_APPROVED, orderId.toString());
 	}
 
 }

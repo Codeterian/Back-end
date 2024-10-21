@@ -1,4 +1,4 @@
-package com.codeterian.order.infrastructure.kafka.config;
+package com.codeterian.payment.infrastructure.config.kafka.config;
 
 import java.util.HashMap;
 import java.util.Map;

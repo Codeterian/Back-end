@@ -1,10 +1,24 @@
+repositories {
+	maven { url 'https://jitpack.io'}
+}
+
 dependencies {
+
+	// 타임리프
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+	// 포트원
+	implementation 'com.github.iamport:iamport-rest-client-java:0.2.23'
 
 	// Spring Docs
 	implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.2.0'
 
 	// Feign Client
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
+	// kafka
+	implementation 'org.springframework.kafka:spring-kafka'
+	testImplementation 'org.springframework.kafka:spring-kafka-test'
 
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'

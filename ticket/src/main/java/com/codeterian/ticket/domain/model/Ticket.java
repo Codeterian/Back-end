@@ -46,7 +46,7 @@ public class Ticket extends BaseEntity {
     private Long userId;
 
     @Column(nullable = false)
-    private UUID orderID;
+    private UUID orderId;
 
 
     public static Ticket create(UUID performanceId, TicketStatus ticketStatus, Integer price, String seatSection, Integer seatNumber, Long userId, UUID orderID) {
@@ -60,7 +60,7 @@ public class Ticket extends BaseEntity {
         this.seatSection = seatSection;
         this.seatNumber = seatNumber;
         this.userId = userId;
-        this.orderID = orderId;
+        this.orderId = orderId;
     }
 
     public void update(String seatSection, int seatNumber, TicketStatus ticketStatus, Integer price) {
@@ -70,4 +70,7 @@ public class Ticket extends BaseEntity {
         this.price = price;
     }
 
+	public void updateStatus(TicketStatus ticketStatus) {
+        this.ticketStatus = ticketStatus;
+    }
 }
