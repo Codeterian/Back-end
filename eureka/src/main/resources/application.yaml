@@ -18,3 +18,14 @@ eureka:
 logging:
   level:
     feign: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: always
+    prometheus:
+      enabled: true
