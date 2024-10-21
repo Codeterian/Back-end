@@ -1,6 +1,6 @@
 package com.codeterian.performance.domain.performance;
 
-import static com.codeterian.performance.exception.PerformanceErrorCode.*;
+import static com.codeterian.performance.infrastructure.exception.PerformanceErrorCode.*;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;

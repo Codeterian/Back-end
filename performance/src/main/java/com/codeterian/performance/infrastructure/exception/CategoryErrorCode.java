@@ -1,4 +1,4 @@
-package com.codeterian.performance.exception;
+package com.codeterian.performance.infrastructure.exception;
 
 import org.springframework.http.HttpStatus;
 

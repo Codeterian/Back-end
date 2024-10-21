@@ -1,8 +1,9 @@
 package com.codeterian.performance.application;
 
-import static com.codeterian.performance.exception.PerformanceErrorCode.*;
+import static com.codeterian.performance.infrastructure.exception.PerformanceErrorCode.*;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -22,7 +23,9 @@ import com.codeterian.common.infrastructure.util.Passport;
 import com.codeterian.performance.domain.category.Category;
 import com.codeterian.performance.domain.performance.Performance;
 import com.codeterian.performance.domain.performance.PerformanceDocument;
+import com.codeterian.performance.domain.repository.PerformanceDocumentRepository;
 import com.codeterian.performance.domain.repository.PerformanceRepository;
+import com.codeterian.performance.infrastructure.exception.PerformanceErrorCode;
 import com.codeterian.performance.infrastructure.kafka.PerformanceKafkaProducer;
 import com.codeterian.performance.infrastructure.persistence.CategoryRepositoryImpl;
 import com.codeterian.performance.presentation.dto.request.PerformanceAddRequestDto;
@@ -47,6 +50,7 @@ public class PerformanceService {
 	private final PerformanceKafkaProducer performanceKafkaProducer;
     private final ElasticsearchOperations elasticsearchOperations;
     private final S3Service s3Service;
+    private final PerformanceDocumentRepository performanceDocumentRepository;
 
     @Transactional
     public PerformanceAddResponseDto addPerformance(PerformanceAddRequestDto dto, MultipartFile titleImage,
@@ -148,25 +152,19 @@ public class PerformanceService {
             .withQuery(q -> q
                 .bool(b -> b
                     .must(m -> m
-                        .bool(b1 -> b1
-                            .should(s1 -> s1.match(m1 -> m1
-                                .field("title")
-                                .query(query)
-                            ))
-                            .should(s2 -> s2.match(m2 -> m2
-                                .field("description")
-                                .query(query)
-                            ))
-                            .should(s3 -> s3.match(m3 -> m3
-                                .field("location")
-                                .query(query)
-                            ))
+                        .multiMatch(m1 -> m1
+                            .query(query)
+                            .fields(Arrays.asList("title^2", "description", "location"))
                         )
                     )
                     .filter(f -> f
-                        .term(t -> t
-                            .field("isDeleted")
-                            .value(false)
+                        .bool(bf -> bf
+                            .must(t -> t
+                                .term(t1 -> t1
+                                    .field("isDeleted")
+                                    .value(false)
+                                )
+                            )
                         )
                     )
                 )
@@ -219,6 +217,16 @@ public class PerformanceService {
 
         if (userRole == UserRole.CUSTOMER){
             throw new RestApiException(FORBIDDEN_ADMIN_ACCESS);
+        }
+    }
+
+    // 엘라스틱 서치에 더미데이터 저장
+    public void migratePerformancesToElasticsearch() {
+        List<Performance> performances = performanceRepository.findAll();
+
+        for (Performance performance : performances) {
+            PerformanceDocument document = PerformanceDocument.from(performance);
+            performanceDocumentRepository.save(document);
         }
     }
 }

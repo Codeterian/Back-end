@@ -1,17 +1,16 @@
 package com.codeterian.performance.application;
 
-import static com.codeterian.performance.exception.CategoryErrorCode.*;
+import static com.codeterian.performance.infrastructure.exception.CategoryErrorCode.*;
 
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import com.codeterian.common.exception.CustomException;
 import com.codeterian.common.exception.RestApiException;
 import com.codeterian.common.infrastructure.entity.UserRole;
 import com.codeterian.common.infrastructure.util.Passport;
 import com.codeterian.performance.domain.category.Category;
-import com.codeterian.performance.exception.CategoryErrorCode;
+import com.codeterian.performance.infrastructure.exception.CategoryErrorCode;
 import com.codeterian.performance.infrastructure.persistence.CategoryRepositoryImpl;
 import com.codeterian.performance.presentation.dto.request.CategoryModifyRequestDto;
 import com.codeterian.performance.presentation.dto.request.ChildCategoryAddRequestDto;

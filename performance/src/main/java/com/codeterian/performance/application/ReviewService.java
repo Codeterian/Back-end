@@ -1,7 +1,7 @@
 package com.codeterian.performance.application;
 
-import static com.codeterian.performance.exception.PerformanceErrorCode.*;
-import static com.codeterian.performance.exception.ReviewErrorCode.*;
+import static com.codeterian.performance.infrastructure.exception.PerformanceErrorCode.*;
+import static com.codeterian.performance.infrastructure.exception.ReviewErrorCode.*;
 
 import java.util.UUID;
 

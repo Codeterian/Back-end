@@ -1,5 +1,6 @@
 package com.codeterian.performance.domain.repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -14,4 +15,6 @@ public interface PerformanceRepository {
 	Optional<Performance> findByIdAndIsDeletedFalse(UUID id);
 
 	Optional<Performance> findById(UUID id);
+
+	List<Performance> findAll();
 }

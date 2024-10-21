@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -21,7 +22,6 @@ import com.codeterian.common.infrastructure.util.Passport;
 import com.codeterian.performance.application.PerformanceService;
 import com.codeterian.performance.presentation.dto.request.PerformanceAddRequestDto;
 import com.codeterian.performance.presentation.dto.request.PerformanceModifyRequestDto;
-import com.codeterian.performance.presentation.dto.response.ParentCategoryAddResponseDto;
 import com.codeterian.performance.presentation.dto.response.PerformanceAddResponseDto;
 import com.codeterian.performance.presentation.dto.response.PerformanceDetailsResponseDto;
 import com.codeterian.performance.presentation.dto.response.PerformanceModifyResponseDto;
@@ -60,9 +60,9 @@ public class PerformanceController {
     })
     @PostMapping
     public ResponseEntity<PerformanceAddResponseDto> performanceAdd(
-        @RequestPart PerformanceAddRequestDto dto,
-        @RequestPart("titleImage") MultipartFile titleImage,
-        @RequestPart("images")List<MultipartFile> images,
+        @RequestBody PerformanceAddRequestDto dto,
+        @RequestPart(value = "titleImage",required = false) MultipartFile titleImage,
+        @RequestPart(value = "images",required = false)List<MultipartFile> images,
         @Parameter(hidden = true)@CurrentPassport Passport passport) throws IOException {
         return ResponseEntity.ok().body( performanceService.addPerformance(dto,titleImage,images,passport));
     }
@@ -125,5 +125,11 @@ public class PerformanceController {
         @Parameter(hidden = true)@CurrentPassport Passport passport) {
         performanceService.removePerformance(performanceId,passport);
         return ResponseEntity.ok().body("공연 삭제에 성공했습니다.");
+    }
+
+    @PostMapping("/performances")
+    public ResponseEntity<String> migratePerformances() {
+        performanceService.migratePerformancesToElasticsearch();
+        return ResponseEntity.ok("Performance data migrated to Elasticsearch successfully.");
     }
 }
