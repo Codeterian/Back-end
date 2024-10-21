@@ -2,9 +2,8 @@ package com.codeterian.payment.domain.entity.payment;
 
 import java.util.UUID;
 
-import com.codeterian.common.infrastructure.entity.enums.PaymentStatus;
-import com.codeterian.common.infrastructure.entity.enums.PaymentType;
-import com.codeterian.common.infrastructure.dto.payment.PaymentAddRequestDto;
+import com.codeterian.common.infrastructure.entity.BaseEntity;
+import com.codeterian.common.infrastructure.enums.PaymentStatus;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -23,7 +22,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
-public class Payment {
+public class Payment extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
@@ -31,18 +30,20 @@ public class Payment {
 
 	private UUID orderId;
 
+	private Integer price;
+
 	@Enumerated(EnumType.STRING)
 	private PaymentStatus status;
 
-
-	@Enumerated(EnumType.STRING)
-	private PaymentType type;
-
-	public static Payment add(PaymentAddRequestDto requestDto) {
+	public static Payment create(UUID orderId, Integer price) {
 		return Payment.builder()
-			.orderId(requestDto.orderId())
+			.orderId(orderId)
+			.price(price)
 			.status(PaymentStatus.PENDING)
-			.type(requestDto.paymentType())
 			.build();
+	}
+
+	public void updateStatus(PaymentStatus paymentStatus) {
+		this.status = paymentStatus;
 	}
 }

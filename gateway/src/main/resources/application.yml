@@ -27,6 +27,7 @@ eureka:
     service-url:
       defaultZone: http://localhost:19090/eureka/
 
+
 logging:
   level:
     org.springframework.security: DEBUG
@@ -49,6 +50,9 @@ springdoc:
     urls[4]:
       name: 유저 명세서
       url: /swagger/users/v3/api-docs
+    urls[5]:
+      name: 대기열 명세서
+      url: /swagger/queues/v3/api-docs
     use-root-path: true
 
 jwt:
