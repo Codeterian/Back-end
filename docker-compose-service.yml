@@ -77,6 +77,8 @@ services:
       dockerfile: Dockerfile
       args:
         - FILE_DIRECTORY=./payment
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
     image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/payment
 
 
