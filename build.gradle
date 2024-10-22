@@ -48,6 +48,7 @@ bootJar {
 jar {
 	enabled = true
 }
+
 java {
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(17)

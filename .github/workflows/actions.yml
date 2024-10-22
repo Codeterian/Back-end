@@ -28,11 +28,11 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      # 초기 root project build
       - name: Build with Gradle
         run: |
           chmod +x ./gradlew
           ./gradlew clean build -x test
-        working-directory: ${{ matrix.service }}
 
   Docker:
     name: Build docker image and Push to registry
