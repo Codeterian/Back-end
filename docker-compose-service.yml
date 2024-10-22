@@ -34,7 +34,6 @@ services:
       - SPRING_PROFILES_ACTIVE=prod
     image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/user
 
-
   order:
     ports:
       - "19095:19095"
