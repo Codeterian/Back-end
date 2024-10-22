@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
@@ -16,7 +17,8 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 @EnableKafka
 public class KafkaConsumerConfig {
 
-	private static final String KAFKA_BROKER_URL = "localhost:9092";
+	@Value("${value.kafka.broker.url}")
+	private String KAFKA_BROKER_URL;
 	private static final String TEMP_GROUP_ID = "group-a";
 
 

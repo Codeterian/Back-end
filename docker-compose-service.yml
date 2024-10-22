@@ -1,0 +1,96 @@
+# docker-compose-service.yml
+services:
+  eureka:
+    ports:
+      - "19090:19090"
+    build:
+      dockerfile: Dockerfile
+      args:
+        - FILE_DIRECTORY=./eureka
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+    image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/eureka
+
+  gateway:
+    ports:
+      - "19091:19091"
+    build:
+      dockerfile: Dockerfile
+      args:
+        - FILE_DIRECTORY=./gateway
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+    image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/gateway
+
+
+  user:
+    ports:
+      - "19097:19097"
+    build:
+      dockerfile: Dockerfile
+      args:
+        - FILE_DIRECTORY=./user
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+    image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/user
+
+
+  order:
+    ports:
+      - "19095:19095"
+    build:
+      dockerfile: Dockerfile
+      args:
+        - FILE_DIRECTORY=./order
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+    image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/order
+
+  performance:
+    ports:
+      - "19093:19093"
+    build:
+      dockerfile: Dockerfile
+      args:
+        - FILE_DIRECTORY=./performance
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+    image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/performance
+
+
+  ticket:
+    ports:
+      - "19094:19094"
+    build:
+      dockerfile: Dockerfile
+      args:
+        - FILE_DIRECTORY=./ticket
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+    image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/ticket
+
+
+  payment:
+    ports:
+      - "19096:19096"
+    build:
+      dockerfile: Dockerfile
+      args:
+        - FILE_DIRECTORY=./payment
+    image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/payment
+
+
+  queue:
+    ports:
+      - "19099:19099"
+    build:
+      dockerfile: Dockerfile
+      args:
+        - FILE_DIRECTORY=./queue
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+    image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/queue
+
+
+
+

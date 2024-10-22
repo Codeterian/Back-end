@@ -1,15 +1,16 @@
 spring:
   application:
-    name: queue
+    name: order
   profiles:
     active: local
   config:
     import: optional:configserver:http://localhost:18080
 
 ---
+
 spring:
   application:
-    name: queue
+    name: order
   profiles:
     active: prod
   config:

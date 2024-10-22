@@ -3,19 +3,24 @@ name: Spring boot CI/CD with AWS EC2, ECR
 on:
   push:
     branches:
-      - dev
+      - main
+
+env:
+  ECR_NAMESPACE: sparta
 
 jobs:
   build:
-    name: build
+    name: Build
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-      actions: write
+    # 3개의 서비스를 모두 빌드할 수 있도록 변수로 지정합니다.
+    # https://docs.github.com/ko/actions/writing-workflows/choosing-what-your-workflow-does/running-variations-of-jobs-in-a-workflow
+    strategy:
+      matrix:
+        service: [eureka, gateway, order, payment, performance, queue, ticket, user]
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -23,82 +28,74 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v4
+      - name: Build with Gradle
+        run: ./gradlew clean build -x test
+        working-directory: ${{ matrix.service }}
 
-      - run: pwd
-
-      - run: ls -al
-
-      - name: Build with Gradle Wrapper
-        run: ./gradlew clean build -x test --warning-mode=all
-
-      # Docker 로그인
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-            # Docker 이미지 빌드
-      - name: Build Docker images
-        run: |
-            docker build -t ${{ secrets.DOCKER_USERNAME }}/codeterian-user:latest \
-              --build-arg FILE_DIRECTORY=user -f ./Dockerfile .
-            docker build -t ${{ secrets.DOCKER_USERNAME }}/codeterian-payment:latest \
-              --build-arg FILE_DIRECTORY=payment -f ./Dockerfile .
-            docker build -t ${{ secrets.DOCKER_USERNAME }}/codeterian-order:latest \
-              --build-arg FILE_DIRECTORY=order -f ./Dockerfile .
-            docker build -t ${{ secrets.DOCKER_USERNAME }}/codeterian-ticket:latest \
-              --build-arg FILE_DIRECTORY=ticket -f ./Dockerfile .
-            docker build -t ${{ secrets.DOCKER_USERNAME }}/codeterian-performance:latest \
-              --build-arg FILE_DIRECTORY=performance -f ./Dockerfile .
-            docker build -t ${{ secrets.DOCKER_USERNAME }}/codeterian-eureka:latest \
-              --build-arg FILE_DIRECTORY=eureka -f ./Dockerfile .
-            docker build -t ${{ secrets.DOCKER_USERNAME }}/codeterian-gateway:latest \
-              --build-arg FILE_DIRECTORY=gateway -f ./Dockerfile .
-
-      # Docker Hub에 이미지 푸시
-      - name: Push Docker image to Hub
-        run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/codeterian-user:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/codeterian-payment:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/codeterian-order:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/codeterian-ticket:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/codeterian-performance:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/codeterian-eureka:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/codeterian-gateway:latest
-      
-  deploy:
+  Docker:
+    name: Build docker image and Push to registry
     needs: build
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-      actions: write
 
     steps:
-      - name: Deploy to EC2
-        uses: appleboy/ssh-action@v1.0.3
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # AWS ECR 에 이미지 업로드 권한을 얻기 위해 인증을 진행합니다.
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      # 로그인
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      # docker compose 를 이용해서 여러 이미지를 모두 빌드하고, 별도의 script를 사용해서 이미지를 push 합니다.
+      - name: Build, Tag and Push docker image to AWS ECR
+        run: |
+          docker compose -f docker-compose-service.yml build
+          ./dockerTagAndPush.sh
+        env:
+          ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
+
+  Deploy:
+    name: Deploy
+    needs: Docker
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # docker compose로 container를 실행하기 위해 docker-compose-service.yml 을 EC2로 복사합니다.
+      - name: Copy Docker compose file to EC2
+        uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_KEY }}
+          source: "docker-compose-total.yml"
+          target: "/home/ubuntu" # target 은 디렉토리임. target directory 아래에 같은 이름의 파일로 옮겨진다.
+
+      # ssh를 통해 EC2에 접속하고 docker container를 재시작합니다.
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_KEY }}
+          port: 22
+          envs: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, ECR_REGISTRY, ECR_NAMESPACE
           script: |
-            echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
-            docker compose -f ./docker-compose-deploy.yml down
-            docker rm -f codeterian-user
-            docker rm -f codeterian-ticket
-            docker rm -f codeterian-order
-            docker rm -f codeterian-payment
-            docker rm -f codeterian-performance
-            docker rm -f codeterian-eureka
-            docker rm -f codeterian-gateway
-            docker pull ${{ secrets.DOCKER_USERNAME }}/codeterian-user:latest
-            docker pull ${{ secrets.DOCKER_USERNAME }}/codeterian-ticket:latest
-            docker pull ${{ secrets.DOCKER_USERNAME }}/codeterian-order:latest
-            docker pull ${{ secrets.DOCKER_USERNAME }}/codeterian-performance:latest
-            docker pull ${{ secrets.DOCKER_USERNAME }}/codeterian-payment:latest
-            docker pull ${{ secrets.DOCKER_USERNAME }}/codeterian-eureka:latest
-            docker pull ${{ secrets.DOCKER_USERNAME }}/codeterian-gateway:latest
-            docker compose -f ./docker-compose-deploy.yml up -d
+            aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.ECR_REGISTRY }}
+            docker compose -f docker-compose-total.yml down
+            docker compose -f docker-compose-total pull
+            docker compose -f docker-compose-total.yml up -d

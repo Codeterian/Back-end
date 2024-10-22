@@ -1,31 +1,16 @@
 spring:
   application:
     name: eureka
+  profiles:
+    active: local
+  config:
+    import: optional:configserver:http://localhost:18080
 
-server:
-  port: 19090
-
-eureka:
-  client:
-    registryFetchIntervalSeconds: 5
-    register-with-eureka: false
-    fetch-registry: false
-    service-url:
-      defaultZone: http://localhost:19090/eureka
-  instance:
-    hostname: localhost
-
-logging:
-  level:
-    feign: DEBUG
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: '*'
-  endpoint:
-    health:
-      show-details: always
-    prometheus:
-      enabled: true
+---
+spring:
+  application:
+    name: eureka
+  profiles:
+    active: prod
+  config:
+    import: optional:configserver:http://config:18080
