@@ -3,10 +3,10 @@ name: Spring boot CI/CD with AWS EC2, ECR
 on:
   push:
     branches:
-      - main
+      - dev
 
 env:
-  ECR_NAMESPACE: sparta
+  ECR_NAMESPACE: codeterian
 
 jobs:
   build:
