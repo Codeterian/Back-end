@@ -1,73 +1,24 @@
 spring:
   application:
     name: gateway
-  cloud:
-    gateway:
-      discovery:
-        locator:
-          enabled: true
+  profiles:
+    active: local
   main:
     web-application-type: reactive
+  config:
+    import: optional:configserver:http://localhost:18080
 
+---
+spring:
+  application:
+    name: gateway
+  profiles:
+    active: prod
+  main:
+    web-application-type: reactive
   autoconfigure:
     exclude:
       - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
       - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
-
-  data:
-    redis:
-      host: localhost
-      port: 6379
-
-server:
-  port: 19091
-
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:19090/eureka/
-
-
-logging:
-  level:
-    org.springframework.security: DEBUG
-    org.springframework.cloud.gateway: DEBUG
-
-springdoc:
-  swagger-ui:
-    urls[0]:
-      name: 공연 명세서
-      url: /swagger/performances/v3/api-docs
-    urls[1]:
-      name: 티켓 명세서
-      url: /swagger/tickets/v3/api-docs
-    urls[2]:
-      name: 주문 명세서
-      url: /swagger/orders/v3/api-docs
-    urls[3]:
-      name: 결제 명세서
-      url: /swagger/payments/v3/api-docs
-    urls[4]:
-      name: 유저 명세서
-      url: /swagger/users/v3/api-docs
-    urls[5]:
-      name: 대기열 명세서
-      url: /swagger/queues/v3/api-docs
-    use-root-path: true
-
-jwt:
-  secret:
-    key: 2e2ab37ae96a148bcb9919d74ecbd818ce9c097151c4b5d5d9049bcbdc05d349c59b9e1ad762c7b6ccf8b73e79fef4a82d13f08db22ca3c3070705b08df3f41c
-    internal-secret-key: 45c7553fdd3c31912b36e569f8e26a4218051ef3709bf4ba16ec9c8d2ba14d535ce63db771f0a7b899b53a3d6f33f8dda7c6c6b1fb35c99d5bb9e93122f82a4b
-    expiration-time: 3600000
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: '*'
-  endpoint:
-    health:
-      show-details: always
-    prometheus:
-      enabled: true
+  config:
+    import: optional:configserver:http://localhost:18080

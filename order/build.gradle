@@ -12,6 +12,10 @@ dependencies {
 	// Spring Docs
 	implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.2.0'
 
+	// config server
+	implementation 'org.springframework.cloud:spring-cloud-starter-config'
+
+
 	// kafka
 	implementation 'org.springframework.kafka:spring-kafka'
 	testImplementation 'org.springframework.kafka:spring-kafka-test'

@@ -42,10 +42,10 @@ public class Ticket extends BaseEntity {
     @Column(name = "seat_number")
     private Integer seatNumber;
 
-    @Column(name = "user_id", nullable = false)
+    @Column(name = "user_id")
     private Long userId;
 
-    @Column(name = "order_id",nullable = false)
+    @Column(name = "order_id")
     private UUID orderId;
 
 
