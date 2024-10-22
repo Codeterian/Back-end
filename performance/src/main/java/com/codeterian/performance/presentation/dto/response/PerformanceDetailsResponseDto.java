@@ -1,6 +1,7 @@
 package com.codeterian.performance.presentation.dto.response;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import com.codeterian.performance.domain.performance.Performance;
@@ -21,7 +22,9 @@ public record PerformanceDetailsResponseDto(
 	String ageRestriction,
 	String status,
 	Integer ticketStock,
-	UUID categoryId
+	UUID categoryId,
+	String titleImageUrl,
+	List<String> imageUrls
 ){
 
 	public static PerformanceDetailsResponseDto fromEntity(Performance performance) {
@@ -39,6 +42,8 @@ public record PerformanceDetailsResponseDto(
 			.status(performance.getStatus().name())
 			.ticketStock(performance.getTicketStock())
 			.categoryId(performance.getCategory().getId())
+			.titleImageUrl(performance.getTitle())
+			.imageUrls(performance.getPerformanceImage().getImages())
 			.build();
 	}
 }

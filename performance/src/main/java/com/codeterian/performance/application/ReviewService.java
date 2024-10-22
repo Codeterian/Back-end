@@ -1,16 +1,24 @@
 package com.codeterian.performance.application;
 
+import static com.codeterian.performance.infrastructure.exception.PerformanceErrorCode.*;
+import static com.codeterian.performance.infrastructure.exception.ReviewErrorCode.*;
+
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import com.codeterian.common.exception.RestApiException;
+import com.codeterian.common.infrastructure.entity.UserRole;
+import com.codeterian.common.infrastructure.util.Passport;
 import com.codeterian.performance.domain.performance.Performance;
 import com.codeterian.performance.domain.review.Review;
 import com.codeterian.performance.infrastructure.persistence.PerformanceRepositoryImpl;
 import com.codeterian.performance.infrastructure.persistence.ReviewRepositoryImpl;
 import com.codeterian.performance.presentation.dto.request.ReviewAddRequestDto;
 import com.codeterian.performance.presentation.dto.request.ReviewModifyRequestDto;
+import com.codeterian.performance.presentation.dto.response.ReviewAddResponseDto;
 import com.codeterian.performance.presentation.dto.response.ReviewDetailsResponseDto;
+import com.codeterian.performance.presentation.dto.response.ReviewModifyResponseDto;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,52 +30,78 @@ public class ReviewService {
 	private final ReviewRepositoryImpl reviewRepository;
 	private final PerformanceRepositoryImpl performanceRepository;
 
-	public void addReview(@Valid ReviewAddRequestDto dto) {
-		// 공연정보랑 유저아이디로 리뷰를 이미 등록했는지 확인하는 검증 추가하기
+	public ReviewAddResponseDto addReview(@Valid ReviewAddRequestDto dto, Passport passport) {
+		validateCustomerRole(passport);
 
-		// 공연 존재 여부 확인
 		Performance performance = performanceRepository.findByIdAndIsDeletedFalse(dto.performanceId()).orElseThrow(
-			() -> new IllegalArgumentException("존재하지 않는 공연입니다.")
+			() -> new RestApiException(PERFORMANCE_NOT_FOUND)
 		);
 
-		Review newReview = Review.builder()
-			.performance(performance)
-			.title(dto.title())
-			.description(dto.description())
-			.rating(dto.rating())
-			.build();
+		if (reviewRepository.existsByCreatedByAndPerformanceIdAndIsDeletedFalse(passport.getUserId(), performance.getId())){
+			throw new RestApiException(DUPLICATE_REVIEW);
+		}
 
-		reviewRepository.save(newReview);
+		Review newReview = Review.addReview(dto,passport.getUserId(),performance);
+
+		Review savedReview = reviewRepository.save(newReview);
+
+		return ReviewAddResponseDto.fromEntity(savedReview);
 	}
 
-	public void modifyReview(UUID reviewId, ReviewModifyRequestDto dto) {
-		// 리뷰 존재 여부 확인
+	public ReviewModifyResponseDto modifyReview(UUID reviewId, ReviewModifyRequestDto dto,Passport passport) {
+		validateCustomerRole(passport);
+
 		Review existingReview = reviewRepository.findByIdAndIsDeletedFalse(reviewId).orElseThrow(
-			() -> new IllegalArgumentException("존재하지 않는 리뷰입니다.")
+			() -> new RestApiException(REVIEW_NOT_FOUND)
 		);
+
+		checkReviewEditPermission(passport, existingReview);
 
 		Performance performance = performanceRepository.findByIdAndIsDeletedFalse(dto.performanceId()).orElseThrow(
-			() -> new IllegalArgumentException("존재하지 않는 공연입니다.")
+			() -> new RestApiException(PERFORMANCE_NOT_FOUND)
 		);
 
-		// 일괄 업데이트 호출
-		existingReview.update(
-			dto.title(),
-			dto.description(),
-			dto.rating(),
-			performance
+		existingReview.modify(dto ,performance,passport.getUserId());
+
+		Review savedReview = reviewRepository.save(existingReview);
+
+		return ReviewModifyResponseDto.fromEntity(savedReview);
+	}
+
+	public void removeReview(UUID reviewId, Passport passport) {
+		Review review = reviewRepository.findByIdAndIsDeletedFalse(reviewId).orElseThrow(
+			() -> new RestApiException(REVIEW_NOT_FOUND)
 		);
 
-		reviewRepository.save(existingReview);
+		checkReviewEditPermission(passport, review);
 
+		review.delete(passport.getUserId());
+
+		reviewRepository.save(review);
 	}
 
 	public ReviewDetailsResponseDto findReviewDetails(UUID reviewId) {
-		// 리뷰 존재 여부 확인
 		Review existingReview = reviewRepository.findByIdAndIsDeletedFalse(reviewId).orElseThrow(
-			() -> new IllegalArgumentException("존재하지 않는 리뷰입니다.")
+			() -> new RestApiException(REVIEW_NOT_FOUND)
 		);
 
 		return ReviewDetailsResponseDto.fromEntity(existingReview);
 	}
+
+	private static void validateCustomerRole(Passport passport) {
+		UserRole userRole = passport.getUserRole();
+
+		if (userRole != UserRole.CUSTOMER){
+			throw new RestApiException(FORBIDDEN_CUSTOMER_ACCESS);
+		}
+	}
+
+	private static void checkReviewEditPermission(Passport passport, Review existingReview) {
+		if (!existingReview.getCreatedBy().equals(passport.getUserId())){
+			if (passport.getUserRole() != UserRole.MANAGER && passport.getUserRole() != UserRole.MASTER){
+				throw new RestApiException(UNAUTHORIZED_REVIEW_MODIFICATION);
+			}
+		}
+	}
+
 }

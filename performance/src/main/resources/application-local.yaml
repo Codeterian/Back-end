@@ -1,4 +1,6 @@
 spring:
+  config:
+    import: optional:file:.env[.properties]
 
   datasource:
     url: jdbc:postgresql://localhost:5432/performance
@@ -18,8 +20,8 @@ spring:
     elasticsearch:
       rest:
         uris: localhost:9200
-        username: elastic
-        password: 8zUSBpEzJmYnTn=EUZuR
+        username: ${ELASTICSEARCH_USERNAME}
+        password: ${ELASTICSEARCH_PASSWORD}
 
 eureka:
   instance:
@@ -29,4 +31,17 @@ eureka:
       defaultZone: http://localhost:19090/eureka/
     register-with-eureka: true
     fetch-registry: true
+
+cloud:
+  aws:
+    s3:
+      bucket: performance-image
+    credentials:
+      accessKey: ${AWS_ACCESS_KEY}
+      secretKey: ${AWS_SECRET_KEY}
+    region:
+      static: ap-northeast-2
+
+
+
 
