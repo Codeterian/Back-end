@@ -157,7 +157,7 @@ services:
     build:
       dockerfile: Dockerfile
       args:
-        - FILE_DIRECTORY=./payment
+        - FILE_DIRECTORY=./queue
     environment:
       - SPRING_PROFILES_ACTIVE=prod
     image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/queue
