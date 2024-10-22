@@ -1,29 +1,5 @@
-version: '3.9'
-
+# docker-compose-service.yml
 services:
-  postgresql:
-    container_name: postgresql
-    image: postgres:latest
-    restart: always
-    volumes:
-      - ./postgres-data:/var/lib/postgresql/data
-    ports:
-      - 5432:5432
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: order
-
-  redis-stack:
-    image: redis/redis-stack
-    container_name: redis-stack
-    restart: always
-    environment:
-      REDIS_ARGS: "--requirepass systempass"
-    ports:
-      - 6379:6379
-      - 8001:8001
-
   zookeeper:
     image: wurstmeister/zookeeper:latest
     platform: linux/amd64
@@ -74,112 +50,117 @@ services:
       - elasticsearch-data:/usr/share/elasticsearch/data
 
   eureka:
-    image: whdrb2643/codeterian-eureka:latest
-    container_name: codeterian-eureka
-    build:
-      dockerfile: Dockerfile
-      args:
-        - FILE_DIRECTORY=eureka
     ports:
       - "19090:19090"
-    network_mode: host
-
-  gateway:
-    image: whdrb2643/codeterian-gateway:latest
-    container_name: codeterian-gateway
     build:
       dockerfile: Dockerfile
       args:
-        - FILE_DIRECTORY=gateway
+        - FILE_DIRECTORY=./eureka
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+    image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/server
+
+  gateway:
     ports:
       - "19091:19091"
-    network_mode: host
+    build:
+      dockerfile: Dockerfile
+      args:
+        - FILE_DIRECTORY=./gateway
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+    image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/gateway
+    depends_on:
+      - eureka
+
+  user:
+    ports:
+      - "19097:19097"
+    build:
+      dockerfile: Dockerfile
+      args:
+        - FILE_DIRECTORY=./user
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+    image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/user
     depends_on:
       - eureka
 
   order:
-    image: whdrb2643/codeterian-order:latest
-    container_name: codeterian-order
-    build:
-      dockerfile: Dockerfile
-      args:
-        - FILE_DIRECTORY=order
     ports:
       - "19095:19095"
-    network_mode: host
-    depends_on:
-      - postgresql
-      - redis-stack
-      - kafka
-      - kafka-ui
-      - zookeeper
-      - eureka
-
-  performance:
-    image: whdrb2643/codeterian-performance:latest
-    container_name: codeterian-performance
     build:
       dockerfile: Dockerfile
       args:
-        - FILE_DIRECTORY=performance
+        - FILE_DIRECTORY=./order
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+    image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/order
+    depends_on:
+      - eureka
+      - kafka-ui
+      - kafka
+      - zookeeper
+
+  performance:
     ports:
       - "19093:19093"
-    network_mode: host
+    build:
+      dockerfile: Dockerfile
+      args:
+        - FILE_DIRECTORY=./performance
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+    image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/performance
     depends_on:
-      - postgresql
-      - kafka
-      - kafka-ui
-      - zookeeper
       - eureka
+      - kafka-ui
+      - kafka
+      - zookeeper
       - elasticsearch
 
   ticket:
-    image: whdrb2643/codeterian-ticket:latest
-    container_name: codeterian-ticket
-    build:
-      dockerfile: Dockerfile
-      args:
-        - FILE_DIRECTORY=ticket
     ports:
       - "19094:19094"
-    network_mode: host
+    build:
+      dockerfile: Dockerfile
+      args:
+        - FILE_DIRECTORY=./ticket
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+    image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/ticket
     depends_on:
-      - postgresql
-      - kafka
-      - kafka-ui
-      - zookeeper
       - eureka
+      - kafka-ui
+      - kafka
+      - zookeeper
+
 
   payment:
-    image: whdrb2643/codeterian-payment:latest
-    container_name: codeterian-payment
+    ports:
+      - "19096:19096"
     build:
       dockerfile: Dockerfile
       args:
-        - FILE_DIRECTORY=payment
-    ports:
-        - "19096:19096"
-    network_mode: host
+        - FILE_DIRECTORY=./payment
+    image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/payment
     depends_on:
-      - postgresql
-      - kafka
+      - eureka
       - kafka-ui
+      - kafka
       - zookeeper
-      - eureka
 
-  user:
-    image: whdrb2643/codeterian-user:latest
-    container_name: codeterian-user
+
+  queue:
+    ports:
+      - "19099:19099"
     build:
       dockerfile: Dockerfile
       args:
-        - FILE_DIRECTORY=user
-    ports:
-      - "19097:19097"
-    network_mode: host
+        - FILE_DIRECTORY=./payment
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+    image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/queue
     depends_on:
-      - postgresql
       - eureka
-
-
 

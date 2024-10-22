@@ -16,9 +16,5 @@ spring:
     active: prod
   main:
     web-application-type: reactive
-  autoconfigure:
-    exclude:
-      - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
-      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
   config:
-    import: optional:configserver:http://localhost:18080
+    import: optional:configserver:http://config:18080

@@ -1,8 +1,13 @@
 package com.codeterian.performance.domain.performance;
 
+import static com.codeterian.performance.infrastructure.exception.PerformanceErrorCode.*;
+
+import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
+import com.codeterian.common.exception.RestApiException;
 import com.codeterian.common.infrastructure.entity.BaseEntity;
 import com.codeterian.performance.domain.category.Category;
 import com.codeterian.performance.presentation.dto.request.PerformanceAddRequestDto;
@@ -27,7 +32,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Performance extends BaseEntity {
+public class Performance extends BaseEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -46,20 +51,23 @@ public class Performance extends BaseEntity {
     private PerformanceStatus status;
     private int ticketStock;
     private String username;
-    private boolean isDeleted = false;
 
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
 
+    private PerformanceImage  performanceImage;
 
-    public static Performance addPerformance(PerformanceAddRequestDto dto,Category category) {
+    public static Performance addPerformance(PerformanceAddRequestDto dto,Category category, String titleImageUrl,
+        List<String> imageUrls, Long userId) {
 
         if (dto.startDate().isAfter(dto.endDate())) {
-            throw new IllegalArgumentException("시작일은 종료일보다 이전이어야 합니다.");
+            throw new RestApiException(INVALID_DATE_RANGE);
         }
 
-        return Performance.builder()
+        PerformanceImage performanceImage = PerformanceImage.addPerformanceImage(titleImageUrl, imageUrls);
+
+        Performance performance = Performance.builder()
             .title(dto.title())
             .description(dto.description())
             .location(dto.location())
@@ -72,14 +80,20 @@ public class Performance extends BaseEntity {
             .status(PerformanceStatus.valueOf(dto.status()))
             .ticketStock(dto.ticketStock())
             .category(category)
+            .performanceImage(performanceImage)
             .build();
+        performance.createBy(userId);
+        return performance;
     }
 
-    public void updatePerformance(PerformanceModifyRequestDto dto, Category category) {
+    public void updatePerformance(PerformanceModifyRequestDto dto, Category category, String titleImageUrl,
+        List<String> imageUrls,Long userId) {
 
         if (startDate.isAfter(endDate)) {
-            throw new IllegalArgumentException("시작일은 종료일보다 이전이어야 합니다.");
+            throw new RestApiException(INVALID_DATE_RANGE);
         }
+
+        PerformanceImage performanceImage = PerformanceImage.modifyPerformanceImage(titleImageUrl, imageUrls);
 
         this.title = dto.title();
         this.description = dto.description();
@@ -93,6 +107,9 @@ public class Performance extends BaseEntity {
         this.status = PerformanceStatus.valueOf(dto.status()); // 상태 값은 enum 처리
         this.ticketStock = dto.ticketStock();
         this.category = category;
+        this.performanceImage = performanceImage;
+
+        updateBy(userId);
     }
 
 	public void modifyStock(Integer number) {

@@ -6,6 +6,8 @@ import java.util.UUID;
 
 import com.codeterian.common.infrastructure.entity.BaseEntity;
 import com.codeterian.performance.domain.performance.Performance;
+import com.codeterian.performance.presentation.dto.request.ChildCategoryAddRequestDto;
+import com.codeterian.performance.presentation.dto.request.ParentCategoryAddRequestDto;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -56,6 +58,23 @@ public class Category extends BaseEntity {
 
 	public void deleteCategory(Long handlerId) {
 		delete(handlerId);
+	}
+
+	public static Category addParentCategory(ParentCategoryAddRequestDto dto, Long handlerId) {
+		Category category = Category.builder()
+			.name(dto.name())
+			.build();
+		category.createBy(handlerId);
+		return category;
+	}
+
+	public static Category addChildCategory(ChildCategoryAddRequestDto dto,Category parentCategory,Long handlerId) {
+		Category category = Category.builder()
+			.name(dto.name())
+			.parent(parentCategory)
+			.build();
+		category.createBy(handlerId);
+		return category;
 	}
 
 }

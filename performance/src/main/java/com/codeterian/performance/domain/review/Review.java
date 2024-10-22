@@ -2,7 +2,10 @@ package com.codeterian.performance.domain.review;
 
 import java.util.UUID;
 
+import com.codeterian.common.infrastructure.entity.BaseEntity;
 import com.codeterian.performance.domain.performance.Performance;
+import com.codeterian.performance.presentation.dto.request.ReviewAddRequestDto;
+import com.codeterian.performance.presentation.dto.request.ReviewModifyRequestDto;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -21,7 +24,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Review {
+public class Review extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
@@ -35,16 +38,23 @@ public class Review {
 	private String description;
 	private int rating;
 
-	// 유저
-	// private Long userId;
-
-	// 나중에 baseEntity 사용하면 삭제할 예정
-	private boolean isDeleted = false;
-
-	public void update(String title, String description, Integer rating, Performance performance) {
-		this.title = title;
-		this.description = description;
-		this.rating = rating;
-		this.performance = performance;
+	public static Review addReview(ReviewAddRequestDto dto, Long id,Performance performance) {
+		Review review = Review.builder()
+			.performance(performance)
+			.title(dto.title())
+			.description(dto.description())
+			.rating(dto.rating())
+			.build();
+		review.createBy(id);
+		return review;
 	}
+
+	public void modify(ReviewModifyRequestDto dto, Performance performance,Long id) {
+		this.title = dto.title();
+		this.description = dto.description();
+		this.rating = dto.rating();
+		this.performance = performance;
+		updateBy(id);
+	}
+
 }

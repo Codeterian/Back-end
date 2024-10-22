@@ -1,9 +1,9 @@
 package com.codeterian.performance.presentation.dto.response;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
-import com.codeterian.performance.domain.performance.Performance;
 import com.codeterian.performance.domain.performance.PerformanceDocument;
 
 import lombok.Builder;
@@ -22,7 +22,10 @@ public record PerformanceSearchResponseDto(
 	String ageRestriction,
 	String status,
 	Integer ticketStock,
-	UUID categoryId
+	UUID categoryId,
+	boolean isDeleted,
+	String titleImage,
+	List<String> images
 ) {
 
 	public static PerformanceSearchResponseDto fromDocument(PerformanceDocument performanceDocument) {
@@ -40,6 +43,9 @@ public record PerformanceSearchResponseDto(
 			.status(performanceDocument.getStatus())
 			.ticketStock(performanceDocument.getTicketStock())
 			.categoryId(performanceDocument.getCategoryId())
+			.isDeleted(performanceDocument.isDeleted())
+			.titleImage(performanceDocument.getTitleImage())
+			.images(performanceDocument.getImages())
 			.build();
 	}
 }

@@ -1,5 +1,9 @@
 package com.codeterian.performance.application;
 
+import static com.codeterian.performance.infrastructure.exception.PerformanceErrorCode.*;
+
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -10,12 +14,18 @@ import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.codeterian.common.exception.RestApiException;
 import com.codeterian.common.infrastructure.dto.performance.PerformanceDecreaseStockRequestDto;
+import com.codeterian.common.infrastructure.entity.UserRole;
+import com.codeterian.common.infrastructure.util.Passport;
 import com.codeterian.performance.domain.category.Category;
 import com.codeterian.performance.domain.performance.Performance;
 import com.codeterian.performance.domain.performance.PerformanceDocument;
+import com.codeterian.performance.domain.repository.PerformanceDocumentRepository;
 import com.codeterian.performance.domain.repository.PerformanceRepository;
+import com.codeterian.performance.infrastructure.exception.PerformanceErrorCode;
 import com.codeterian.performance.infrastructure.kafka.PerformanceKafkaProducer;
 import com.codeterian.performance.infrastructure.persistence.CategoryRepositoryImpl;
 import com.codeterian.performance.presentation.dto.request.PerformanceAddRequestDto;
@@ -39,46 +49,84 @@ public class PerformanceService {
     private final CategoryRepositoryImpl categoryRepository;
 	private final PerformanceKafkaProducer performanceKafkaProducer;
     private final ElasticsearchOperations elasticsearchOperations;
+    private final S3Service s3Service;
+    private final PerformanceDocumentRepository performanceDocumentRepository;
 
-    public PerformanceAddResponseDto addPerformance(PerformanceAddRequestDto dto) {
-        // 카테고리 존재 여부 확인
+    @Transactional
+    public PerformanceAddResponseDto addPerformance(PerformanceAddRequestDto dto, MultipartFile titleImage,
+        List<MultipartFile> images, Passport passport) throws IOException {
+
+        validateAdminRole(passport);
+
         Category category = categoryRepository.findByIdAndIsDeletedFalse(dto.categoryId()).orElseThrow(
-                () -> new IllegalArgumentException("존재하지 않는 카테고리 입니다.")
+                () -> new RestApiException(CATEGORY_NOT_FOUND)
         );
 
-        // 공연 title 중복 확인
         if (performanceRepository.existsByTitleAndIsDeletedFalse(dto.title())){
-            throw new IllegalArgumentException("중복되는 공연 입니다.");
+            throw new RestApiException(DUPLICATE_PERFORMANCE_TITLE);
         }
 
-        Performance newPerformance = Performance.addPerformance(dto, category);
+        String titleImageUrl = s3Service.uploadFile(titleImage);
+
+        List<String> imageUrls = images.stream()
+            .map(file -> {
+                try {
+                    return s3Service.uploadFile(file);
+                } catch (IOException e) {
+                    throw new RestApiException(IMAGE_UPLOAD_FAILED);
+                }
+            })
+            .toList();
+
+        Performance newPerformance = Performance.addPerformance(dto, category,titleImageUrl,imageUrls,passport.getUserId());
 
         Performance savedperformance = performanceRepository.save(newPerformance);
 
-        log.info("Performance DB 저장 성공");
+        if (savedperformance == null || savedperformance.getId() == null) {
+            throw new RestApiException(DATABASE_SAVE_FAILED);
+        }
 
-        // Kafka를 통해 Elasticsearch에 저장하도록 메시지 발행
         performanceKafkaProducer.sendPerformanceToKafka(savedperformance.getId());
 
         return PerformanceAddResponseDto.fromEntity(savedperformance);
     }
 
     @Transactional
-    public PerformanceModifyResponseDto modifyPerformance(UUID performanceId, PerformanceModifyRequestDto dto) {
+    public PerformanceModifyResponseDto modifyPerformance(UUID performanceId, PerformanceModifyRequestDto dto,
+        MultipartFile newTitleImage, List<MultipartFile> newImages, Passport passport) throws IOException {
+
+        validateAdminRole(passport);
+
         Performance existedPerformance = performanceRepository.findByIdAndIsDeletedFalse(performanceId).orElseThrow(
-            () -> new IllegalArgumentException("존재하지 않는 공연입니다.")
+            () -> new RestApiException(PERFORMANCE_NOT_FOUND)
         );
 
         Category existingcategory = categoryRepository.findByIdAndIsDeletedFalse(dto.categoryId()).orElseThrow(
-            () -> new IllegalArgumentException("존재하지 않는 카테고리입니다.")
+            () -> new RestApiException(CATEGORY_NOT_FOUND)
         );
 
-        // 일괄 업데이트 메서드 호출
-        existedPerformance.updatePerformance(dto, existingcategory);
+        String titleImageUrl = existedPerformance.getPerformanceImage().getTitleImage();
+        if (newTitleImage != null && !newTitleImage.isEmpty()) {
+            titleImageUrl = s3Service.uploadFile(newTitleImage);
+        }
+
+        List<String> imageUrls = existedPerformance.getPerformanceImage().getImages();
+        if (newImages != null && !newImages.isEmpty()) {
+            imageUrls = newImages.stream()
+                .map(file-> {
+                    try {
+                        return s3Service.uploadFile(file);
+                    } catch (IOException e) {
+                        throw new RestApiException(IMAGE_UPLOAD_FAILED);
+                    }
+                })
+                .toList();
+        }
+
+        existedPerformance.updatePerformance(dto, existingcategory,titleImageUrl,imageUrls,passport.getUserId());
 
         Performance savedPerformance = performanceRepository.save(existedPerformance);
 
-        // Kafka를 통해 Elasticsearch에 저장하도록 메시지 발행
         performanceKafkaProducer.sendPerformanceToKafka(existedPerformance.getId());
 
         return PerformanceModifyResponseDto.fromEntity(savedPerformance);
@@ -86,60 +134,66 @@ public class PerformanceService {
 
     public PerformanceDetailsResponseDto findPerformanceDetails(UUID performanceId) {
         Performance performance = performanceRepository.findByIdAndIsDeletedFalse(performanceId).orElseThrow(
-            () -> new IllegalArgumentException("존재하지 않는 공연입니다.")
+            () -> new RestApiException(PERFORMANCE_NOT_FOUND)
         );
         return PerformanceDetailsResponseDto.fromEntity(performance);
     }
 
-    public List<PerformanceSearchResponseDto> searchPerformance(String query,int pageNumber, int pageSize) {
+    public List<PerformanceSearchResponseDto> searchPerformance(String query, int pageNumber, int pageSize) {
         if (pageNumber < 0) {
-            throw new IllegalArgumentException("잘못된 pageNumber 요청입니다.");
+            throw new RestApiException(INVALID_PAGE_NUMBER);
         }
 
         if (pageSize <= 0) {
-            throw new IllegalArgumentException("잘못된 pageSize 요청입니다.");
+            throw new RestApiException(INVALID_PAGE_SIZE);
         }
-        log.info("performance search query: {}", query);
+
         NativeQuery nativeQuery = NativeQuery.builder()
             .withQuery(q -> q
                 .bool(b -> b
-                    .should(s -> s.match(m -> m
-                        .field("title")
-                        .query(query)
-                    ))
-                    .should(s -> s.match(m -> m
-                        .field("description")
-                        .query(query)
-                    ))
-                    .should(s -> s.match(m -> m
-                        .field("location")
-                        .query(query)
-                    ))
+                    .must(m -> m
+                        .multiMatch(m1 -> m1
+                            .query(query)
+                            .fields(Arrays.asList("title^2", "description", "location"))
+                        )
+                    )
+                    .filter(f -> f
+                        .bool(bf -> bf
+                            .must(t -> t
+                                .term(t1 -> t1
+                                    .field("isDeleted")
+                                    .value(false)
+                                )
+                            )
+                        )
+                    )
                 )
             )
-            .withPageable(PageRequest.of(pageNumber,pageSize))
+            .withPageable(PageRequest.of(pageNumber, pageSize))
             .build();
 
         SearchHits<PerformanceDocument> searchHits = elasticsearchOperations.search(nativeQuery, PerformanceDocument.class);
         return searchHits.getSearchHits().stream()
-            .map(hit-> PerformanceSearchResponseDto.fromDocument(hit.getContent()))
+            .map(hit -> PerformanceSearchResponseDto.fromDocument(hit.getContent()))
             .collect(Collectors.toList());
     }
 
     @Transactional
-    public void removePerformance(UUID performanceId) {
+    public void removePerformance(UUID performanceId, Passport passport) {
+        validateAdminRole(passport);
+
         Performance performance = performanceRepository.findByIdAndIsDeletedFalse(performanceId).orElseThrow(
-            () -> new IllegalArgumentException("존재하지 않는 공연입니다.")
+            () -> new RestApiException(PERFORMANCE_NOT_FOUND)
         );
 
-        // 나중에 userId 받아와서 수정하기
-        performance.delete(1L);
+        performance.delete(passport.getUserId());
+
         performanceRepository.save(performance);
 
-        performanceKafkaProducer.sendPerformanceToKafka(performanceId);
+        performanceKafkaProducer.sendPerformanceToKafka(performance.getId());
     }
 
-	@Transactional
+  @Transactional
 	public void modifyStock(PerformanceDecreaseStockRequestDto performanceDecreaseStockRequestDto) throws
         JsonProcessingException {
 		Performance performance = performanceRepository.findByIdAndIsDeletedFalse(
@@ -157,4 +211,22 @@ public class PerformanceService {
                 performanceDecreaseStockRequestDto.ticketAddRequestDtoList());
         }
 	}
+
+    private static void validateAdminRole(Passport passport) {
+        UserRole userRole = passport.getUserRole();
+
+        if (userRole == UserRole.CUSTOMER){
+            throw new RestApiException(FORBIDDEN_ADMIN_ACCESS);
+        }
+    }
+
+    // 엘라스틱 서치에 더미데이터 저장
+    public void migratePerformancesToElasticsearch() {
+        List<Performance> performances = performanceRepository.findAll();
+
+        for (Performance performance : performances) {
+            PerformanceDocument document = PerformanceDocument.from(performance);
+            performanceDocumentRepository.save(document);
+        }
+    }
 }
