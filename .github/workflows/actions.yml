@@ -89,6 +89,7 @@ jobs:
           source: "docker-compose-service.yml"
           target: "/home/ubuntu" # target 은 디렉토리임. target directory 아래에 같은 이름의 파일로 옮겨진다.
 
+
       # ssh를 통해 EC2에 접속하고 docker container를 재시작합니다.
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.0.3
@@ -106,5 +107,5 @@ jobs:
           script: |
             aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.ECR_REGISTRY }}
             docker compose -f docker-compose-service.yml down
-            docker compose -f docker-compose-service pull
+            docker compose -f docker-compose-service.yml pull
             docker compose -f docker-compose-service.yml up -d
