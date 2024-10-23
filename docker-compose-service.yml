@@ -6,7 +6,7 @@ services:
     build:
       dockerfile: Dockerfile
       args:
-        - FILE_DIRECTORY=eureka
+        - FILE_DIRECTORY=./eureka
     environment:
       - SPRING_PROFILES_ACTIVE=prod
     image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/eureka
@@ -17,10 +17,12 @@ services:
     build:
       dockerfile: Dockerfile
       args:
-        - FILE_DIRECTORY=gateway
+        - FILE_DIRECTORY=./gateway
     environment:
       - SPRING_PROFILES_ACTIVE=prod
     image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/gateway
+    depends_on:
+      - eureka
 
 
   user:
@@ -29,10 +31,12 @@ services:
     build:
       dockerfile: Dockerfile
       args:
-        - FILE_DIRECTORY=user
+        - FILE_DIRECTORY=./user
     environment:
       - SPRING_PROFILES_ACTIVE=prod
     image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/user
+    depends_on:
+      - eureka
 
   order:
     ports:
@@ -40,10 +44,12 @@ services:
     build:
       dockerfile: Dockerfile
       args:
-        - FILE_DIRECTORY=order
+        - FILE_DIRECTORY=./order
     environment:
       - SPRING_PROFILES_ACTIVE=prod
     image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/order
+    depends_on:
+      - eureka
 
   performance:
     ports:
@@ -51,10 +57,12 @@ services:
     build:
       dockerfile: Dockerfile
       args:
-        - FILE_DIRECTORY=performance
+        - FILE_DIRECTORY=./performance
     environment:
       - SPRING_PROFILES_ACTIVE=prod
     image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/performance
+    depends_on:
+      - eureka
 
 
   ticket:
@@ -63,10 +71,12 @@ services:
     build:
       dockerfile: Dockerfile
       args:
-        - FILE_DIRECTORY=ticket
+        - FILE_DIRECTORY=./ticket
     environment:
       - SPRING_PROFILES_ACTIVE=prod
     image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/ticket
+    depends_on:
+      - eureka
 
 
   payment:
@@ -75,10 +85,12 @@ services:
     build:
       dockerfile: Dockerfile
       args:
-        - FILE_DIRECTORY=payment
+        - FILE_DIRECTORY=./payment
     environment:
       - SPRING_PROFILES_ACTIVE=prod
     image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/payment
+    depends_on:
+      - eureka
 
 
   queue:
@@ -87,10 +99,12 @@ services:
     build:
       dockerfile: Dockerfile
       args:
-        - FILE_DIRECTORY=queue
+        - FILE_DIRECTORY=./queue
     environment:
       - SPRING_PROFILES_ACTIVE=prod
     image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/queue
+    depends_on:
+      - eureka
 
 
 

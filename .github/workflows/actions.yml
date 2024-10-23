@@ -86,7 +86,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_KEY }}
-          source: "docker-compose-total.yml"
+          source: "docker-compose-service.yml"
           target: "/home/ubuntu" # target 은 디렉토리임. target directory 아래에 같은 이름의 파일로 옮겨진다.
 
       # ssh를 통해 EC2에 접속하고 docker container를 재시작합니다.
@@ -105,6 +105,6 @@ jobs:
           envs: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, ECR_REGISTRY, ECR_NAMESPACE
           script: |
             aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.ECR_REGISTRY }}
-            docker compose -f docker-compose-total.yml down
-            docker compose -f docker-compose-total pull
-            docker compose -f docker-compose-total.yml up -d
+            docker compose -f docker-compose-service.yml down
+            docker compose -f docker-compose-service pull
+            docker compose -f docker-compose-service.yml up -d
