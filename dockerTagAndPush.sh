@@ -1,5 +1,4 @@
 # 모든 서비스 도커 이미지를 빌드합니다.
-# shellcheck disable=SC2054
 services=("eureka", "gateway", "order", "payment", "performance", "queue", "ticket", "user")
 
 # 도커 이미지에 commit hash를 기반으로한 이미지 태그를 설정합니다.
