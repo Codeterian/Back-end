@@ -13,4 +13,4 @@ spring:
   profiles:
     active: prod
   config:
-    import: optional:configserver:http://config:18080
+    import: optional:configserver:ec2-3-37-29-71.ap-northeast-2.compute.amazonaws.com:18080
