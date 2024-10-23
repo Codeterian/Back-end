@@ -29,6 +29,13 @@ jobs:
           chmod +x ./gradlew
           ./gradlew clean build -x test
 
+      # build 이후 전체 폴더 artifactis에 올린다.
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-output
+          path: .
+
   Docker:
     name: Build docker image and Push to registry
     needs: build
@@ -38,20 +45,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
         with:
-          java-version: '17'
-          distribution: 'temurin'
-
-      # 초기 root project build
-      - name: Build with Gradle
-        run: |
-          chmod +x ./gradlew
-          ./gradlew clean build -x test
-
-      - name: Checkout
-        uses: actions/checkout@v4
+          name: build-output
 
       # AWS ECR 에 이미지 업로드 권한을 얻기 위해 인증을 진행합니다.
       - name: Configure AWS credentials
