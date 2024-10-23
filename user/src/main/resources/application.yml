@@ -13,4 +13,4 @@ spring:
   profiles:
     active: prod
   config:
-    import: optional:configserver:http://3.37.29.71/:18080
+    import: optional:configserver:http://3.37.29.71:18080
