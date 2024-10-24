@@ -9,6 +9,8 @@ services:
         - FILE_DIRECTORY=./eureka
     environment:
       - SPRING_PROFILES_ACTIVE=prod
+    networks:
+      - codeterian-network
     image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/eureka
 
   gateway:
@@ -20,6 +22,8 @@ services:
         - FILE_DIRECTORY=./gateway
     environment:
       - SPRING_PROFILES_ACTIVE=prod
+    networks:
+      - codeterian-network
     image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/gateway
     depends_on:
       - eureka
@@ -34,6 +38,8 @@ services:
         - FILE_DIRECTORY=./user
     environment:
       - SPRING_PROFILES_ACTIVE=prod
+    networks:
+      - codeterian-network
     image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/user
     depends_on:
       - eureka
@@ -47,6 +53,8 @@ services:
         - FILE_DIRECTORY=./order
     environment:
       - SPRING_PROFILES_ACTIVE=prod
+    networks:
+      - codeterian-network
     image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/order
     depends_on:
       - eureka
@@ -60,6 +68,8 @@ services:
         - FILE_DIRECTORY=./performance
     environment:
       - SPRING_PROFILES_ACTIVE=prod
+    networks:
+      - codeterian-network
     image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/performance
     depends_on:
       - eureka
@@ -74,6 +84,8 @@ services:
         - FILE_DIRECTORY=./ticket
     environment:
       - SPRING_PROFILES_ACTIVE=prod
+    networks:
+      - codeterian-network
     image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/ticket
     depends_on:
       - eureka
@@ -88,6 +100,8 @@ services:
         - FILE_DIRECTORY=./payment
     environment:
       - SPRING_PROFILES_ACTIVE=prod
+    networks:
+      - codeterian-network
     image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/payment
     depends_on:
       - eureka
@@ -100,12 +114,15 @@ services:
       dockerfile: Dockerfile
       args:
         - FILE_DIRECTORY=./queue
+    networks:
+      - codeterian-network
     environment:
       - SPRING_PROFILES_ACTIVE=prod
     image: ${ECR_REGISTRY}/${ECR_NAMESPACE}/queue
     depends_on:
       - eureka
 
-
-
+networks:
+  codeterian-network:
+    external: true
 

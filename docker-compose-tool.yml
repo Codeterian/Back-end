@@ -4,6 +4,8 @@ services:
     platform: linux/amd64
     ports:
       - "2181:2181"
+    networks:
+      - codeterian-network
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
@@ -13,6 +15,8 @@ services:
     platform: linux/amd64
     ports:
       - "9092:9092"
+    networks:
+      - codeterian-network
     environment:
       KAFKA_ADVERTISED_LISTENERS: INSIDE://kafka:29092,OUTSIDE://ec2-3-37-29-71.ap-northeast-2.compute.amazonaws.com:9092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
@@ -27,6 +31,8 @@ services:
     platform: linux/amd64
     ports:
       - "8080:8080"
+    networks:
+      - codeterian-network
     environment:
       KAFKA_CLUSTERS_0_NAME: ec2-3-37-29-71.ap-northeast-2.compute.amazonaws.com
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
@@ -37,6 +43,8 @@ services:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.15.2
     container_name: elasticsearch
     restart: always
+    networks:
+      - codeterian-network
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false
@@ -52,6 +60,8 @@ services:
     image: redis/redis-stack
     container_name: redis-stack
     restart: always
+    networks:
+      - codeterian-network
     environment:
       REDIS_ARGS: "--requirepass systempass"
     ports:
@@ -60,3 +70,7 @@ services:
 
 volumes:
   elasticsearch-data:
+
+networks:
+  shared-network:
+    external: true
