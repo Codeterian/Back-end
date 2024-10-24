@@ -1,6 +1,7 @@
 package com.codeterian.queue.application.service;
 
 import com.codeterian.common.infrastructure.util.Passport;
+import com.codeterian.queue.infrastructure.redisson.aspect.DistributedLock;
 import com.codeterian.queue.presentation.dto.QueueResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +32,7 @@ public class QueueService {
     /**
      * 사용자를 대기큐 or 실행큐에 추가 (새로고침 시 뒤로 밀리도록 처리)
      */
+    @DistributedLock(key = "#lockName")
     public void joinQueue(Passport passport) {
         String userId = passport.getUserId().toString();
 
@@ -40,10 +42,10 @@ public class QueueService {
 
         Long currentRunningQueueSize = redisTemplate.opsForZSet().size(RUNNING_QUEUE);
 
-        if (currentRunningQueueSize != null && currentRunningQueueSize >= TRAFFIC_THRESHOLD) {
-            // 임계치 초과: 대기큐에 사용자 추가
+        if (currentRunningQueueSize != null && currentRunningQueueSize > TRAFFIC_THRESHOLD-1) {
             redisTemplate.opsForZSet().add(WAITING_QUEUE, userId, System.currentTimeMillis());
             log.info("사용자가 대기큐에 추가되었습니다.");
+
         } else {
             // 실행큐에 사용자 추가
             redisTemplate.opsForZSet().add(RUNNING_QUEUE, userId, System.currentTimeMillis());
@@ -65,8 +67,10 @@ public class QueueService {
     @Scheduled(fixedDelay = 2000)
     public void getNextUserFrom() {
         Set<String> nextUsers = redisTemplate.opsForZSet().range(WAITING_QUEUE, 0, 0);
+        Long currentRunningQueueSize = redisTemplate.opsForZSet().size(RUNNING_QUEUE);
 
-        if (nextUsers != null && !nextUsers.isEmpty()) {
+        if (nextUsers != null && !nextUsers.isEmpty() &&
+                currentRunningQueueSize != null && currentRunningQueueSize < TRAFFIC_THRESHOLD) {
             String nextUser = nextUsers.iterator().next();
             redisTemplate.opsForZSet().remove(WAITING_QUEUE, nextUser);
 

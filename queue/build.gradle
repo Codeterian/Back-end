@@ -21,8 +21,9 @@ dependencies {
 	//eureka-client
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 
-	//openfeign
-	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+	// redisson
+	implementation 'org.redisson:redisson-spring-boot-starter:3.27.0'
+	implementation 'org.springframework.boot:spring-boot-starter-aop'
 
 	//embedded redis for test
 	testImplementation 'it.ozimov:embedded-redis:0.7.2'
